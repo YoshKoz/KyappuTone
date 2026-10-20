@@ -74,13 +74,36 @@
 				<ColumnDefinition />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<dev:AutoScrollView IsPlaying="True"
-			                    ScrollingPixelsPreSecond="20">
-				<TextBlock x:Name="PlaylistHeader"
-				           Grid.Column="0"
-				           HorizontalAlignment="Left"
-				           Style="{ThemeResource TitleTextBlockStyle}" />
-			</dev:AutoScrollView>
+			<Grid Grid.Column="0"
+			      ColumnSpacing="12">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Border Width="56"
+				        Height="56"
+				        VerticalAlignment="Center"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="8">
+					<Grid>
+						<FontIcon HorizontalAlignment="Center"
+						          VerticalAlignment="Center"
+						          FontSize="22"
+						          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+						          Glyph="&#xE8FD;" />
+						<Image x:Name="PlaylistCoverImage"
+						       Stretch="UniformToFill"
+						       Visibility="Collapsed" />
+					</Grid>
+				</Border>
+				<dev:AutoScrollView Grid.Column="1"
+				                    IsPlaying="True"
+				                    ScrollingPixelsPreSecond="20">
+					<TextBlock x:Name="PlaylistHeader"
+					           HorizontalAlignment="Left"
+					           Style="{ThemeResource TitleTextBlockStyle}" />
+				</dev:AutoScrollView>
+			</Grid>
 
 			<StackPanel x:Name="PageButtons"
 			            Grid.Column="1"
@@ -213,6 +236,18 @@
 							                Text="Rename Playlist">
 								<MenuFlyoutItem.Icon>
 									<FontIcon Glyph="&#xE8AC;" />
+								</MenuFlyoutItem.Icon>
+							</MenuFlyoutItem>
+							<MenuFlyoutItem Click="ChangePlaylistCover_Click"
+							                Text="Change cover">
+								<MenuFlyoutItem.Icon>
+									<FontIcon Glyph="&#xE8B9;" />
+								</MenuFlyoutItem.Icon>
+							</MenuFlyoutItem>
+							<MenuFlyoutItem Click="RemovePlaylistCover_Click"
+							                Text="Remove cover">
+								<MenuFlyoutItem.Icon>
+									<FontIcon Glyph="&#xE74D;" />
 								</MenuFlyoutItem.Icon>
 							</MenuFlyoutItem>
 							<MenuFlyoutItem x:Name="ExportPlayList"

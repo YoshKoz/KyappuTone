@@ -3,7 +3,10 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Media.Imaging;
 using KyappuTone.Views.Common;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace KyappuTone.Views.PlaylistViews;
 
@@ -70,6 +73,99 @@ public sealed partial class PlayListTemplate : SongListPageBase
 		if (e.Parameter is string title)
 		{
 			PlaylistHeader.Text = title;
+		}
+
+		_ = LoadPlaylistCoverAsync();
+	}
+
+	/// <summary>Loads the stored cover for the current playlist, if one exists.</summary>
+	private async Task LoadPlaylistCoverAsync()
+	{
+		if (string.IsNullOrWhiteSpace(PlaylistHeader.Text))
+			return;
+
+		var cover = await DatabaseHelper.Instance.GetPlaylistCover(PlaylistHeader.Text);
+		ShowPlaylistCover(cover);
+	}
+
+	private void ShowPlaylistCover(string? coverFileName)
+	{
+		if (string.IsNullOrWhiteSpace(coverFileName))
+		{
+			PlaylistCoverImage.Source = null;
+			PlaylistCoverImage.Visibility = Visibility.Collapsed;
+			return;
+		}
+
+		try
+		{
+			PlaylistCoverImage.Source = new BitmapImage(
+				new Uri($"ms-appdata:///local/PlaylistCovers/{Uri.EscapeDataString(coverFileName)}"));
+			PlaylistCoverImage.Visibility = Visibility.Visible;
+		}
+		catch
+		{
+			PlaylistCoverImage.Source = null;
+			PlaylistCoverImage.Visibility = Visibility.Collapsed;
+		}
+	}
+
+	private async void ChangePlaylistCover_Click(object sender, RoutedEventArgs e)
+	{
+		try
+		{
+			var picker = new FileOpenPicker
+			{
+				SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+			};
+			picker.FileTypeFilter.Add(".jpg");
+			picker.FileTypeFilter.Add(".jpeg");
+			picker.FileTypeFilter.Add(".png");
+			picker.FileTypeFilter.Add(".webp");
+			picker.FileTypeFilter.Add(".bmp");
+
+			WinRT.Interop.InitializeWithWindow.Initialize(picker,
+				WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
+
+			var file = await picker.PickSingleFileAsync();
+			if (file is null)
+				return;
+
+			var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(
+				"PlaylistCovers", CreationCollisionOption.OpenIfExists);
+			var target = await file.CopyAsync(
+				folder,
+				$"{Guid.NewGuid():N}{file.FileType}",
+				NameCollisionOption.FailIfExists);
+
+			await DatabaseHelper.Instance.SetPlaylistCover(PlaylistHeader.Text, target.Name);
+			ShowPlaylistCover(target.Name);
+			GlobalNotification.Success("Playlist cover updated.");
+		}
+		catch (Exception ex)
+		{
+			GlobalNotification.Error($"Could not update playlist cover: {ex.Message}");
+		}
+	}
+
+	private async void RemovePlaylistCover_Click(object sender, RoutedEventArgs e)
+	{
+		var cover = await DatabaseHelper.Instance.GetPlaylistCover(PlaylistHeader.Text);
+		await DatabaseHelper.Instance.SetPlaylistCover(PlaylistHeader.Text, string.Empty);
+		ShowPlaylistCover(null);
+
+		if (!string.IsNullOrWhiteSpace(cover))
+		{
+			try
+			{
+				var path = Path.Combine(ApplicationData.Current.LocalFolder.Path, "PlaylistCovers", cover);
+				if (File.Exists(path))
+					File.Delete(path);
+			}
+			catch
+			{
+				// The cover row is already cleared; a leftover file is harmless.
+			}
 		}
 	}
 
@@ -837,6 +933,7 @@ public sealed partial class PlayListTemplate : SongListPageBase
 			}
 			await DatabaseHelper.Instance.RenamePlaylist(PlaylistHeader.Text, PlaylistNameBox.Text.Trim());
 			PlaylistHeader.Text = PlaylistNameBox.Text.Trim();
+			_ = LoadPlaylistCoverAsync();
 			AddNoResultsMessage();
 			GlobalNotification.Success("Playlist renamed to " + PlaylistHeader.Text + ".");
 		}

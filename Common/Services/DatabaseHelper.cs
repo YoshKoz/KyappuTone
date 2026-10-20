@@ -260,7 +260,13 @@ public class DatabaseHelper
 
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS Playlists (
 									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
-									   Name TEXT)");
+									   Name TEXT,
+									   CoverPath TEXT NOT NULL DEFAULT '')");
+
+		var playlistSchema = await _database.ExecuteScalarAsync<string>(
+			"SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'Playlists'");
+		if (playlistSchema is not null && !playlistSchema.Contains("CoverPath", StringComparison.OrdinalIgnoreCase))
+			await _database.ExecuteAsync("ALTER TABLE Playlists ADD COLUMN CoverPath TEXT NOT NULL DEFAULT ''");
 
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS PlaylistSongs (
 									   PlaylistId INTEGER,
@@ -1200,6 +1206,26 @@ public class DatabaseHelper
 	public async Task RenamePlaylist(string oldName, string newName)
 	{
 		await _database.ExecuteAsync("UPDATE Playlists SET Name = ? WHERE Name = ?", newName, oldName);
+	}
+
+	/// <summary>Stores the file name of a playlist cover inside the app's local cover folder.</summary>
+	public async Task SetPlaylistCover(string playlistName, string coverFileName)
+	{
+		await _database.ExecuteAsync("UPDATE Playlists SET CoverPath = ? WHERE Name = ?", coverFileName, playlistName);
+	}
+
+	/// <summary>Returns the stored playlist cover file name, or null when the playlist has no cover.</summary>
+	public async Task<string?> GetPlaylistCover(string playlistName)
+	{
+		try
+		{
+			return await _database.ExecuteScalarAsync<string>(
+				"SELECT CoverPath FROM Playlists WHERE Name = ? LIMIT 1", playlistName);
+		}
+		catch (Exception)
+		{
+			return null;
+		}
 	}
 
 	/// <summary>

@@ -1,5 +1,25 @@
 # KyappuTone full review — 2026-10-20
 
+## Follow-up implemented after this review
+
+The findings below describe the tree at review time. Later on 2026-10-20 the following
+items were implemented:
+
+- Optional Last.fm scrobbling with user-supplied API credentials, "now playing", a
+  persisted offline queue, retry, and disconnect.
+- Spotify playlist import using Authorization Code + PKCE, a loopback callback, local
+  title/artist matching, and normal KyappuTone playlist creation. No Spotify audio is
+  streamed or downloaded.
+- Local crash logging for XAML, AppDomain and unobserved task exceptions, with an
+  **Open log folder** action in Settings. Nothing is uploaded.
+- Custom playlist covers stored in the app's local cover folder.
+- Package version advanced from `1.66.19.0` to `1.66.20.0` for development builds.
+
+Still open: release semantic versioning, a GitHub Releases/MSIX update handoff, a
+production signing certificate, smart playlists/mixes, subfolder auto-playlists and
+metadata enrichment. Batch multi-select and the Favorites quick filter were already
+present in the All Songs view when checked after the review.
+
 ## Scope
 
 Reviewed the current `main` tree (`C:\Tools\KyappuTone`) after the Phase 2A/2B work,

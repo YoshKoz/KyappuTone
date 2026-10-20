@@ -13,10 +13,10 @@ The repository is private until the first release.
 ## Status
 
 Pre-release. The custom audio engine, EQ, crossfade, sleep timer, visualizers, favorites,
-listening history, statistics and home overview are implemented. The app plays local
-files only; Last.fm scrobbling and Spotify playback are not implemented, and Spotify
-playlist import is still planned for the acquisition phase. See
-`docs/superpowers/specs/` for the remaining work.
+listening history, statistics and home overview are implemented. Playback is local-files
+only. Optional Last.fm scrobbling and Spotify playlist import are available with your own
+API credentials; Spotify audio is never streamed or downloaded. See
+`docs/integrations.md` for setup and `docs/superpowers/specs/` for the remaining work.
 
 ## Requirements
 
@@ -45,6 +45,12 @@ Add-AppxPackage -Register .\bin\x64\Debug\net10.0-windows10.0.26100.0\win-x64\Ap
 ```powershell
 dotnet test .\tests\KyappuTone.Core.Tests\KyappuTone.Core.Tests.csproj
 ```
+
+## Optional integrations
+
+Last.fm scrobbling and Spotify playlist import are opt-in and use credentials you create.
+They are configured under **Settings → Integrations**. No credentials are bundled and
+nothing is uploaded except the API calls you enable. See `docs/integrations.md`.
 
 ## CI
 
