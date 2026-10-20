@@ -302,7 +302,9 @@ public enum LocalSave
 	YtDlpPath,
 	FfmpegPath,
 	DownloadFolder,
-	ImportDownloads
+	ImportDownloads,
+	DiscordPresenceEnabled,
+	DiscordClientId
 }
 
 public enum AddPlaylistResult

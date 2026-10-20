@@ -707,6 +707,58 @@
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
 
+			<dev:SettingsExpander Description="Downloaded audio is saved here and imported into the local library when the option below is on."
+			                      Header="Downloads"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Header="Default folder">
+						<StackPanel Spacing="4">
+							<TextBlock x:Name="DownloadFolderText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="" />
+							<StackPanel Orientation="Horizontal"
+							            Spacing="8">
+								<Button Click="BrowseDownloadFolder_Click"
+								        Content="Choose folder" />
+								<Button Click="OpenDownloadFolder_Click"
+								        Content="Open folder" />
+							</StackPanel>
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Reads tags from the completed file and adds it to KyappuTone without rescanning the whole library."
+					                  Header="Import completed downloads">
+						<ToggleSwitch x:Name="ImportDownloadsToggle"
+						              Toggled="ImportDownloadsToggle_Toggled" />
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
+			<dev:SettingsExpander Description="Show the current track in Discord. Create a Discord application, copy its application ID, and paste it below. The ID is not a secret."
+			                      Header="Discord Rich Presence"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Header="Enable presence">
+						<ToggleSwitch x:Name="DiscordPresenceToggle"
+						              Toggled="DiscordPresenceToggle_Toggled" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="Discord application ID">
+						<StackPanel Spacing="6">
+							<StackPanel Orientation="Horizontal"
+							            Spacing="8">
+								<TextBox x:Name="DiscordClientIdBox"
+								         Width="260"
+								         PlaceholderText="Application ID" />
+								<Button Click="SaveDiscordClientId_Click"
+								        Content="Save" />
+							</StackPanel>
+							<TextBlock x:Name="DiscordStatusText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="Presence is off." />
+						</StackPanel>
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
 			<!--  About  -->
 
 			<StackPanel Orientation="Horizontal"

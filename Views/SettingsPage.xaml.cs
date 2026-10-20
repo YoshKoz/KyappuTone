@@ -67,6 +67,10 @@ public sealed partial class SettingsPage : Page
 
 		_ = LoadToolSettingsAsync();
 
+		LoadDownloadSettings();
+
+		LoadDiscordSettings();
+
 		_ = LoadSpotifySettingsAsync();
 
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
@@ -1574,6 +1578,84 @@ public sealed partial class SettingsPage : Page
 		GitHubTokenBox.Password = string.Empty;
 		UpdateGitHubTokenStatus();
 		GlobalNotification.Info("GitHub token removed.");
+	}
+
+	private void LoadDiscordSettings()
+	{
+		var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+		DiscordPresenceToggle.IsOn = bool.Parse(
+			settings.Values[nameof(LocalSave.DiscordPresenceEnabled)]?.ToString() ?? "false");
+		DiscordClientIdBox.Text = settings.Values[nameof(LocalSave.DiscordClientId)]?.ToString() ?? string.Empty;
+		DiscordStatusText.Text = DiscordPresenceToggle.IsOn
+			? "Presence is on. Start Discord to connect."
+			: "Presence is off.";
+	}
+
+	private async void DiscordPresenceToggle_Toggled(object sender, RoutedEventArgs e)
+	{
+		Windows.Storage.ApplicationData.Current.LocalSettings
+			.Values[nameof(LocalSave.DiscordPresenceEnabled)] = DiscordPresenceToggle.IsOn;
+		await DiscordPresenceService.Instance.ConfigureAsync();
+		DiscordStatusText.Text = DiscordPresenceService.Instance.Status;
+	}
+
+	private async void SaveDiscordClientId_Click(object sender, RoutedEventArgs e)
+	{
+		Windows.Storage.ApplicationData.Current.LocalSettings
+			.Values[nameof(LocalSave.DiscordClientId)] = DiscordClientIdBox.Text.Trim();
+		await DiscordPresenceService.Instance.ConfigureAsync();
+		DiscordStatusText.Text = DiscordPresenceService.Instance.Status;
+		GlobalNotification.Success("Discord application ID saved.");
+	}
+
+	private void LoadDownloadSettings()
+	{
+		DownloadFolderText.Text = DownloadService.DefaultDownloadFolder;
+		ImportDownloadsToggle.IsOn = !string.Equals(
+			Windows.Storage.ApplicationData.Current.LocalSettings
+				.Values[nameof(LocalSave.ImportDownloads)]?.ToString(),
+			"false",
+			StringComparison.OrdinalIgnoreCase);
+	}
+
+	private async void BrowseDownloadFolder_Click(object sender, RoutedEventArgs e)
+	{
+		var picker = new FolderPicker((sender as Button)!.XamlRoot.ContentIslandEnvironment.AppWindowId)
+		{
+			SuggestedStartLocation = PickerLocationId.MusicLibrary,
+			CommitButtonText = "Use this folder",
+		};
+		var folder = await picker.PickSingleFolderAsync();
+		if (folder is null)
+			return;
+
+		Windows.Storage.ApplicationData.Current.LocalSettings
+			.Values[nameof(LocalSave.DownloadFolder)] = folder.Path;
+		DownloadFolderText.Text = folder.Path;
+	}
+
+	private void ImportDownloadsToggle_Toggled(object sender, RoutedEventArgs e)
+	{
+		Windows.Storage.ApplicationData.Current.LocalSettings
+			.Values[nameof(LocalSave.ImportDownloads)] = ImportDownloadsToggle.IsOn;
+	}
+
+	private void OpenDownloadFolder_Click(object sender, RoutedEventArgs e)
+	{
+		try
+		{
+			var folder = DownloadService.DefaultDownloadFolder;
+			Directory.CreateDirectory(folder);
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+			{
+				FileName = folder,
+				UseShellExecute = true,
+			});
+		}
+		catch (Exception ex)
+		{
+			GlobalNotification.Error($"Could not open downloads folder: {ex.Message}");
+		}
 	}
 
 	private async Task LoadToolSettingsAsync()

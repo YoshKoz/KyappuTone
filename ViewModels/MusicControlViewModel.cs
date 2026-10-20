@@ -36,6 +36,7 @@ public partial class MusicControlViewModel : ObservableRecipient
 	private readonly UISettings _uiSettings = new();
 
 	private SmoothProgressBar? _progressBar;
+	private Song? _currentTrack;
 	public SmoothProgressBar? ProgressBar
 	{
 		get => _progressBar;
@@ -239,6 +240,11 @@ public partial class MusicControlViewModel : ObservableRecipient
 			{
 				case PlaybackState.Paused:
 				case PlaybackState.Stopped:
+					if (_musicPlayer.CurrentStream is { } pausedStream)
+						DiscordPresenceService.Instance.UpdateStream(pausedStream, false);
+					else if (_currentTrack is not null)
+						DiscordPresenceService.Instance.UpdateTrack(_currentTrack, false);
+
 					FontIconPlayPause = "\uE768";
 					ToolTipTextPlayPause = "Play";
 
@@ -263,6 +269,11 @@ public partial class MusicControlViewModel : ObservableRecipient
 					break;
 
 				case PlaybackState.Playing:
+					if (_musicPlayer.CurrentStream is { } playingStream)
+						DiscordPresenceService.Instance.UpdateStream(playingStream, true);
+					else if (_currentTrack is not null)
+						DiscordPresenceService.Instance.UpdateTrack(_currentTrack, true);
+
 					FontIconPlayPause = "\uE769";
 					ToolTipTextPlayPause = "Pause";
 
@@ -285,6 +296,7 @@ public partial class MusicControlViewModel : ObservableRecipient
 					break;
 
 				case PlaybackState.Ended:
+					DiscordPresenceService.Instance.Clear();
 					_musicPlayer.Next(autoChange: true);
 					break;
 			}
@@ -608,6 +620,8 @@ public partial class MusicControlViewModel : ObservableRecipient
 				ProgressBarValue = 0;
 				Cover = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png");
 				ApplyStreamTitle(_musicPlayer.StreamTitle ?? stream.Name);
+				_currentTrack = null;
+				DiscordPresenceService.Instance.UpdateStream(stream, _musicPlayer.IsPlaying);
 				_vinylEffect?.Begin();
 				if (!_musicPlayer.IsPlaying) _vinylEffect?.Pause();
 				MusicControl._instance?.FloatingPlayer(null, MainPage._instance?.IsMainPlayerPageOpened ?? false);
@@ -652,6 +666,13 @@ public partial class MusicControlViewModel : ObservableRecipient
 				Artist = track.Artists;
 				Cover = track.Cover;
 				UpdateInfoOnTaskbarOverlay(track);
+				_currentTrack = track;
+				DiscordPresenceService.Instance.UpdateTrack(track, _musicPlayer.IsPlaying);
+			}
+			else
+			{
+				_currentTrack = null;
+				DiscordPresenceService.Instance.Clear();
 			}
 
 			_vinylEffect?.Begin();
