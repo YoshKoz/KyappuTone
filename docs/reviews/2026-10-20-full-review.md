@@ -13,12 +13,13 @@ items were implemented:
 - Local crash logging for XAML, AppDomain and unobserved task exceptions, with an
   **Open log folder** action in Settings. Nothing is uploaded.
 - Custom playlist covers stored in the app's local cover folder.
-- Package version advanced from `1.66.19.0` to `1.66.20.0` for development builds.
+- Package and assembly version reset to KyappuTone `0.3.0` after backing up and restoring
+  the development library database.
 
-Still open: release semantic versioning, a GitHub Releases/MSIX update handoff, a
-production signing certificate, smart playlists/mixes, subfolder auto-playlists and
-metadata enrichment. Batch multi-select and the Favorites quick filter were already
-present in the All Songs view when checked after the review.
+Still open: a GitHub Releases/MSIX update handoff, a production signing certificate,
+smart playlists, subfolder auto-playlists and metadata enrichment. Batch multi-select and
+the Favorites quick filter were already present in the All Songs view when checked after
+the review.
 
 ## Scope
 
