@@ -111,7 +111,7 @@ public partial class App : Application
 
 		MainWindow = new MainWindow();
 		MainWindow.Title = MainWindow.AppWindow.Title = ProcessInfoHelper.ProductName;
-		MainWindow.AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
+		MainWindow.AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
 
 		var rootFrame = new Frame();
 		MainWindow.Content = rootFrame;
