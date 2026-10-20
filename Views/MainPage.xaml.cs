@@ -1186,7 +1186,19 @@ public sealed partial class MainPage : Page
 			// StoreContext requires a package with a Store identity. Sideloaded, developer-registered
 			// and unpackaged builds throw 0x803FB112 here, which used to take the whole app down.
 			if (Windows.ApplicationModel.Package.Current.SignatureKind != Windows.ApplicationModel.PackageSignatureKind.Store)
+			{
+				var latest = await UpdateService.GetLatestReleaseAsync();
+				var packageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
+				var current = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build);
+				if (latest is not null && UpdateService.IsNewer(current, latest.Version))
+				{
+					await MessageBox.ShowInfoAsync(
+						$"KyappuTone {latest.Tag} is available.\n\nOpen Settings → About → Check for New Version to view the release.",
+						"Update check",
+						buttons: MessageBoxButtons.OK);
+				}
 				return;
+			}
 
 			var context = StoreContext.GetDefault();
 

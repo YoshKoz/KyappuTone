@@ -1417,11 +1417,8 @@ public sealed partial class SettingsPage : Page
 			// packages report SignatureKind != Store and the Store APIs throw 0x803FB112.
 			if (!IsMicrosoftStoreInstall())
 			{
+				await CheckGitHubUpdateAsync();
 				ResetUpdateCheckUi();
-				await MessageBox.ShowInfoAsync(
-					"Update checks require the Microsoft Store build of KyappuTone. This copy was installed locally, so there is no Store update to check for.",
-					"Update check",
-					buttons: MessageBoxButtons.OK);
 				return;
 			}
 
@@ -1458,6 +1455,52 @@ public sealed partial class SettingsPage : Page
 				"Update check",
 				buttons: MessageBoxButtons.OK);
 		}
+	}
+
+	/// <summary>Checks the public GitHub Releases feed used by sideloaded builds.</summary>
+	private async Task CheckGitHubUpdateAsync()
+	{
+		var latest = await UpdateService.GetLatestReleaseAsync();
+		if (latest is null)
+		{
+			await MessageBox.ShowInfoAsync(
+				$"No public release feed was found for {UpdateService.Repository}.\n\nCheck the GitHub Releases page for a manual download.",
+				"Update check",
+				buttons: MessageBoxButtons.OK);
+			return;
+		}
+
+		var packageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
+		var current = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build);
+		if (!UpdateService.IsNewer(current, latest.Version))
+		{
+			await MessageBox.ShowSuccessAsync("Your app is up to date.", "Update check", buttons: MessageBoxButtons.OK);
+			return;
+		}
+
+		var notes = latest.Notes.Length > 4000 ? latest.Notes[..4000] + "\n…" : latest.Notes;
+		var content = new ScrollViewer
+		{
+			MaxHeight = 320,
+			Content = new TextBlock
+			{
+				Text = string.IsNullOrWhiteSpace(notes) ? "Open the release page for details." : notes,
+				TextWrapping = TextWrapping.WrapWholeWords,
+			},
+		};
+
+		var dialog = new ContentDialog
+		{
+			Title = $"KyappuTone {latest.Tag} is available",
+			Content = content,
+			PrimaryButtonText = "Open release page",
+			CloseButtonText = "Later",
+			DefaultButton = ContentDialogButton.Primary,
+			XamlRoot = XamlRoot,
+		};
+
+		if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+			await Windows.System.Launcher.LaunchUriAsync(new Uri(latest.ReleaseUrl));
 	}
 
 	/// <summary>True only when this package has a Microsoft Store signature, which is required by StoreContext.</summary>
