@@ -194,6 +194,22 @@ public class MetadataCacheRow
 	public long FetchedAtUtc { get; set; }
 }
 
+/// <summary>One persisted YouTube download item.</summary>
+[Table("DownloadQueue")]
+public class DownloadQueueRow
+{
+	[PrimaryKey, AutoIncrement]
+	public int Id { get; set; }
+	public string Url { get; set; } = string.Empty;
+	public string Title { get; set; } = string.Empty;
+	public string TargetFolder { get; set; } = string.Empty;
+	public string Status { get; set; } = "queued";
+	public double Progress { get; set; }
+	public string Error { get; set; } = string.Empty;
+	public string OutputPath { get; set; } = string.Empty;
+	public long CreatedAtUtc { get; set; }
+}
+
 /// <summary>
 /// Represents a row in the PendingTagWrites table, used for deferred tag write processing.
 /// </summary>

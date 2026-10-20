@@ -249,6 +249,17 @@ public class DatabaseHelper
 									   Json TEXT NOT NULL,
 									   FetchedAtUtc INTEGER NOT NULL)");
 
+		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS DownloadQueue (
+									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
+									   Url TEXT NOT NULL,
+									   Title TEXT NOT NULL DEFAULT '',
+									   TargetFolder TEXT NOT NULL,
+									   Status TEXT NOT NULL DEFAULT 'queued',
+									   Progress REAL NOT NULL DEFAULT 0,
+									   Error TEXT NOT NULL DEFAULT '',
+									   OutputPath TEXT NOT NULL DEFAULT '',
+									   CreatedAtUtc INTEGER NOT NULL)");
+
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS ScrobbleQueue (
 									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
 									   Artist TEXT NOT NULL,
@@ -1220,6 +1231,44 @@ public class DatabaseHelper
 	public async Task ClearMetadataCache()
 	{
 		await _database.ExecuteAsync("DELETE FROM MetadataCache");
+	}
+
+	/// <summary>Returns the download queue in creation order.</summary>
+	public async Task<List<DownloadQueueRow>> GetDownloadQueue()
+	{
+		return await _database.QueryAsync<DownloadQueueRow>("SELECT * FROM DownloadQueue ORDER BY Id ASC");
+	}
+
+	/// <summary>Adds a queued download and returns its database id.</summary>
+	public async Task<int> AddDownload(string url, string title, string targetFolder)
+	{
+		await _database.ExecuteAsync(
+			@"INSERT INTO DownloadQueue (Url, Title, TargetFolder, Status, Progress, Error, OutputPath, CreatedAtUtc)
+			  VALUES (?, ?, ?, 'queued', 0, '', '', ?)",
+			url,
+			title,
+			targetFolder,
+			DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+		return await _database.ExecuteScalarAsync<int>("SELECT last_insert_rowid()");
+	}
+
+	/// <summary>Persists the current state of one download row.</summary>
+	public async Task UpdateDownload(DownloadQueueRow row)
+	{
+		await _database.UpdateAsync(row);
+	}
+
+	/// <summary>Marks interrupted downloads as queued when the app starts.</summary>
+	public async Task ResetRunningDownloads()
+	{
+		await _database.ExecuteAsync(
+			"UPDATE DownloadQueue SET Status = 'queued', Progress = 0 WHERE Status = 'running'");
+	}
+
+	/// <summary>Removes one download row.</summary>
+	public async Task RemoveDownload(int id)
+	{
+		await _database.ExecuteAsync("DELETE FROM DownloadQueue WHERE Id = ?", id);
 	}
 
 	/// <summary>Returns every auto-managed folder playlist.</summary>

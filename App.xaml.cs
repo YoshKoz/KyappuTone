@@ -150,6 +150,7 @@ public partial class App : Application
 		bool autoSync = bool.Parse(localSettings.Values[nameof(LocalSave.AutoScanEnabled)]?.ToString() ?? "false");
 		await DatabaseHelper.Instance.InitializeDatabase();
 		_ = LastFmService.Instance.FlushQueueAsync();
+		_ = DownloadService.Instance.StartAsync();
 
 		// One-time full scan after updating to a targeted version (see PostUpdateScanService).
 		bool postUpdateScanRan = await PostUpdateScanService.RunIfEligible();
