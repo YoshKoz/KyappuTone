@@ -1,8 +1,5 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
+using KyappuTone.Core.Imaging;
 using TagLib;
-using Image = SixLabors.ImageSharp.Image;
 
 namespace KyappuTone.Common.Helpers;
 
@@ -21,29 +18,11 @@ public static class ImageResizer
 	/// <returns>The file path of the created thumbnail image.</returns>
 	public static string CreateThumbnailImage(ThumbnailFolder thumbnailFolder, IPicture[]? pictures, int width, int height)
 	{
-		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), "Cover_" + new string(Enumerable.Range(0, 10).Select(_ => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[new Random().Next(62)]).ToArray()) + ".png");
-		var dir = Path.GetDirectoryName(thumbnailFilePath);
-		if (dir != null) Directory.CreateDirectory(dir);
-		byte[] imageData;
-		try
-		{
-			imageData = pictures?.Length > 0
-			? pictures[0].Data.Data
-			: System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
-		}
-		catch (Exception)
-		{
-			imageData = System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
-		}
+		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), RandomCoverFileName());
+		EnsureDirectory(thumbnailFilePath);
 
-		using var image = Image.Load(imageData);
-		image.Mutate(x => x.Resize(new ResizeOptions
-		{
-			Size = new Size(width, height),
-			Mode = ResizeMode.Max
-		}));
-
-		image.Save(thumbnailFilePath, new PngEncoder());
+		var imageData = ProcessWithFallback(pictures, data => CoverArtProcessor.ResizeToPng(data, width, height));
+		System.IO.File.WriteAllBytes(thumbnailFilePath, imageData);
 
 		return thumbnailFilePath;
 	}
@@ -58,24 +37,11 @@ public static class ImageResizer
 	/// <returns>The file path of the created thumbnail image.</returns>
 	public static string CreateThumbnailImage(ThumbnailFolder thumbnailFolder, IPicture[]? pictures, string? fileName = null)
 	{
-		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), fileName ?? "Cover_" + new string(Enumerable.Range(0, 10).Select(_ => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[new Random().Next(62)]).ToArray()) + ".png");
-		var dir = Path.GetDirectoryName(thumbnailFilePath);
-		if (dir != null) Directory.CreateDirectory(dir);
-		byte[] imageData;
-		try
-		{
-			imageData = pictures?.Length > 0
-			? pictures[0].Data.Data
-			: System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
-		}
-		catch (Exception)
-		{
-			imageData = System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
-		}
+		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), fileName ?? RandomCoverFileName());
+		EnsureDirectory(thumbnailFilePath);
 
-		using var image = Image.Load(imageData);
-
-		image.Save(thumbnailFilePath, new PngEncoder());
+		var imageData = ProcessWithFallback(pictures, CoverArtProcessor.ReencodePng);
+		System.IO.File.WriteAllBytes(thumbnailFilePath, imageData);
 
 		return thumbnailFilePath;
 	}
@@ -90,5 +56,43 @@ public static class ImageResizer
 	public static string CreateThumbnailImage(ThumbnailFolder thumbnailFolder, IPicture[]? pictures, int size)
 	{
 		return CreateThumbnailImage(thumbnailFolder, pictures, size, size);
+	}
+
+	private static byte[] ProcessWithFallback(IPicture[]? pictures, Func<byte[], byte[]> process)
+	{
+		var fallback = System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
+
+		byte[] imageData;
+		try
+		{
+			imageData = pictures?.Length > 0
+				? pictures[0].Data.Data
+				: fallback;
+		}
+		catch (Exception)
+		{
+			imageData = fallback;
+		}
+
+		try
+		{
+			return process(imageData);
+		}
+		catch (ArgumentException)
+		{
+			// Embedded artwork that is not a decodable image falls back to the application icon.
+			return process(fallback);
+		}
+	}
+
+	private static string RandomCoverFileName()
+	{
+		return "Cover_" + new string(Enumerable.Range(0, 10).Select(_ => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[new Random().Next(62)]).ToArray()) + ".png";
+	}
+
+	private static void EnsureDirectory(string thumbnailFilePath)
+	{
+		var dir = Path.GetDirectoryName(thumbnailFilePath);
+		if (dir != null) Directory.CreateDirectory(dir);
 	}
 }

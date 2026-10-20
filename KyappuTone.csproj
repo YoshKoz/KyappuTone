@@ -208,7 +208,6 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
     <PackageReference Include="NAudio.Wasapi" Version="3.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
     <PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
@@ -291,6 +290,18 @@
   <CreateMSIXPackage>True</CreateMSIXPackage>
   <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 </PropertyGroup>
+  <ItemGroup>
+    <!-- The app project lives at the repo root, so keep the default globs out of the
+         sibling projects' source and build output. -->
+    <Compile Remove="src\**;tests\**" />
+    <Content Remove="src\**;tests\**" />
+    <None Remove="src\**;tests\**" />
+    <Page Remove="src\**;tests\**" />
+    <ApplicationDefinition Remove="src\**;tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="src\KyappuTone.Core\KyappuTone.Core.csproj" />
+  </ItemGroup>
   <Target Name="TransformAllT4Templates" BeforeTargets="BeforeBuild">
     <ItemGroup>
       <!-- This picks up all T4 templates in the project -->
