@@ -342,17 +342,17 @@ resources, documented feature matrix versus both source apps.
 
 ## 12. Performance targets
 
-| Metric | Target |
-|---|---|
-| Cold start to interactive | ≤ 1.5 s (warm disk, 50k tracks) |
-| Idle RAM | ≤ 250 MB with 50k tracks |
-| Scan 100k tracks (NVMe, tags cached) | ≤ 90 s |
-| Scan unchanged library (no-op) | ≤ 3 s |
-| UI scroll | steady 60 fps |
-| Audio CPU (EQ only) | ≤ 3 % of one core |
-| Audio CPU (EQ + visualizer) | ≤ 8 % of one core |
-| Audio dropouts | 0 in 1 h soak |
-| Search latency (FTS5) | ≤ 50 ms at 100k tracks |
+| Metric | Target | Measured 2026-10-20 |
+|---|---|---|
+| Cold start to interactive | ≤ 1.5 s (warm disk, 50k tracks) | not measured |
+| Idle RAM | ≤ 250 MB with 50k tracks | not measured (app working set 296–308 MB after launch, library size unknown) |
+| Scan 100k tracks (NVMe, tags cached) | ≤ 90 s | not measured |
+| Scan unchanged library (no-op) | ≤ 3 s | not measured |
+| UI scroll | steady 60 fps | not measured |
+| Audio CPU (EQ only) | ≤ 3 % of one core | 1.11 % (0.3 min engine harness, EQ + FFT tap) |
+| Audio CPU (EQ + visualizer) | ≤ 8 % of one core | not measured (tone soak stopped at user request) |
+| Audio dropouts | 0 in 1 h soak | 0 in 0.3 min; 1 h soak not run |
+| Search latency (FTS5) | ≤ 50 ms at 100k tracks | not measured |
 
 Measurements are recorded in `docs/perf/` per phase; claims in release notes cite them.
 

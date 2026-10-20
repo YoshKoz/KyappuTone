@@ -296,11 +296,11 @@
   <ItemGroup>
     <!-- The app project lives at the repo root, so keep the default globs out of the
          sibling projects' source and build output. -->
-    <Compile Remove="src\**;tests\**" />
-    <Content Remove="src\**;tests\**" />
-    <None Remove="src\**;tests\**" />
-    <Page Remove="src\**;tests\**" />
-    <ApplicationDefinition Remove="src\**;tests\**" />
+    <Compile Remove="src\**;tests\**;tools\**" />
+    <Content Remove="src\**;tests\**;tools\**" />
+    <None Remove="src\**;tests\**;tools\**" />
+    <Page Remove="src\**;tests\**;tools\**" />
+    <ApplicationDefinition Remove="src\**;tests\**;tools\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="src\KyappuTone.Core\KyappuTone.Core.csproj" />
