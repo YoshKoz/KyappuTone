@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl x:Class="KyappuTone.Common.Controls.VisualizerPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+	<Grid Background="Transparent">
+		<SwapChainPanel x:Name="SwapPanel"
+		                HorizontalAlignment="Stretch"
+		                VerticalAlignment="Stretch" />
+		<ComboBox x:Name="StylePicker"
+		          Width="140"
+		          Margin="8"
+		          HorizontalAlignment="Right"
+		          VerticalAlignment="Top"
+		          FontSize="12"
+		          SelectionChanged="StylePicker_OnSelectionChanged"
+		          ToolTipService.ToolTip="Visualizer style" />
+	</Grid>
+</UserControl>

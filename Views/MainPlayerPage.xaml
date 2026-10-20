@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:dev="using:DevWinUI"
       xmlns:local="using:KyappuTone"
+      xmlns:controls="using:KyappuTone.Common.Controls"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:media="using:CommunityToolkit.WinUI.Media"
       SizeChanged="Page_SizeChanged"
@@ -299,6 +300,13 @@
 			</Border>
 
 		</Grid>
+
+		<controls:VisualizerPanel x:Name="Visualizer"
+		                          Width="520"
+		                          Height="110"
+		                          Margin="0,0,0,150"
+		                          HorizontalAlignment="Center"
+		                          VerticalAlignment="Bottom" />
 
 		<Canvas x:Name="LyricsCanvas"
 		        HorizontalAlignment="Stretch"

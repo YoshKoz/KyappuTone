@@ -1,5 +1,6 @@
 using KyappuTone.Audio;
 using KyappuTone.Common.Services;
+using KyappuTone.Core.Audio;
 
 namespace KyappuTone.Common.Services.Backends;
 
@@ -45,6 +46,9 @@ internal sealed class KyappuAudioBackend : IMediaBackend
 
 	/// <inheritdoc />
 	public bool IsPlaying => _engine.IsPlaying;
+
+	/// <summary>FFT analyser fed by the engine's post-limiter mix.</summary>
+	internal FftTap Fft => _engine.Fft;
 
 	/// <inheritdoc />
 	public long CurTimeTicks

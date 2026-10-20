@@ -78,6 +78,13 @@ public class MusicPlayer
 		set { if (_activeBackend != null) _activeBackend.Volume = value; }
 	}
 
+	/// <summary>
+	/// FFT analyser of the active in-process engine, or null when another
+	/// backend is rendering (visualizers show silence).
+	/// </summary>
+	public KyappuTone.Core.Audio.FftTap? VisualizerFft =>
+		(_activeBackend as KyappuAudioBackend)?.Fft;
+
 	// ── events replacing MediaPlayer.PropertyChanged ─────────
 
 	/// <summary>Fires when playback state changes (Playing / Paused / Stopped / Ended).</summary>
