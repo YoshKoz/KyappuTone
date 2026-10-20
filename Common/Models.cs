@@ -20,6 +20,7 @@ public class Song
 	public string Genre { get; set; } = string.Empty;
 	public string Year { get; set; } = string.Empty;
 	public int PlayCount { get; set; }
+	public bool Favorite { get; set; }
 	public string Cover { get; set; } = string.Empty;
 	public double Duration { get; set; }
 	public DateTime DateAdded { get; set; }
@@ -33,6 +34,21 @@ public class Song
 	public string? FileSize { get; set; }
 	public string PlayerType { get; set; } = "Flyleaf";
 	public int? Track { get; set; }
+}
+
+/// <summary>
+/// One listening event. Stored without a foreign key so a full library rescan,
+/// which rebuilds the Songs table, does not cascade away listening history.
+/// </summary>
+[Table("PlayHistory")]
+public class PlayHistoryRow
+{
+	[PrimaryKey, AutoIncrement]
+	public int Id { get; set; }
+	public string Path { get; set; } = string.Empty;
+	public DateTime StartedAt { get; set; }
+	public long MsPlayed { get; set; }
+	public bool Completed { get; set; }
 }
 
 /// <summary>

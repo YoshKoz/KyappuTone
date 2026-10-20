@@ -232,6 +232,17 @@ public class DatabaseHelper
 									   Track INTEGER)");
 
 		await AddColumnIfMissing("Songs", "Track", "INTEGER");
+		await AddColumnIfMissing("Songs", "Favorite", "INTEGER NOT NULL DEFAULT 0");
+
+		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS PlayHistory (
+									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
+									   Path TEXT NOT NULL,
+									   StartedAt DATETIME NOT NULL,
+									   MsPlayed INTEGER NOT NULL DEFAULT 0,
+									   Completed INTEGER NOT NULL DEFAULT 0)");
+
+		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_StartedAt ON PlayHistory(StartedAt)");
+		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_Path ON PlayHistory(Path)");
 
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_Songs_Title_nocase ON Songs(Title COLLATE NOCASE)");
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_Songs_Album_nonempty ON Songs(Album) WHERE Album IS NOT NULL AND TRIM(Album) != ''");
@@ -605,14 +616,18 @@ public class DatabaseHelper
 	/// </returns>
 	public async Task InsertMultipleSongs(List<Song> songs)
 	{
+		var existingFavorites = await _database.QueryAsync<Song>("SELECT Path, Favorite FROM Songs");
+
 		await _database.RunInTransactionAsync(conn =>
 		{
 			foreach (var song in songs)
 			{
+				var favorite = existingFavorites.FirstOrDefault(s => s.Path == song.Path)?.Favorite ?? song.Favorite;
+
 				conn.Execute(@"INSERT OR REPLACE INTO Songs
-							   (Path, Title, Artists, Album, Genre, Year, PlayCount, Cover, Duration, DateAdded, DateLastPlayed, Extension, AudioBitrate, AudioChannels, AudioCodecDescription, AudioSampleRate, Lyrics, FileSize, PlayerType, Track)
+							   (Path, Title, Artists, Album, Genre, Year, PlayCount, Cover, Duration, DateAdded, DateLastPlayed, Extension, AudioBitrate, AudioChannels, AudioCodecDescription, AudioSampleRate, Lyrics, FileSize, PlayerType, Track, Favorite)
 							   VALUES
-							   (?,	  ?,	 ?,		  ?,	 ?,		?,	  ?,		 ?,		?,		  ?,		 ?,				 ?,			?,			  ?,			 ?,						?,				 ?,		 ?,		   ?,		   ?)
+							   (?,	  ?,	 ?,		  ?,	 ?,		?,	  ?,		 ?,		?,		  ?,		 ?,				 ?,			?,			  ?,			 ?,						?,				 ?,		 ?,		   ?,		   ?,		?)
 							   ON CONFLICT(Path) DO UPDATE SET
 							   Title = excluded.Title,
 							   Artists = excluded.Artists,
@@ -632,10 +647,11 @@ public class DatabaseHelper
 							   Lyrics = excluded.Lyrics,
 							   FileSize = excluded.FileSize,
 							   PlayerType = excluded.PlayerType,
-							   Track = excluded.Track;",
+							   Track = excluded.Track,
+							   Favorite = excluded.Favorite;",
 							   song.Path, song.Title, song.Artists, song.Album, song.Genre, song.Year,
 							   song.PlayCount, song.Cover, song.Duration, song.DateAdded, song.DateLastPlayed,
-							   song.Extension, song.AudioBitrate, song.AudioChannels, song.AudioCodecDescription, song.AudioSampleRate, song.Lyrics, song.FileSize, song.PlayerType, song.Track);
+							   song.Extension, song.AudioBitrate, song.AudioChannels, song.AudioCodecDescription, song.AudioSampleRate, song.Lyrics, song.FileSize, song.PlayerType, song.Track, favorite);
 
 				SyncSongArtistsForSong(conn, song);
 			}
@@ -663,7 +679,7 @@ public class DatabaseHelper
 	/// <returns>A task representing the asynchronous operation of updating the songs database.</returns>
 	public async Task UpdateSongsDatabase(List<Song> songs)
 	{
-		var existingSongData = await _database.QueryAsync<Song>("SELECT Path, PlayCount, DateLastPlayed FROM Songs");
+		var existingSongData = await _database.QueryAsync<Song>("SELECT Path, PlayCount, DateLastPlayed, Favorite FROM Songs");
 		var existingPlaylistLinks = await _database.QueryAsync<(int PlaylistId, string SongPath)>("SELECT PlaylistId, SongPath FROM PlaylistSongs");
 
 		await DeleteAllSongsFromDB();
@@ -674,11 +690,12 @@ public class DatabaseHelper
 			{
 				int existingPlayCount = existingSongData.FirstOrDefault(s => s.Path == song.Path)?.PlayCount ?? 0;
 				DateTime? lastPlayed = existingSongData.FirstOrDefault(s => s.Path == song.Path)?.DateLastPlayed;
+				bool favorite = existingSongData.FirstOrDefault(s => s.Path == song.Path)?.Favorite ?? song.Favorite;
 
 				conn.Execute(@"INSERT OR REPLACE INTO Songs
-							   (Path, Title, Artists, Album, Genre, Year, PlayCount, Cover, Duration, DateAdded, DateLastPlayed, Extension, AudioBitrate, AudioChannels, AudioCodecDescription, AudioSampleRate, Lyrics, FileSize, PlayerType, Track)
+							   (Path, Title, Artists, Album, Genre, Year, PlayCount, Cover, Duration, DateAdded, DateLastPlayed, Extension, AudioBitrate, AudioChannels, AudioCodecDescription, AudioSampleRate, Lyrics, FileSize, PlayerType, Track, Favorite)
 							   VALUES
-							   (?,	  ?,	 ?,		  ?,	 ?,		?,	  ?,		 ?,		?,		  ?,		 ?,				 ?,			?,			  ?,			 ?,						?,				 ?,		 ?,		   ?,		   ?)
+							   (?,	  ?,	 ?,		  ?,	 ?,		?,	  ?,		 ?,		?,		  ?,		 ?,				 ?,			?,			  ?,			 ?,						?,				 ?,		 ?,		   ?,		   ?,		?)
 							   ON CONFLICT(Path) DO UPDATE SET
 							   Title = excluded.Title,
 							   Artists = excluded.Artists,
@@ -698,10 +715,11 @@ public class DatabaseHelper
 							   Lyrics = excluded.Lyrics,
 							   FileSize = excluded.FileSize,
 							   PlayerType = excluded.PlayerType,
-							   Track = excluded.Track;",
+							   Track = excluded.Track,
+							   Favorite = excluded.Favorite;",
 							   song.Path, song.Title, song.Artists, song.Album, song.Genre, song.Year,
 							   existingPlayCount, song.Cover, song.Duration, song.DateAdded, lastPlayed,
-							   song.Extension, song.AudioBitrate, song.AudioChannels, song.AudioCodecDescription, song.AudioSampleRate, song.Lyrics, song.FileSize, song.PlayerType, song.Track);
+							   song.Extension, song.AudioBitrate, song.AudioChannels, song.AudioCodecDescription, song.AudioSampleRate, song.Lyrics, song.FileSize, song.PlayerType, song.Track, favorite);
 
 				SyncSongArtistsForSong(conn, song);
 			}
@@ -915,6 +933,81 @@ public class DatabaseHelper
 	{
 		await _database.ExecuteAsync("UPDATE Songs SET PlayCount = PlayCount + 1 WHERE Path = ?", songPath);
 		OnPlayCountUpdated?.Invoke();
+	}
+
+	/// <summary>
+	/// Raised after a song's favorite flag changed, so visible lists can refresh.
+	/// </summary>
+	public static event Action? OnFavoriteUpdated;
+
+	/// <summary>Sets or clears the favorite flag for a song.</summary>
+	public async Task SetFavorite(string songPath, bool favorite)
+	{
+		await _database.ExecuteAsync(
+			"UPDATE Songs SET Favorite = ? WHERE Path = ?",
+			favorite ? 1 : 0,
+			songPath);
+		OnFavoriteUpdated?.Invoke();
+	}
+
+	/// <summary>Returns true when the song exists and is marked as a favorite.</summary>
+	public async Task<bool> IsFavorite(string songPath)
+	{
+		try
+		{
+			var value = await _database.ExecuteScalarAsync<int>(
+				"SELECT Favorite FROM Songs WHERE Path = ?", songPath);
+			return value != 0;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Returns every song marked as a favorite, ordered by title.</summary>
+	public async Task<List<Song>> GetFavoriteSongs()
+	{
+		try
+		{
+			return await _database.QueryAsync<Song>(
+				"SELECT * FROM Songs WHERE Favorite = 1 ORDER BY Title COLLATE NOCASE ASC");
+		}
+		catch (Exception)
+		{
+			return new List<Song>();
+		}
+	}
+
+	/// <summary>Appends one listening event. StartedAt must be UTC.</summary>
+	public async Task AddPlayHistory(string songPath, DateTime startedAtUtc, long msPlayed, bool completed)
+	{
+		await _database.ExecuteAsync(
+			"INSERT INTO PlayHistory (Path, StartedAt, MsPlayed, Completed) VALUES (?, ?, ?, ?)",
+			songPath,
+			startedAtUtc,
+			Math.Max(0, msPlayed),
+			completed ? 1 : 0);
+	}
+
+	/// <summary>Returns listening history, newest first, optionally filtered and limited.</summary>
+	public async Task<List<PlayHistoryRow>> GetPlayHistory(DateTime? sinceUtc = null, int limit = 0)
+	{
+		try
+		{
+			var query = "SELECT * FROM PlayHistory";
+			if (sinceUtc is not null) query += " WHERE StartedAt >= ?";
+			query += " ORDER BY StartedAt DESC";
+			if (limit > 0) query += $" LIMIT {limit}";
+
+			return sinceUtc is null
+				? await _database.QueryAsync<PlayHistoryRow>(query)
+				: await _database.QueryAsync<PlayHistoryRow>(query, sinceUtc.Value);
+		}
+		catch (Exception)
+		{
+			return new List<PlayHistoryRow>();
+		}
 	}
 
 	/// <summary>
