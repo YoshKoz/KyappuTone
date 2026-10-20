@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>Latest</LangVersion>
+    <Platforms>x64;ARM64</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KyappuTone.Audio\KyappuTone.Audio.csproj" />
+    <ProjectReference Include="..\..\src\KyappuTone.Core\KyappuTone.Core.csproj" />
+  </ItemGroup>
+</Project>
