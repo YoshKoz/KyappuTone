@@ -21,7 +21,8 @@
 				<RowDefinition Height="*" />
 				<RowDefinition Height="40" />
 			</Grid.RowDefinitions>
-			<Grid Grid.Row="1">
+			<Grid Grid.Row="1"
+			      Visibility="{x:Bind ViewModel.StreamProgressVisibility, Mode=OneWay}">
 				<controls:SmoothProgressBar x:Name="BottomProgressBar"
 				                            Margin="10,-25,10,0"
 				                            VerticalAlignment="Center" />
@@ -49,6 +50,7 @@
 					           VerticalAlignment="Center"
 					           FontSize="15"
 					           Style="{ThemeResource BodyTextBlockStyle}"
+					           Visibility="{x:Bind ViewModel.StreamProgressVisibility, Mode=OneWay}"
 					           Text="{Binding ElementName=BottomProgressBar, Path=Position, Converter={StaticResource DurationConverter}}" />
 
 					<ToggleButton x:Name="ShuffleButton"
@@ -147,6 +149,7 @@
 					           VerticalAlignment="Center"
 					           FontSize="15"
 					           Style="{ThemeResource BodyTextBlockStyle}"
+					           Visibility="{x:Bind ViewModel.StreamProgressVisibility, Mode=OneWay}"
 					           Text="{x:Bind ViewModel.DurationOfSong, Converter={StaticResource DurationConverter}, Mode=OneWay}" />
 				</Grid>
 			</Grid>

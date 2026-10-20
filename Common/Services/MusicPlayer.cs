@@ -625,6 +625,12 @@ public class MusicPlayer
 			UpdateStreamSmtc(station);
 
 			await _activeBackend.OpenAsync(station.Url);
+
+			// Stop or another station may have won the race while the stream was opening.
+			// Without this check the late continuation restarts audio after Stop.
+			if (!ReferenceEquals(_currentStream, station))
+				return;
+
 			_activeBackend.Volume = initialVolume;
 			if (play)
 				Play();
@@ -660,16 +666,30 @@ public class MusicPlayer
 	}
 
 	/// <summary>Updates the current stream title from the ICY poller.</summary>
-	public void SetStreamTitle(string? title)
+	/// <param name="station">The station the title belongs to. Stale polls are ignored.</param>
+	/// <param name="title">The ICY title to display.</param>
+	public void SetStreamTitle(RadioStation station, string? title)
 	{
-		if (_currentStream is null || string.IsNullOrWhiteSpace(title))
+		if (station is null || _currentStream is null || !ReferenceEquals(_currentStream, station)
+			|| string.IsNullOrWhiteSpace(title))
 			return;
 
 		_streamTitle = title.Trim();
 		if (SMTC is not null)
 		{
-			SMTC.DisplayUpdater.MusicProperties.Title = _streamTitle;
-			SMTC.DisplayUpdater.Update();
+			var updater = SMTC.DisplayUpdater;
+			try
+			{
+				// ClearAll() resets the updater type to Unknown, so re-assert it before
+				// touching MusicProperties. Without this, the next ICY poll throws 0x80070032.
+				updater.Type = Windows.Media.MediaPlaybackType.Music;
+				updater.MusicProperties.Title = _streamTitle;
+				updater.Update();
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				// SMTC metadata is best-effort; a failed update must never stop playback.
+			}
 		}
 		StreamTitleChanged?.Invoke(this, _streamTitle);
 	}

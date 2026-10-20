@@ -163,6 +163,17 @@ public partial class MusicControlViewModel : ObservableRecipient
 		set => SetProperty(ref _forward_rewind_visibility, value);
 	}
 
+	private Visibility _streamProgressVisibility = Visibility.Visible;
+	/// <summary>Hides the seek bar for live radio streams, which have no fixed duration.</summary>
+	public Visibility StreamProgressVisibility
+	{
+		get => _streamProgressVisibility;
+		set => SetProperty(ref _streamProgressVisibility, value);
+	}
+
+	private void UpdateStreamProgressVisibility()
+		=> StreamProgressVisibility = _musicPlayer.CurrentStream is null ? Visibility.Visible : Visibility.Collapsed;
+
 	public Storyboard? _vinylEffect { get; set; }
 
 	public MusicControlViewModel()
@@ -236,6 +247,7 @@ public partial class MusicControlViewModel : ObservableRecipient
 	{
 		_dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, async () =>
 		{
+			UpdateStreamProgressVisibility();
 			switch (e.State)
 			{
 				case PlaybackState.Paused:
@@ -616,6 +628,7 @@ public partial class MusicControlViewModel : ObservableRecipient
 		{
 			if (_musicPlayer.CurrentStream is { } stream)
 			{
+				UpdateStreamProgressVisibility();
 				DurationOfSong = 0;
 				ProgressBarValue = 0;
 				Cover = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png");

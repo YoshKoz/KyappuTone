@@ -74,6 +74,7 @@ public sealed partial class DiscoverPage : Page
 	private readonly ObservableCollection<RadioStation> _radioResults = new();
 	private DispatcherTimer? _icyTimer;
 	private RadioStation? _playingStation;
+	private int _icyGeneration;
 	private bool _subscribed;
 	private bool _searching;
 	private bool _radioSearching;
@@ -370,8 +371,11 @@ public sealed partial class DiscoverPage : Page
 			return;
 
 		_playingStation = station;
+		var generation = ++_icyGeneration;
 		RadioNowPlayingText.Text = $"Connecting to {station.Name}...";
 		await MusicPlayer.Instance.LoadStreamAsync(station);
+		if (generation != _icyGeneration || !ReferenceEquals(_playingStation, station))
+			return;
 		if (MusicPlayer.Instance.CurrentStream is null)
 		{
 			_playingStation = null;
@@ -381,13 +385,18 @@ public sealed partial class DiscoverPage : Page
 
 		RadioNowPlayingText.Text = station.Name;
 		await RadioService.TouchFavoriteAsync(station.Uuid);
+		if (generation != _icyGeneration || !ReferenceEquals(_playingStation, station))
+			return;
 		StartIcyTimer();
 		await Task.Delay(2500);
+		if (generation != _icyGeneration || !ReferenceEquals(_playingStation, station))
+			return;
 		await PollIcyAsync();
 	}
 
 	private void StopRadio_Click(object sender, RoutedEventArgs e)
 	{
+		_icyGeneration++;
 		MusicPlayer.Instance.StopStream();
 		_playingStation = null;
 		StopIcyTimer();
@@ -414,14 +423,18 @@ public sealed partial class DiscoverPage : Page
 	private async Task PollIcyAsync()
 	{
 		var station = _playingStation;
+		var generation = _icyGeneration;
 		if (station is null)
 			return;
 
 		var title = await IcyMetadataService.GetCurrentTitleAsync(station.Url);
-		if (string.IsNullOrWhiteSpace(title) || !ReferenceEquals(_playingStation, station))
+		if (string.IsNullOrWhiteSpace(title)
+			|| generation != _icyGeneration
+			|| !ReferenceEquals(_playingStation, station)
+			|| !ReferenceEquals(MusicPlayer.Instance.CurrentStream, station))
 			return;
 
-		MusicPlayer.Instance.SetStreamTitle(title);
+		MusicPlayer.Instance.SetStreamTitle(station, title);
 		RadioNowPlayingText.Text = title;
 	}
 

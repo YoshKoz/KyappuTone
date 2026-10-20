@@ -222,7 +222,9 @@ public sealed partial class MainPlayerPage : Page
 				GlobalNotification.Error("Could not load track/song.");
 		}
 
-		if (MusicPlayer.Instance.SMTC != null)
+		// A radio stream owns the SMTC metadata. Clearing it here resets the display
+		// updater type to Unknown and makes the next ICY title update throw.
+		if (MusicPlayer.Instance.CurrentStream is null && MusicPlayer.Instance.SMTC != null)
 			MusicPlayer.Instance.SMTC.DisplayUpdater.ClearAll();
 		Visualizer.Visibility = Visibility.Collapsed;
 		BGbitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/AppIcon.png"));
