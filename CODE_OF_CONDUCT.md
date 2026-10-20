@@ -59,8 +59,9 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-amit.ku.p.2806+KyappuTone@gmail.com.
+reported to the project maintainers privately through GitHub. Open the repository's
+profile or Security tab and use the available private contact option; do not include
+sensitive details in a public issue.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

@@ -334,8 +334,8 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_SIGNING_KEY" > ~/.ssh/commit_signing_key
           chmod 600 ~/.ssh/commit_signing_key
-          git config user.name "Amit Patra"
-          git config user.email "amitpatra28061996@gmail.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config gpg.format ssh
           git config user.signingkey ~/.ssh/commit_signing_key
           git config commit.gpgsign true
@@ -594,8 +594,8 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_SIGNING_KEY" > ~/.ssh/commit_signing_key
           chmod 600 ~/.ssh/commit_signing_key
-          git config user.name "Amit Patra"
-          git config user.email "amitpatra28061996@gmail.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config gpg.format ssh
           git config user.signingkey ~/.ssh/commit_signing_key
           git config commit.gpgsign true

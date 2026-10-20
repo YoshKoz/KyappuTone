@@ -28,8 +28,8 @@ release page for a manual install; see `docs/release.md`.
 
 ## Scope
 
-Reviewed the current `main` tree (`C:\Tools\KyappuTone`) after the Phase 2A/2B work,
-branding replacement and the 12,813-track library import.
+Reviewed the current `main` tree (`<repo>`) after the Phase 2A/2B work,
+branding replacement and a large test-library import.
 
 Checks performed:
 

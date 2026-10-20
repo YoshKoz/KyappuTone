@@ -10,7 +10,7 @@ Please read through this before opening an issue or submitting a pull request.
 
 - **Check existing issues** first to see if your bug or idea is already being tracked.
 - For anything beyond a small fix, **open an issue to discuss it first**. This saves you from putting work into something that might not be a good fit for the project.
-- This project uses [ImageSharp](https://github.com/SixLabors/ImageSharp), which requires a license key from SixLabors. The key is not included in this repository. Get your own license key at [licensing.sixlabors.com](https://licensing.sixlabors.com/).
+- The project uses .NET 10, WinUI 3 / Windows App SDK, TagLib#, SQLite, FlyleafLib, and SkiaSharp. No paid license file or `sixlabors.lic` is required to build or run it.
 
 ---
 

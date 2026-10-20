@@ -377,6 +377,8 @@ FodyWeavers.xsd
 *.db3-wal
 *.pfx
 *.p12
+*.cer
+*.password.txt
 crash.log
 app.log
 AppPackages/
