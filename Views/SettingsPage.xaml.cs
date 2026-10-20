@@ -1411,34 +1411,73 @@ public sealed partial class SettingsPage : Page
 	private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
 	{
 		CheckForUpdates.ProgressRingVisibility = Visibility.Visible;
-		var context = StoreContext.GetDefault();
 
-		WinRT.Interop.InitializeWithWindow.Initialize(context,
-			WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
-
-		var updates = await context.GetAppAndOptionalStorePackageUpdatesAsync();
-
-		if (updates.Count == 0)
+		try
 		{
-			CheckForUpdates.ProgressRingVisibility = Visibility.Collapsed;
-			CheckForUpdates.IsChecked = false;
-			await MessageBox.ShowSuccessAsync("Your app is up to date.", "Update check", buttons: MessageBoxButtons.OK);
-		}
-		else
-		{
-			var result = await context.RequestDownloadAndInstallStorePackageUpdatesAsync(updates).AsTask();
-
-			if (result.OverallState == StorePackageUpdateState.Completed)
+			// StoreContext requires the Microsoft Store build. Sideloaded/developer-registered
+			// packages report SignatureKind != Store and the Store APIs throw 0x803FB112.
+			if (!IsMicrosoftStoreInstall())
 			{
-				CheckForUpdates.ProgressRingVisibility = Visibility.Collapsed;
-				await MessageBox.ShowInfoAsync("Update installed", "The update will apply next time you launch the app.");
+				ResetUpdateCheckUi();
+				await MessageBox.ShowInfoAsync(
+					"Update checks require the Microsoft Store build of KyappuTone. This copy was installed locally, so there is no Store update to check for.",
+					"Update check",
+					buttons: MessageBoxButtons.OK);
+				return;
+			}
+
+			var context = StoreContext.GetDefault();
+
+			WinRT.Interop.InitializeWithWindow.Initialize(context,
+				WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
+
+			var updates = await context.GetAppAndOptionalStorePackageUpdatesAsync();
+
+			if (updates.Count == 0)
+			{
+				ResetUpdateCheckUi();
+				await MessageBox.ShowSuccessAsync("Your app is up to date.", "Update check", buttons: MessageBoxButtons.OK);
 			}
 			else
 			{
-				CheckForUpdates.ProgressRingVisibility = Visibility.Collapsed;
-				CheckForUpdates.IsChecked = false;
+				var result = await context.RequestDownloadAndInstallStorePackageUpdatesAsync(updates).AsTask();
+
+				ResetUpdateCheckUi();
+
+				if (result.OverallState == StorePackageUpdateState.Completed)
+				{
+					await MessageBox.ShowInfoAsync("Update installed", "The update will apply next time you launch the app.");
+				}
 			}
 		}
+		catch (Exception ex)
+		{
+			ResetUpdateCheckUi();
+			System.Diagnostics.Debug.WriteLine($"Store update check failed: 0x{ex.HResult:X8} {ex.Message}");
+			await MessageBox.ShowInfoAsync(
+				$"Could not check for updates through the Microsoft Store (0x{ex.HResult:X8}).\n\nStore updates are only available for Store-installed copies of KyappuTone.",
+				"Update check",
+				buttons: MessageBoxButtons.OK);
+		}
+	}
+
+	/// <summary>True only when this package has a Microsoft Store signature, which is required by StoreContext.</summary>
+	private static bool IsMicrosoftStoreInstall()
+	{
+		try
+		{
+			return Windows.ApplicationModel.Package.Current.SignatureKind == Windows.ApplicationModel.PackageSignatureKind.Store;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ResetUpdateCheckUi()
+	{
+		CheckForUpdates.ProgressRingVisibility = Visibility.Collapsed;
+		CheckForUpdates.IsChecked = false;
 	}
 
 	private void LoadAboutSectionSettings()
