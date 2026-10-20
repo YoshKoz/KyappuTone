@@ -662,8 +662,16 @@ public partial class MusicControlViewModel : ObservableRecipient
 			_midpointTimer?.Stop();
 			_midpointTimer?.Tick -= MidpointTimer_Tick;
 			_playbackTracker.MarkPlayCountRecorded();
-			await DatabaseHelper.Instance.IncrementPlayCount(_musicPlayer.CurrentSong);
-			await DatabaseHelper.Instance.UpdateDateLastPlayed(_musicPlayer.CurrentSong);
+
+			var songPath = _musicPlayer.CurrentSong;
+			var played = _playbackTracker.GetTotalPlayTime();
+			await DatabaseHelper.Instance.IncrementPlayCount(songPath);
+			await DatabaseHelper.Instance.UpdateDateLastPlayed(songPath);
+			await DatabaseHelper.Instance.AddPlayHistory(
+				songPath,
+				DateTime.UtcNow - played,
+				(long)played.TotalMilliseconds,
+				completed: true);
 		}
 	}
 

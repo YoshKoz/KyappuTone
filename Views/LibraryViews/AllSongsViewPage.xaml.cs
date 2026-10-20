@@ -63,6 +63,7 @@ public sealed partial class AllSongsViewPage : SongListPageBase
 
 	private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e) => SongListView_SelectionChanged(sender, e);
 	private string? _searchResult = null;
+	private bool _favoritesOnly;
 
 	/// <summary>
 	/// Represents a page for displaying and managing all available songs in the application.
@@ -107,6 +108,24 @@ public sealed partial class AllSongsViewPage : SongListPageBase
 		$"Add {(multiSelect ? "selected songs/tracks" : "this song/track")} to {playList} playlist";
 
 	private void MenuFlyout_Opened(object sender, object e) => MenuFlyoutOpened(sender, e);
+
+	private void FavoritesOnlyButton_Click(object sender, RoutedEventArgs e)
+	{
+		_favoritesOnly = FavoritesOnlyButton.IsChecked == true;
+		_ = UpdateListBasedOnSorting();
+	}
+
+	private async void MenuFlyoutItemFavorite_OnClick(object sender, RoutedEventArgs e)
+	{
+		var song = selectedSong;
+		if (song is null) return;
+
+		var favorite = !song.Favorite;
+		await DatabaseHelper.Instance.SetFavorite(song.Path, favorite);
+		song.Favorite = favorite;
+
+		if (_favoritesOnly) _ = UpdateListBasedOnSorting();
+	}
 
 	/// <summary>
 	/// Updates the sorting preferences for the song list displayed on the AllSongsViewPage.
@@ -238,7 +257,10 @@ public sealed partial class AllSongsViewPage : SongListPageBase
 		var orderBy = Sort.Items.OfType<RadioMenuFlyoutItem>().Where(item => item.GroupName == "Order" && item.IsChecked).Select(item => item.Text).FirstOrDefault() ?? "Ascending";
 		bool AscOrder = orderBy == "Ascending";
 
-		var newList = await DatabaseHelper.Instance.LoadSongsFromDB(Enum.Parse<SongProperty>(sortBy), AscOrder);
+		var newList = await DatabaseHelper.Instance.LoadSongsFromDB(
+			Enum.Parse<SongProperty>(sortBy),
+			AscOrder,
+			whereCondition: _favoritesOnly ? "Favorite = 1" : null);
 		AllSongs.Clear();
 		AllSongs.AddRange(newList);
 		newList = null;

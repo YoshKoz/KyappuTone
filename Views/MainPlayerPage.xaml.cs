@@ -50,6 +50,7 @@ public sealed partial class MainPlayerPage : Page
 	private long _lastKnownTicks = 0;
 	private bool _centeringPaddingSet = false;
 	private string? _externalLrcPath;
+	private string? _favoriteSongPath;
 	private const double SyncControlsGap = 30;
 
 
@@ -120,6 +121,10 @@ public sealed partial class MainPlayerPage : Page
 
 						Artist.Text = track?.Artists;
 						ToolTipService.SetToolTip(Artist, track?.Artists);
+
+						_favoriteSongPath = songPath;
+						FavoriteGlyph.Glyph = track.Favorite ? "\uE735" : "\uE734";
+						ToolTipService.SetToolTip(FavoriteButton, track.Favorite ? "Remove from favorites" : "Favorite");
 
 						Title.FontSize = Album.FontSize * 1.5;
 						Artist.FontSize = Album.FontSize * 1.1;
@@ -383,6 +388,23 @@ public sealed partial class MainPlayerPage : Page
 	/// </summary>
 	/// <param name="sender">The source of the event, typically the button being clicked.</param>
 	/// <param name="e">The event data associated with the button click.</param>
+	private async void FavoriteButton_Click(object sender, RoutedEventArgs e)
+	{
+		if (string.IsNullOrEmpty(_favoriteSongPath)) return;
+
+		try
+		{
+			var favorite = !await DatabaseHelper.Instance.IsFavorite(_favoriteSongPath);
+			await DatabaseHelper.Instance.SetFavorite(_favoriteSongPath, favorite);
+			FavoriteGlyph.Glyph = favorite ? "\uE735" : "\uE734";
+			ToolTipService.SetToolTip(FavoriteButton, favorite ? "Remove from favorites" : "Favorite");
+		}
+		catch (Exception)
+		{
+			GlobalNotification.Error("Could not update favorite.");
+		}
+	}
+
 	private async void MusicInfoButton_Click(object sender, RoutedEventArgs e)
 	{
 		MainPage._instance?.ShowSongInfo(await DatabaseHelper.Instance.GetSongByPath(_musicPlayer.CurrentSong));

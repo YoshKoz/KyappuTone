@@ -463,6 +463,18 @@
 				<RowDefinition />
 				<RowDefinition />
 			</Grid.RowDefinitions>
+			<Button x:Name="FavoriteButton"
+			        Grid.Row="0"
+			        Width="40"
+			        Height="40"
+			        Margin="5"
+			        Padding="3"
+			        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+			        Click="FavoriteButton_Click"
+			        ToolTipService.ToolTip="Favorite">
+				<FontIcon x:Name="FavoriteGlyph"
+				          Glyph="&#xE734;" />
+			</Button>
 			<Button x:Name="MusicInfoButton"
 			        Grid.Row="2"
 			        Width="40"
