@@ -292,7 +292,8 @@ public enum LocalSave
 	ScanResult_Time,
 	ScanResult_Message,
 	PostUpdateScanDoneVersion,
-	ModernAudioEngineStatus
+	ModernAudioEngineStatus,
+	EqualizerSettings
 }
 
 public enum AddPlaylistResult

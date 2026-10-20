@@ -43,6 +43,16 @@ public sealed class AudioEngine : IDisposable
     /// <summary>Ten-band equalizer applied to the mix.</summary>
     public TenBandEqualizer Equalizer { get; }
 
+    /// <summary>
+    /// Applies a configuration change to the equalizer under the render lock,
+    /// so filter coefficients never swap while audio is being processed.
+    /// </summary>
+    public void ConfigureEqualizer(Action<TenBandEqualizer> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        lock (_gate) configure(Equalizer);
+    }
+
     /// <summary>FFT analyser fed from the post-limiter mix.</summary>
     public FftTap Fft => _fft;
 

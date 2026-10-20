@@ -278,6 +278,41 @@
 					</dev:SettingsCard>
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
+			<dev:SettingsExpander Description="Ten-band equalizer with preamp and presets. Flat settings bypass the DSP entirely."
+			                      Header="Equalizer">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Header="Enable equalizer">
+						<ToggleSwitch x:Name="EqEnabledToggle"
+						              Toggled="EqEnabledToggle_OnToggled" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="Preset">
+						<ComboBox x:Name="EqPresetCombo"
+						          MinWidth="220"
+						          SelectionChanged="EqPresetCombo_OnSelectionChanged" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="Preamp"
+					                  Description="Headroom applied before the band filters, in dB.">
+						<StackPanel Orientation="Horizontal"
+						            Spacing="10">
+							<Slider x:Name="EqPreampSlider"
+							        Width="280"
+							        Maximum="12"
+							        Minimum="-12"
+							        StepFrequency="0.5"
+							        ValueChanged="EqPreampSlider_OnValueChanged" />
+							<TextBlock x:Name="EqPreampValue"
+							           Width="60"
+							           VerticalAlignment="Center" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="Bands"
+					                  Description="31.5 Hz to 16 kHz, -12 to +12 dB.">
+						<StackPanel x:Name="EqBandsPanel"
+						            MinWidth="360"
+						            Spacing="2" />
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
 			<dev:SettingsCard Description="When turned on, the app will restart the track that is currently playing when previous button is pressed."
 			                  Header="Previous button restarts the current track">
 				<ToggleSwitch x:Name="PreviousReset"

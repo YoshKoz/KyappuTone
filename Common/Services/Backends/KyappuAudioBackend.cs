@@ -1,4 +1,5 @@
 using KyappuTone.Audio;
+using KyappuTone.Common.Services;
 
 namespace KyappuTone.Common.Services.Backends;
 
@@ -25,6 +26,11 @@ internal sealed class KyappuAudioBackend : IMediaBackend
 	{
 		_engine = new AudioEngine(new WasapiAudioOutput());
 		_engine.TrackEnded += OnTrackEnded;
+
+		var settings = AudioSettingsService.Instance;
+		_engine.ConfigureEqualizer(settings.ApplyTo);
+		settings.Changed += OnAudioSettingsChanged;
+
 		_positionTimer = new System.Threading.Timer(_ => PublishPosition(), null, Timeout.Infinite, Timeout.Infinite);
 	}
 
@@ -115,6 +121,9 @@ internal sealed class KyappuAudioBackend : IMediaBackend
 		RaiseState(PlaybackState.Ended);
 	}
 
+	private void OnAudioSettingsChanged(object? sender, EventArgs e)
+		=> _engine.ConfigureEqualizer(AudioSettingsService.Instance.ApplyTo);
+
 	private void RaiseState(PlaybackState state)
 	{
 		lock (_stateGate)
@@ -133,6 +142,7 @@ internal sealed class KyappuAudioBackend : IMediaBackend
 		_disposed = true;
 
 		_engine.TrackEnded -= OnTrackEnded;
+		AudioSettingsService.Instance.Changed -= OnAudioSettingsChanged;
 		_positionTimer.Dispose();
 		_engine.Dispose();
 	}

@@ -5,7 +5,9 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Storage.Pickers;
+using KyappuTone.Common.Services;
 using KyappuTone.Common.Services.TaskbarOverlay;
+using KyappuTone.Core.Audio;
 using Windows.Services.Store;
 using Windows.UI;
 
@@ -41,6 +43,10 @@ public sealed partial class SettingsPage : Page
 	public SettingViewModel ViewModel { get; }
 
 	private int clickCounter;
+
+	private Slider[]? _eqBandSliders;
+	private TextBlock[]? _eqBandValues;
+	private bool _eqUiSync;
 
 	public SettingsPage()
 	{
@@ -928,9 +934,157 @@ public sealed partial class SettingsPage : Page
 		LRCOffsetStandard.SelectionChanged += LRCOffsetStandard_SelectionChanged;
 		PlayPauseStopFadeSlider.ValueChanged += PlayPauseStopFadeSlider_OnValueChanged;
 
+		LoadEqualizerSettings();
+
 		//NOTE Uncomment when crossfade is implemented properly
 		//AutoAdvanceSlider.ValueChanged += AutoAdvanceSlider_OnValueChanged;
 		//ManualTrackChangeSlider.ValueChanged += ManualTrackChangeSlider_OnValueChanged;
+	}
+
+	/// <summary>
+	/// Populates the equalizer preset list and band sliders, then mirrors the
+	/// persisted state into the controls.
+	/// </summary>
+	private void LoadEqualizerSettings()
+	{
+		EqPresetCombo.Items.Clear();
+		foreach (var name in AudioSettingsService.PresetNames) EqPresetCombo.Items.Add(name);
+
+		BuildEqualizerBandRows();
+		SyncEqualizerControls();
+	}
+
+	/// <summary>Creates one labelled slider per equalizer band.</summary>
+	private void BuildEqualizerBandRows()
+	{
+		if (_eqBandSliders is not null) return;
+
+		var frequencies = TenBandEqualizer.CenterFrequencies;
+		_eqBandSliders = new Slider[frequencies.Count];
+		_eqBandValues = new TextBlock[frequencies.Count];
+
+		for (var band = 0; band < frequencies.Count; band++)
+		{
+			var row = new Grid { ColumnSpacing = 8 };
+			row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(76) });
+			row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+			row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(64) });
+
+			var label = new TextBlock
+			{
+				Text = FormatFrequency(frequencies[band]),
+				VerticalAlignment = VerticalAlignment.Center
+			};
+			Grid.SetColumn(label, 0);
+			row.Children.Add(label);
+
+			var slider = new Slider
+			{
+				Minimum = -12,
+				Maximum = 12,
+				StepFrequency = 0.5,
+				Tag = band
+			};
+			slider.ValueChanged += EqBandSlider_OnValueChanged;
+			Grid.SetColumn(slider, 1);
+			row.Children.Add(slider);
+
+			var value = new TextBlock
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Right
+			};
+			Grid.SetColumn(value, 2);
+			row.Children.Add(value);
+
+			_eqBandSliders[band] = slider;
+			_eqBandValues[band] = value;
+			EqBandsPanel.Children.Add(row);
+		}
+	}
+
+	/// <summary>Copies the service state into the equalizer controls without echoing changes back.</summary>
+	private void SyncEqualizerControls()
+	{
+		_eqUiSync = true;
+		try
+		{
+			var settings = AudioSettingsService.Instance;
+
+			EqEnabledToggle.IsOn = settings.Enabled;
+			EqPresetCombo.SelectedItem = settings.ActivePreset;
+			EqPreampSlider.Value = settings.PreampDb;
+			EqPreampValue.Text = FormatDb(settings.PreampDb);
+
+			var gains = settings.BandGainsDb;
+			for (var band = 0; band < gains.Count; band++)
+			{
+				_eqBandSliders![band].Value = gains[band];
+				_eqBandValues![band].Text = FormatDb(gains[band]);
+			}
+
+			SetEqualizerControlsEnabled(settings.Enabled);
+		}
+		finally
+		{
+			_eqUiSync = false;
+		}
+	}
+
+	private void SetEqualizerControlsEnabled(bool enabled)
+	{
+		EqPresetCombo.IsEnabled = enabled;
+		EqPreampSlider.IsEnabled = enabled;
+		EqBandsPanel.IsHitTestVisible = enabled;
+		EqBandsPanel.Opacity = enabled ? 1 : 0.6;
+	}
+
+	private static string FormatFrequency(float hertz)
+		=> hertz >= 1000 ? $"{hertz / 1000:0.#} kHz" : $"{hertz:0.#} Hz";
+
+	private static string FormatDb(float db) => $"{db:+0.0;-0.0;0.0} dB";
+
+	private void EqEnabledToggle_OnToggled(object sender, RoutedEventArgs e)
+	{
+		if (_eqUiSync) return;
+
+		var enabled = EqEnabledToggle.IsOn;
+		AudioSettingsService.Instance.Enabled = enabled;
+		SetEqualizerControlsEnabled(enabled);
+	}
+
+	private void EqPresetCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+	{
+		if (_eqUiSync || EqPresetCombo.SelectedItem is not string preset) return;
+
+		AudioSettingsService.Instance.LoadPreset(preset);
+		SyncEqualizerControls();
+	}
+
+	private void EqBandSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+	{
+		if (_eqUiSync || sender is not Slider slider || slider.Tag is not int band) return;
+
+		AudioSettingsService.Instance.SetBandGain(band, (float)e.NewValue);
+		_eqBandValues![band].Text = FormatDb((float)e.NewValue);
+
+		_eqUiSync = true;
+		try
+		{
+			EqPresetCombo.SelectedItem = "Custom";
+		}
+		finally
+		{
+			_eqUiSync = false;
+		}
+	}
+
+	private void EqPreampSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+	{
+		if (_eqUiSync) return;
+
+		AudioSettingsService.Instance.PreampDb = (float)e.NewValue;
+		EqPreampValue.Text = FormatDb((float)e.NewValue);
 	}
 
 	/// <summary>
