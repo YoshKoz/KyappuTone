@@ -171,6 +171,7 @@ public partial class MusicControlViewModel : ObservableRecipient
 		_musicPlayer.PlaybackStateChanged += OnPlaybackStateChanged;
 		_musicPlayer.OpenCompleted += (s, e) => PlaybackSession_MediaOpenedAsync();
 		_musicPlayer.PositionChanged += OnPositionChanged;
+		_musicPlayer.StreamTitleChanged += OnStreamTitleChanged;
 
 		_musicPlayer.ShuffleStatusChanged += _musicPlayer_ShuffleStatusChanged;
 
@@ -302,6 +303,9 @@ public partial class MusicControlViewModel : ObservableRecipient
 	{
 		_dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
 		{
+			if (_musicPlayer.CurrentStream is not null)
+				return;
+
 			var seconds = TimeSpan.FromTicks(ticks).TotalSeconds;
 			isUpdatingProgressBar = true;
 			ProgressBarValue = seconds;
@@ -598,6 +602,19 @@ public partial class MusicControlViewModel : ObservableRecipient
 		await Task.Delay(50);
 		_dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, async () =>
 		{
+			if (_musicPlayer.CurrentStream is { } stream)
+			{
+				DurationOfSong = 0;
+				ProgressBarValue = 0;
+				Cover = Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png");
+				ApplyStreamTitle(_musicPlayer.StreamTitle ?? stream.Name);
+				_vinylEffect?.Begin();
+				if (!_musicPlayer.IsPlaying) _vinylEffect?.Pause();
+				MusicControl._instance?.FloatingPlayer(null, MainPage._instance?.IsMainPlayerPageOpened ?? false);
+				MusicControl._instance?.SlideInDown();
+				return;
+			}
+
 			var songPath = _musicPlayer.CurrentSong;
 			if (string.IsNullOrEmpty(songPath)) return;
 			var track = await DatabaseHelper.Instance.GetSongByPath(songPath!);
@@ -642,6 +659,31 @@ public partial class MusicControlViewModel : ObservableRecipient
 			MusicControl._instance?.FloatingPlayer(null, MainPage._instance?.IsMainPlayerPageOpened ?? false);
 			MusicControl._instance?.SlideInDown();
 		});
+	}
+
+	private void OnStreamTitleChanged(object? sender, string title)
+	{
+		_dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+		{
+			if (_musicPlayer.CurrentStream is null)
+				return;
+
+			ApplyStreamTitle(title);
+		});
+	}
+
+	private void ApplyStreamTitle(string title)
+	{
+		var separator = title.IndexOf(" - ", StringComparison.Ordinal);
+		if (separator > 0)
+		{
+			Artist = title[..separator].Trim();
+			Title = title[(separator + 3)..].Trim();
+			return;
+		}
+
+		Title = title;
+		Artist = _musicPlayer.CurrentStream?.Name ?? "Internet radio";
 	}
 
 	// ─────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
+using KyappuTone.Core.Radio;
 using TagLib;
 using Windows.Media;
 using Windows.Media.Playback;
@@ -99,6 +100,18 @@ public class MusicPlayer
 	// ── existing public events / properties ──────────────────
 	/// <summary>Fires when the currently playing song changes.</summary>
 	public event EventHandler<string>? CurrentSongChanged;
+
+	/// <summary>Fires when an ICY stream title becomes available.</summary>
+	public event EventHandler<string>? StreamTitleChanged;
+
+	private RadioStation? _currentStream;
+	private string? _streamTitle;
+
+	/// <summary>The radio station currently playing, or null for local files.</summary>
+	public RadioStation? CurrentStream => _currentStream;
+
+	/// <summary>The latest ICY title for the current stream.</summary>
+	public string? StreamTitle => _streamTitle;
 
 	/// <summary>Fires when the shuffle status changes.</summary>
 	public event EventHandler<ShuffleMode>? ShuffleStatusChanged;
@@ -474,6 +487,9 @@ public class MusicPlayer
 		{
 			if (string.IsNullOrWhiteSpace(songPath)) return;
 
+			_currentStream = null;
+			_streamTitle = null;
+
 			var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			var position = MusicControl._instance?.ViewModel?.ProgressBarValue ?? 0;
 
@@ -580,6 +596,98 @@ public class MusicPlayer
 		}
 	}
 
+	/// <summary>
+	/// Opens an internet radio stream through Flyleaf. Streams have no local database row,
+	/// so the queue, play count, and scrobble paths are bypassed.
+	/// </summary>
+	public async Task LoadStreamAsync(RadioStation station, bool play = true)
+	{
+		if (station is null || string.IsNullOrWhiteSpace(station.Url))
+			return;
+
+		try
+		{
+			Pause();
+			_activeBackend.Volume = 0;
+			_activeBackend.Stop();
+			await Task.Delay(50);
+
+			ActivateBackend(BackendType.Flyleaf);
+			OriginalPlaylist = null;
+			ActualPlaylist = null;
+			SongQueue = false;
+			currentIndex = 0;
+
+			_currentStream = station;
+			_streamTitle = station.Name;
+			CurrentSong = $"radio://{station.Uuid}";
+			SMTCPlayer.Source = null;
+			UpdateStreamSmtc(station);
+
+			await _activeBackend.OpenAsync(station.Url);
+			_activeBackend.Volume = initialVolume;
+			if (play)
+				Play();
+
+			StreamTitleChanged?.Invoke(this, _streamTitle);
+		}
+		catch (Exception ex)
+		{
+			_currentStream = null;
+			_streamTitle = null;
+			CurrentSong = string.Empty;
+			GlobalNotification.Error($"Could not play radio station: {ex.Message}");
+		}
+	}
+
+	/// <summary>Stops radio playback and clears stream-only state.</summary>
+	public void StopStream()
+	{
+		if (_currentStream is null)
+			return;
+
+		Pause();
+		_activeBackend.Stop();
+		_currentStream = null;
+		_streamTitle = null;
+		CurrentSong = string.Empty;
+		SMTCPlayer.Source = null;
+		if (SMTC is not null)
+		{
+			SMTC.DisplayUpdater.ClearAll();
+			SMTC.PlaybackStatus = Windows.Media.MediaPlaybackStatus.Stopped;
+		}
+	}
+
+	/// <summary>Updates the current stream title from the ICY poller.</summary>
+	public void SetStreamTitle(string? title)
+	{
+		if (_currentStream is null || string.IsNullOrWhiteSpace(title))
+			return;
+
+		_streamTitle = title.Trim();
+		if (SMTC is not null)
+		{
+			SMTC.DisplayUpdater.MusicProperties.Title = _streamTitle;
+			SMTC.DisplayUpdater.Update();
+		}
+		StreamTitleChanged?.Invoke(this, _streamTitle);
+	}
+
+	private void UpdateStreamSmtc(RadioStation station)
+	{
+		if (SMTC is null)
+			return;
+
+		var updater = SMTC.DisplayUpdater;
+		updater.Type = Windows.Media.MediaPlaybackType.Music;
+		updater.MusicProperties.Title = station.Name;
+		updater.MusicProperties.Artist = "Internet radio";
+		if (!string.IsNullOrWhiteSpace(station.Country))
+			updater.MusicProperties.AlbumTitle = station.Country;
+		updater.Update();
+	}
+
 	// ─────────────────────────────────────────────────────────
 	//  Play / Pause (with fade support)
 	// ─────────────────────────────────────────────────────────
@@ -680,6 +788,7 @@ public class MusicPlayer
 	/// </summary>
 	public async void Previous()
 	{
+		if (_currentStream is not null) return;
 		if (LibraryScanner.IsScanning) return;
 		try
 		{
@@ -719,6 +828,7 @@ public class MusicPlayer
 	/// <param name="autoChange">Indicates whether this is an automatic change. Default is false.</param>
 	public async void Next(bool autoChange = false)
 	{
+		if (_currentStream is not null) return;
 		if (LibraryScanner.IsScanning) return;
 		try
 		{
@@ -1049,6 +1159,12 @@ public class MusicPlayer
 	/// <param name="song">The song to reset to, or null to reset to default state.</param>
 	public async void ResetOrReloadPlayer(Song? song = null)
 	{
+		if (_currentStream is not null)
+		{
+			StopStream();
+			return;
+		}
+
 		var track = song ?? await DatabaseHelper.Instance.GetSongByPath(CurrentSong);
 		if (track == null)
 		{

@@ -194,6 +194,22 @@ public class MetadataCacheRow
 	public long FetchedAtUtc { get; set; }
 }
 
+/// <summary>One saved Radio Browser station.</summary>
+[Table("RadioFavorites")]
+public class RadioFavoriteRow
+{
+	[PrimaryKey]
+	public string Uuid { get; set; } = string.Empty;
+	public string Name { get; set; } = string.Empty;
+	public string Url { get; set; } = string.Empty;
+	public string FaviconUrl { get; set; } = string.Empty;
+	public string Tags { get; set; } = string.Empty;
+	public string Country { get; set; } = string.Empty;
+	public string Codec { get; set; } = string.Empty;
+	public int Bitrate { get; set; }
+	public long LastPlayedUtc { get; set; }
+}
+
 /// <summary>One persisted YouTube download item.</summary>
 [Table("DownloadQueue")]
 public class DownloadQueueRow

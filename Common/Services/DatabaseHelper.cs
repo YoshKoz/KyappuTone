@@ -260,6 +260,17 @@ public class DatabaseHelper
 									   OutputPath TEXT NOT NULL DEFAULT '',
 									   CreatedAtUtc INTEGER NOT NULL)");
 
+		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS RadioFavorites (
+									   Uuid TEXT PRIMARY KEY,
+									   Name TEXT NOT NULL,
+									   Url TEXT NOT NULL,
+									   FaviconUrl TEXT NOT NULL DEFAULT '',
+									   Tags TEXT NOT NULL DEFAULT '',
+									   Country TEXT NOT NULL DEFAULT '',
+									   Codec TEXT NOT NULL DEFAULT '',
+									   Bitrate INTEGER NOT NULL DEFAULT 0,
+									   LastPlayedUtc INTEGER NOT NULL DEFAULT 0)");
+
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS ScrobbleQueue (
 									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
 									   Artist TEXT NOT NULL,
@@ -1269,6 +1280,53 @@ public class DatabaseHelper
 	public async Task RemoveDownload(int id)
 	{
 		await _database.ExecuteAsync("DELETE FROM DownloadQueue WHERE Id = ?", id);
+	}
+
+	/// <summary>Returns saved radio stations, most recently played first.</summary>
+	public async Task<List<RadioFavoriteRow>> GetRadioFavorites()
+	{
+		return await _database.QueryAsync<RadioFavoriteRow>(
+			"SELECT * FROM RadioFavorites ORDER BY LastPlayedUtc DESC, Name COLLATE NOCASE");
+	}
+
+	/// <summary>Returns true when the station is already a favorite.</summary>
+	public async Task<bool> IsRadioFavorite(string uuid)
+	{
+		return await _database.ExecuteScalarAsync<int>(
+			"SELECT COUNT(*) FROM RadioFavorites WHERE Uuid = ?", uuid) > 0;
+	}
+
+	/// <summary>Adds or updates one saved radio station.</summary>
+	public async Task UpsertRadioFavorite(KyappuTone.Core.Radio.RadioStation station)
+	{
+		await _database.ExecuteAsync(
+			@"INSERT OR REPLACE INTO RadioFavorites
+			  (Uuid, Name, Url, FaviconUrl, Tags, Country, Codec, Bitrate, LastPlayedUtc)
+			  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			station.Uuid,
+			station.Name,
+			station.Url,
+			station.FaviconUrl ?? string.Empty,
+			station.Tags ?? string.Empty,
+			station.Country ?? string.Empty,
+			station.Codec ?? string.Empty,
+			station.Bitrate,
+			DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+	}
+
+	/// <summary>Marks a saved station as played without changing its other fields.</summary>
+	public async Task TouchRadioFavorite(string uuid)
+	{
+		await _database.ExecuteAsync(
+			"UPDATE RadioFavorites SET LastPlayedUtc = ? WHERE Uuid = ?",
+			DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+			uuid);
+	}
+
+	/// <summary>Removes one saved radio station.</summary>
+	public async Task RemoveRadioFavorite(string uuid)
+	{
+		await _database.ExecuteAsync("DELETE FROM RadioFavorites WHERE Uuid = ?", uuid);
 	}
 
 	/// <summary>Returns every auto-managed folder playlist.</summary>
