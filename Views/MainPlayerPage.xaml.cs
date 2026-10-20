@@ -174,6 +174,7 @@ public sealed partial class MainPlayerPage : Page
 						}
 
 						UpdateCoverArtSize();
+						Visualizer.Visibility = Visibility.Visible;
 						MusicInfoButton.Visibility = Visibility.Visible;
 						ShowLyricsButton.Visibility = string.IsNullOrEmpty(track?.Lyrics) ? Visibility.Collapsed : Visibility.Visible;
 						LyricMenuOptions(embeddedLyrics: true);
@@ -223,6 +224,7 @@ public sealed partial class MainPlayerPage : Page
 
 		if (MusicPlayer.Instance.SMTC != null)
 			MusicPlayer.Instance.SMTC.DisplayUpdater.ClearAll();
+		Visualizer.Visibility = Visibility.Collapsed;
 		BGbitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/AppIcon.png"));
 		if (!backNavigation)
 			BackgroundImage.Source = BGbitmapImage;
