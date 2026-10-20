@@ -239,13 +239,13 @@ public sealed partial class PlayListTemplate : SongListPageBase
 	protected override Page CreateFreshPage() => new PlayListTemplate();
 
 	/// <inheritdoc/>
-	protected override Task OnLibraryReadyAsync()
+	protected override async Task OnLibraryReadyAsync()
 	{
 		ViewButton.Visibility = Visibility.Visible;
 		PageButtons.Visibility = Visibility.Visible;
+		await SmartPlaylistService.RefreshAsync(PlaylistHeader.Text);
 		UpdateAsPerLastViewStyle();
 		LoadPlayListSongs();
-		return Task.CompletedTask;
 	}
 
 	/// <inheritdoc/>

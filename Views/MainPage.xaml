@@ -962,7 +962,38 @@
 						           Foreground="Red"
 						           Text=""
 						           TextWrapping="WrapWholeWords" />
-						<StackPanel Orientation="Horizontal"
+						<ToggleSwitch x:Name="SmartPlaylistToggle"
+						              Header="Smart playlist"
+						              Toggled="SmartPlaylistToggle_Toggled" />
+						<StackPanel x:Name="SmartPlaylistRulesPanel"
+						            Spacing="8"
+						            Visibility="Collapsed">
+							<TextBox x:Name="SmartGenreBox"
+							         Header="Genre contains"
+							         PlaceholderText="e.g. Jazz" />
+							<TextBox x:Name="SmartArtistBox"
+							         Header="Artist contains"
+							         PlaceholderText="e.g. Miles Davis" />
+							<Grid ColumnSpacing="8">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<TextBox x:Name="SmartYearFromBox"
+								         Grid.Column="0"
+								         Header="Year from"
+								         PlaceholderText="1970" />
+								<TextBox x:Name="SmartYearToBox"
+								         Grid.Column="1"
+								         Header="Year to"
+								         PlaceholderText="1979" />
+							</Grid>
+							<TextBox x:Name="SmartMinPlayCountBox"
+							         Header="Minimum play count"
+							         PlaceholderText="0" />
+						</StackPanel>
+						<StackPanel x:Name="PlaylistFilePanel"
+						            Orientation="Horizontal"
 						            Spacing="10">
 							<TextBlock x:Name="AddPlaylistDialogDescription"
 							           Width="290"

@@ -13,9 +13,10 @@ The repository is private until the first release.
 ## Status
 
 Pre-release. The custom audio engine, EQ, crossfade, sleep timer, visualizers, favorites,
-listening history, statistics and home overview are implemented. Playback is local-files
-only. Optional Last.fm scrobbling and Spotify playlist import are available with your own
-API credentials; Spotify audio is never streamed or downloaded. See
+listening history, statistics and home overview are implemented. Playlists support custom
+covers and rule-based smart playlists; the home page builds genre mixes. Playback is
+local-files only. Optional Last.fm scrobbling and Spotify playlist import are available
+with your own API credentials; Spotify audio is never streamed or downloaded. See
 `docs/integrations.md` for setup and `docs/superpowers/specs/` for the remaining work.
 
 ## Requirements

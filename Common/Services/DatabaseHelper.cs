@@ -261,12 +261,18 @@ public class DatabaseHelper
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS Playlists (
 									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
 									   Name TEXT,
-									   CoverPath TEXT NOT NULL DEFAULT '')");
+									   CoverPath TEXT NOT NULL DEFAULT '',
+									   Kind TEXT NOT NULL DEFAULT 'user',
+									   RulesJson TEXT NOT NULL DEFAULT '')");
 
 		var playlistSchema = await _database.ExecuteScalarAsync<string>(
 			"SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'Playlists'");
 		if (playlistSchema is not null && !playlistSchema.Contains("CoverPath", StringComparison.OrdinalIgnoreCase))
 			await _database.ExecuteAsync("ALTER TABLE Playlists ADD COLUMN CoverPath TEXT NOT NULL DEFAULT ''");
+		if (playlistSchema is not null && !playlistSchema.Contains("Kind", StringComparison.OrdinalIgnoreCase))
+			await _database.ExecuteAsync("ALTER TABLE Playlists ADD COLUMN Kind TEXT NOT NULL DEFAULT 'user'");
+		if (playlistSchema is not null && !playlistSchema.Contains("RulesJson", StringComparison.OrdinalIgnoreCase))
+			await _database.ExecuteAsync("ALTER TABLE Playlists ADD COLUMN RulesJson TEXT NOT NULL DEFAULT ''");
 
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS PlaylistSongs (
 									   PlaylistId INTEGER,
@@ -1167,6 +1173,44 @@ public class DatabaseHelper
 	public async Task CreatePlaylist(string playlistName)
 	{
 		await _database.ExecuteAsync("INSERT INTO Playlists (Name) VALUES (?)", playlistName);
+	}
+
+	/// <summary>Creates a rule-based playlist. The rules are evaluated again whenever the playlist is opened.</summary>
+	public async Task CreateSmartPlaylist(string playlistName, string rulesJson)
+	{
+		await _database.ExecuteAsync(
+			"INSERT INTO Playlists (Name, Kind, RulesJson) VALUES (?, 'smart', ?)",
+			playlistName,
+			rulesJson);
+	}
+
+	/// <summary>Returns the playlist row, including kind and stored smart-playlist rules.</summary>
+	public async Task<PlaylistName?> GetPlaylistInfo(string playlistName)
+	{
+		var result = await _database.QueryAsync<PlaylistName>(
+			"SELECT * FROM Playlists WHERE Name = ? LIMIT 1", playlistName);
+		return result.FirstOrDefault();
+	}
+
+	/// <summary>Replaces all songs in a playlist, preserving the supplied order.</summary>
+	public async Task ReplacePlaylistSongs(string playlistName, IReadOnlyList<string> songPaths)
+	{
+		await _database.RunInTransactionAsync(conn =>
+		{
+			conn.Execute(
+				"DELETE FROM PlaylistSongs WHERE PlaylistId = (SELECT Id FROM Playlists WHERE Name = ?)",
+				playlistName);
+
+			for (var index = 0; index < songPaths.Count; index++)
+			{
+				conn.Execute(
+					@"INSERT OR IGNORE INTO PlaylistSongs (PlaylistId, SongPath, Position)
+					  VALUES ((SELECT Id FROM Playlists WHERE Name = ?), ?, ?)",
+					playlistName,
+					songPaths[index],
+					index);
+			}
+		});
 	}
 
 	/// <summary>

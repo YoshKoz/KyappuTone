@@ -45,6 +45,7 @@ public sealed partial class MainPage : Page
 
 	public record AddPlaylistDialogResult(AddPlaylistResult Result, string? Name = null);
 	private TaskCompletionSource<AddPlaylistDialogResult>? _addPlaylistTcs;
+	private bool _songsToAddAfterCreate;
 
 	/// <summary>
 	/// Event triggered when the main player page's visibility state changes.
@@ -354,6 +355,14 @@ public sealed partial class MainPage : Page
 		AddPlaylistOverlay.RequestedTheme = App.Current.ThemeService.ElementTheme;
 		PlaylistNameBox.Text = string.Empty;
 		ErrorMessage.Text = "";
+		SmartPlaylistToggle.IsOn = false;
+		SmartGenreBox.Text = string.Empty;
+		SmartArtistBox.Text = string.Empty;
+		SmartYearFromBox.Text = string.Empty;
+		SmartYearToBox.Text = string.Empty;
+		SmartMinPlayCountBox.Text = string.Empty;
+		SmartPlaylistRulesPanel.Visibility = Visibility.Collapsed;
+		PlaylistFilePanel.Visibility = Visibility.Visible;
 		AddPlaylistCreateButton.Content = "Create";
 		AddPlaylistCreateButton.IsEnabled = false;
 		var desc = new TextBlock();
@@ -364,6 +373,7 @@ public sealed partial class MainPage : Page
 		ResetDropZoneVisual();
 		playLists = await DatabaseHelper.Instance.GetAllPlaylistNames();
 
+		_songsToAddAfterCreate = songsToAddAfterCreate;
 		AddPlaylistSongsNote.Visibility = songsToAddAfterCreate ? Visibility.Visible : Visibility.Collapsed;
 
 		MainWindow._instance.WindowResizePermission(false);
@@ -385,15 +395,35 @@ public sealed partial class MainPage : Page
 	{
 		var outcome = AddPlaylistResult.Cancelled;
 		var name = PlaylistNameBox.Text.Trim();   // capture before closing/clearing
+		var isSmart = SmartPlaylistToggle.IsOn;
+
+		SmartPlaylistRules? rules = null;
+		if (isSmart)
+		{
+			rules = BuildSmartRules();
+			if (rules is null)
+				return;
+		}
 
 		if (CreateNewPlaylist(name))
 		{
-			await DatabaseHelper.Instance.CreatePlaylist(name);
-			GlobalNotification.Info($"{name} Playlist created.");
+			if (isSmart)
+			{
+				await DatabaseHelper.Instance.CreateSmartPlaylist(name, SmartPlaylistService.Serialize(rules!));
+				var songs = await SmartPlaylistService.EvaluateAsync(rules!);
+				await DatabaseHelper.Instance.ReplacePlaylistSongs(name, songs.Select(song => song.Path).ToList());
+				GlobalNotification.Info($"{name} smart playlist created with {songs.Count} tracks.");
+			}
+			else
+			{
+				await DatabaseHelper.Instance.CreatePlaylist(name);
+				GlobalNotification.Info($"{name} Playlist created.");
+			}
+
 			outcome = AddPlaylistResult.Created;
 		}
 
-		if (AddPlaylistCreateButton.Content.ToString() == "Add Playlist" && PlaylistFileSongs.Count > 0)
+		if (!isSmart && AddPlaylistCreateButton.Content.ToString() == "Add Playlist" && PlaylistFileSongs.Count > 0)
 		{
 			await DatabaseHelper.Instance.AddSongsToPlaylist(name, PlaylistFileSongs);
 			GlobalNotification.Success($"{name} Playlist added with {PlaylistFileSongs.Count} {(PlaylistFileSongs.Count > 1 ? "songs/tracks" : "song/track")}.");
@@ -403,6 +433,62 @@ public sealed partial class MainPage : Page
 		CloseAddPlaylistOverlay(new AddPlaylistDialogResult(
 			outcome,
 			outcome == AddPlaylistResult.Cancelled ? null : name));
+	}
+
+	private SmartPlaylistRules? BuildSmartRules()
+	{
+		int? ParseNumber(string? text)
+		{
+			if (string.IsNullOrWhiteSpace(text))
+				return null;
+			return int.TryParse(text.Trim(), out var value) ? value : null;
+		}
+
+		var genre = string.IsNullOrWhiteSpace(SmartGenreBox.Text) ? null : SmartGenreBox.Text.Trim();
+		var artist = string.IsNullOrWhiteSpace(SmartArtistBox.Text) ? null : SmartArtistBox.Text.Trim();
+		var yearFrom = ParseNumber(SmartYearFromBox.Text);
+		var yearTo = ParseNumber(SmartYearToBox.Text);
+		var minPlayCount = ParseNumber(SmartMinPlayCountBox.Text);
+
+		if (yearFrom is null && !string.IsNullOrWhiteSpace(SmartYearFromBox.Text))
+		{
+			ErrorMessage.Text = "Year from must be a number.";
+			return null;
+		}
+		if (yearTo is null && !string.IsNullOrWhiteSpace(SmartYearToBox.Text))
+		{
+			ErrorMessage.Text = "Year to must be a number.";
+			return null;
+		}
+		if (minPlayCount is null && !string.IsNullOrWhiteSpace(SmartMinPlayCountBox.Text))
+		{
+			ErrorMessage.Text = "Minimum play count must be a number.";
+			return null;
+		}
+		if (yearFrom is not null && yearTo is not null && yearFrom > yearTo)
+		{
+			ErrorMessage.Text = "Year from cannot be greater than year to.";
+			return null;
+		}
+		if (genre is null && artist is null && yearFrom is null && yearTo is null && minPlayCount is null)
+		{
+			ErrorMessage.Text = "Add at least one smart rule.";
+			return null;
+		}
+
+		ErrorMessage.Text = "";
+		return new SmartPlaylistRules(genre, artist, yearFrom, yearTo, minPlayCount);
+	}
+
+	private void SmartPlaylistToggle_Toggled(object sender, RoutedEventArgs e)
+	{
+		var enabled = SmartPlaylistToggle.IsOn;
+		SmartPlaylistRulesPanel.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
+		PlaylistFilePanel.Visibility = enabled ? Visibility.Collapsed : Visibility.Visible;
+		PlaylistDropZone.Visibility = enabled ? Visibility.Collapsed : Visibility.Visible;
+		AddPlaylistSongsNote.Visibility = enabled
+			? Visibility.Collapsed
+			: _songsToAddAfterCreate ? Visibility.Visible : Visibility.Collapsed;
 	}
 
 	/// <summary>
