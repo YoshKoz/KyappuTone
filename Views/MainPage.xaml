@@ -151,10 +151,49 @@
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="100" />
 						</Grid.ColumnDefinitions>
-						<Button x:Name="ThemeButton"
+						<Button x:Name="SleepTimerButton"
 						        Grid.Column="0"
+						        Height="32"
+						        Margin="0,0,4,0"
+						        Style="{ThemeResource SubtleButtonStyle}"
+						        ToolTipService.ToolTip="Sleep timer">
+							<FontIcon Glyph="&#xE916;" />
+							<Button.Flyout>
+								<MenuFlyout Placement="Bottom">
+									<MenuFlyoutItem x:Name="SleepTimerStatusItem"
+									                IsEnabled="False"
+									                Text="Sleep timer: off" />
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem Click="SleepTimerPreset_Click"
+									                Tag="15"
+									                Text="15 minutes" />
+									<MenuFlyoutItem Click="SleepTimerPreset_Click"
+									                Tag="30"
+									                Text="30 minutes" />
+									<MenuFlyoutItem Click="SleepTimerPreset_Click"
+									                Tag="45"
+									                Text="45 minutes" />
+									<MenuFlyoutItem Click="SleepTimerPreset_Click"
+									                Tag="60"
+									                Text="1 hour" />
+									<MenuFlyoutItem Click="SleepTimerPreset_Click"
+									                Tag="90"
+									                Text="1 hour 30 minutes" />
+									<MenuFlyoutItem Click="SleepTimerCustomItem_Click"
+									                Text="Custom..." />
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem x:Name="SleepTimerCancelItem"
+									                Click="SleepTimerCancelItem_Click"
+									                IsEnabled="False"
+									                Text="Cancel sleep timer" />
+								</MenuFlyout>
+							</Button.Flyout>
+						</Button>
+						<Button x:Name="ThemeButton"
+						        Grid.Column="1"
 						        Height="32"
 						        Margin="0,0,4,0"
 						        Click="ThemeButton_Click"
@@ -163,7 +202,7 @@
 						        Style="{ThemeResource SubtleButtonStyle}"
 						        ToolTipService.ToolTip="Toggle Theme" />
 						<Button x:Name="volumeMuteButton"
-						        Grid.Column="1"
+						        Grid.Column="2"
 						        Click="VolumeMuteButton_Click"
 						        Style="{ThemeResource SubtleButtonStyle}"
 						        ToolTipService.ToolTip="Mute">
@@ -171,7 +210,7 @@
 							          Glyph="&#xE767;" />
 						</Button>
 						<Slider x:Name="VolumeSlider"
-						        Grid.Column="2"
+						        Grid.Column="3"
 						        Height="32"
 						        Maximum="100"
 						        Value="0" />
@@ -218,6 +257,21 @@
 				</Grid>
 			</TeachingTip.HeroContent>
 		</TeachingTip>
+		<ContentDialog x:Name="SleepTimerCustomDialog"
+		               Title="Sleep timer"
+		               CloseButtonText="Cancel"
+		               DefaultButton="Primary"
+		               PrimaryButtonText="Start">
+			<StackPanel Spacing="8">
+				<TextBlock Text="Stop playback after:" />
+				<NumberBox x:Name="SleepTimerCustomMinutes"
+				           Header="Minutes"
+				           Maximum="600"
+				           Minimum="1"
+				           SpinButtonPlacementMode="Compact"
+				           Value="30" />
+			</StackPanel>
+		</ContentDialog>
 		<Grid Width="Auto"
 		      Height="Auto"
 		      HorizontalAlignment="Center"

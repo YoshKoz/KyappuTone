@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Storage.Pickers;
 using TagLib;
+using KyappuTone.Core.Audio;
 using KyappuTone.Views.Common;
 using KyappuTone.Views.LibraryViews;
 using KyappuTone.Views.PlaylistViews;
@@ -35,6 +36,7 @@ public sealed partial class MainPage : Page
 	private bool _pausedByVolume0 = false;
 	private Song? _songData = null;
 	private string? _frontCoverArtPath = null;
+	private readonly SleepTimer _sleepTimer;
 
 	private List<string> ArtistSuggestions { get; } = new();
 	private List<ArtistSplitRule> ArtistSplitRules { get; } = new();
@@ -92,6 +94,8 @@ public sealed partial class MainPage : Page
 	{
 		this.InitializeComponent();
 		_instance = this;
+		_sleepTimer = new SleepTimer(TimeProvider.System);
+		_sleepTimer.Tick += SleepTimer_Tick;
 		App.MainWindow.ExtendsContentIntoTitleBar = true;
 		App.MainWindow.SetTitleBar(AppTitleBar);
 		var mainWin = App.MainWindow as MainWindow;
@@ -1286,6 +1290,58 @@ public sealed partial class MainPage : Page
 			(int)(bounds.Width * scale),
 			(int)(bounds.Height * scale)
 		);
+	}
+
+	// ─────────────────────────────────────────────────────────
+	//  Sleep timer
+	// ─────────────────────────────────────────────────────────
+	private void SleepTimer_Tick(object? sender, EventArgs e)
+		=> DispatcherQueue.TryEnqueue(UpdateSleepTimerUi);
+
+	private void UpdateSleepTimerUi()
+	{
+		if (_sleepTimer.IsRunning)
+		{
+			var text = $"Sleep timer: {_sleepTimer.Remaining:hh\\:mm\\:ss}";
+			SleepTimerStatusItem.Text = text;
+			ToolTipService.SetToolTip(SleepTimerButton, text);
+			SleepTimerCancelItem.IsEnabled = true;
+		}
+		else
+		{
+			SleepTimerStatusItem.Text = "Sleep timer: off";
+			ToolTipService.SetToolTip(SleepTimerButton, "Sleep timer");
+			SleepTimerCancelItem.IsEnabled = false;
+		}
+	}
+
+	private void SleepTimerPreset_Click(object sender, RoutedEventArgs e)
+	{
+		if (sender is not MenuFlyoutItem { Tag: string tag } || !int.TryParse(tag, out var minutes)) return;
+		StartSleepTimer(TimeSpan.FromMinutes(minutes));
+	}
+
+	private async void SleepTimerCustomItem_Click(object sender, RoutedEventArgs e)
+	{
+		var result = await SleepTimerCustomDialog.ShowAsync();
+		if (result != ContentDialogResult.Primary) return;
+
+		var value = SleepTimerCustomMinutes.Value;
+		var minutes = double.IsFinite(value) ? Math.Clamp(value, 1, 600) : 30;
+		StartSleepTimer(TimeSpan.FromMinutes(minutes));
+	}
+
+	private void SleepTimerCancelItem_Click(object sender, RoutedEventArgs e) => _sleepTimer.Cancel();
+
+	private void StartSleepTimer(TimeSpan duration)
+	{
+		_sleepTimer.Start(duration, () => DispatcherQueue.TryEnqueue(() =>
+		{
+			MusicPlayer.Instance.Pause();
+			GlobalNotification.Info("Sleep timer finished. Playback paused.");
+		}));
+
+		UpdateSleepTimerUi();
 	}
 
 	private void VolumeMuteButton_Click(object sender, RoutedEventArgs e)
