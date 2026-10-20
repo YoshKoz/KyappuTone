@@ -65,6 +65,8 @@ public sealed partial class SettingsPage : Page
 
 		LoadMetadataSettings();
 
+		_ = LoadToolSettingsAsync();
+
 		_ = LoadSpotifySettingsAsync();
 
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
@@ -1572,6 +1574,83 @@ public sealed partial class SettingsPage : Page
 		GitHubTokenBox.Password = string.Empty;
 		UpdateGitHubTokenStatus();
 		GlobalNotification.Info("GitHub token removed.");
+	}
+
+	private async Task LoadToolSettingsAsync()
+	{
+		try
+		{
+			ShowToolStatus(await ToolBootstrapService.GetStatusAsync());
+		}
+		catch (Exception ex)
+		{
+			YtDlpStatusText.Text = "Status unavailable";
+			FfmpegStatusText.Text = "Status unavailable";
+			System.Diagnostics.Debug.WriteLine($"Tool status failed: {ex.Message}");
+		}
+	}
+
+	private void ShowToolStatus(ToolStatus status)
+	{
+		YtDlpStatusText.Text = status.YtDlpReady
+			? $"yt-dlp {status.YtDlpVersion}"
+			: "Not installed";
+		FfmpegStatusText.Text = status.FfmpegReady
+			? $"FFmpeg {status.FfmpegVersion}"
+			: "Not installed";
+	}
+
+	private async void InstallTools_Click(object sender, RoutedEventArgs e)
+	{
+		InstallToolsButton.IsEnabled = false;
+		ToolInstallStatusText.Text = "Starting...";
+		try
+		{
+			var progress = new Progress<string>(message => ToolInstallStatusText.Text = message);
+			await ToolBootstrapService.InstallOrUpdateAsync(progress);
+			ShowToolStatus(await ToolBootstrapService.GetStatusAsync());
+			ToolInstallStatusText.Text = "Tools ready.";
+			GlobalNotification.Success("yt-dlp and FFmpeg are installed.");
+		}
+		catch (Exception ex)
+		{
+			ToolInstallStatusText.Text = $"Install failed: {ex.Message}";
+			GlobalNotification.Error($"Could not install tools: {ex.Message}");
+		}
+		finally
+		{
+			InstallToolsButton.IsEnabled = true;
+		}
+	}
+
+	private async void BrowseYtDlp_Click(object sender, RoutedEventArgs e)
+	{
+		var picker = new FileOpenPicker((sender as Button)!.XamlRoot.ContentIslandEnvironment.AppWindowId)
+		{
+			SuggestedStartLocation = PickerLocationId.Downloads,
+		};
+		picker.FileTypeFilter.Add(".exe");
+		var file = await picker.PickSingleFileAsync();
+		if (file is null)
+			return;
+
+		ToolBootstrapService.SaveManualPaths(file.Path, ToolBootstrapService.GetFfmpegPath());
+		ShowToolStatus(await ToolBootstrapService.GetStatusAsync());
+	}
+
+	private async void BrowseFfmpeg_Click(object sender, RoutedEventArgs e)
+	{
+		var picker = new FileOpenPicker((sender as Button)!.XamlRoot.ContentIslandEnvironment.AppWindowId)
+		{
+			SuggestedStartLocation = PickerLocationId.Downloads,
+		};
+		picker.FileTypeFilter.Add(".exe");
+		var file = await picker.PickSingleFileAsync();
+		if (file is null)
+			return;
+
+		ToolBootstrapService.SaveManualPaths(ToolBootstrapService.GetYtDlpPath(), file.Path);
+		ShowToolStatus(await ToolBootstrapService.GetStatusAsync());
 	}
 
 	private void LoadMetadataSettings()

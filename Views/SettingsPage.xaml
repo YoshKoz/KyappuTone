@@ -671,6 +671,42 @@
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
 
+			<dev:SettingsExpander Description="yt-dlp downloads YouTube audio; FFmpeg converts it. Both are installed into this app's LocalState and verified with SHA-256."
+			                      Header="Download tools"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Header="yt-dlp">
+						<StackPanel Spacing="4">
+							<TextBlock x:Name="YtDlpStatusText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="Checking..." />
+							<Button Click="BrowseYtDlp_Click"
+							        Content="Browse for yt-dlp.exe" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="FFmpeg">
+						<StackPanel Spacing="4">
+							<TextBlock x:Name="FfmpegStatusText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="Checking..." />
+							<Button Click="BrowseFfmpeg_Click"
+							        Content="Browse for ffmpeg.exe" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Uses the official yt-dlp release and an LGPL FFmpeg build. Checks every download against its published SHA-256."
+					                  Header="Install or update">
+						<StackPanel Spacing="6">
+							<Button x:Name="InstallToolsButton"
+							        Click="InstallTools_Click"
+							        Content="Install/Update tools" />
+							<TextBlock x:Name="ToolInstallStatusText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="" />
+						</StackPanel>
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
 			<!--  About  -->
 
 			<StackPanel Orientation="Horizontal"

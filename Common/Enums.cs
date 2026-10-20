@@ -298,7 +298,11 @@ public enum LocalSave
 	LastFmApiKey,
 	LastFmUsername,
 	SpotifyClientId,
-	MetadataLookupEnabled
+	MetadataLookupEnabled,
+	YtDlpPath,
+	FfmpegPath,
+	DownloadFolder,
+	ImportDownloads
 }
 
 public enum AddPlaylistResult
