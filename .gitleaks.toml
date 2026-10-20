@@ -1,0 +1,10 @@
+title = "KyappuTone gitleaks configuration"
+
+[allowlist]
+description = "Generated build, local-state, and test artifacts are not part of the repository."
+paths = [
+  '''(?i)(^|/)(bin|obj|AppPackages|node_modules|\.superpowers|\.vs)/''',
+  '''(?i)(^|/)diag\.log$''',
+  '''(?i)(^|/)(build|restore|test|diag)[^/]*\.log$''',
+  '''(?i)(^|/)test-.*\.log$''',
+]

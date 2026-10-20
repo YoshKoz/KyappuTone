@@ -371,3 +371,15 @@ FodyWeavers.xsd
 /sixlabors.lic
 .superpowers/
 
+# KyappuTone local state and signing material
+*.db3
+*.db3-shm
+*.db3-wal
+*.pfx
+*.p12
+crash.log
+app.log
+AppPackages/
+Tools/
+.venv/
+
