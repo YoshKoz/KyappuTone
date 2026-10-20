@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="KyappuTone.Views.LibraryViews.StatisticsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Loaded="Page_Loaded"
+      mc:Ignorable="d">
+
+	<ScrollViewer>
+		<StackPanel Margin="20,10,20,20"
+		            Spacing="14">
+			<TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+			           Text="Listening Statistics" />
+
+			<StackPanel Orientation="Horizontal"
+			            Spacing="12">
+				<Border MinWidth="180"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="TotalListeningText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0m" />
+						<TextBlock Opacity="0.7"
+						           Text="Listening, last 30 days" />
+					</StackPanel>
+				</Border>
+				<Border MinWidth="150"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="TotalPlaysText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0" />
+						<TextBlock Opacity="0.7"
+						           Text="Completed plays" />
+					</StackPanel>
+				</Border>
+				<Border MinWidth="150"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="ActiveDaysText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0" />
+						<TextBlock Opacity="0.7"
+						           Text="Active days" />
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+			           Text="Daily listening" />
+			<Grid x:Name="DailyGrid"
+			      Height="140" />
+
+			<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+			           Text="Weekly heatmap (local time)" />
+			<Grid x:Name="HeatmapGrid"
+			      HorizontalAlignment="Left"
+			      RowSpacing="2"
+			      ColumnSpacing="2" />
+			<TextBlock Opacity="0.6"
+			           Text="Rows: Sunday to Saturday. Columns: 00:00 to 23:00. Hover a cell for details." />
+
+			<TextBlock x:Name="EmptyText"
+			           Opacity="0.7"
+			           Text="No listening history yet. A listen is recorded after 60% of a track has played."
+			           TextWrapping="Wrap"
+			           Visibility="Collapsed" />
+		</StackPanel>
+	</ScrollViewer>
+</Page>

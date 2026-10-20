@@ -55,6 +55,18 @@
           "Title": "Years",
           "IconGlyph": "E787",
           "HideItem": false
+        },
+        {
+          "UniqueId": "KyappuTone.Views.LibraryViews.FavoritesPage",
+          "Title": "Favorites",
+          "IconGlyph": "E734",
+          "HideItem": false
+        },
+        {
+          "UniqueId": "KyappuTone.Views.LibraryViews.StatisticsPage",
+          "Title": "Statistics",
+          "IconGlyph": "E9D2",
+          "HideItem": false
         }
       ]
     },

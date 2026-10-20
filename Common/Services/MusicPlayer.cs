@@ -401,6 +401,10 @@ public class MusicPlayer
 					.Select(s => s.Path).ToList();
 				break;
 
+			case "Favorites":
+				list = (await DatabaseHelper.Instance.GetFavoriteSongs()).Select(song => song.Path).ToList();
+				break;
+
 			case "RecentlyAdded":
 				var recentlyAddedMaxLimit = Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedMaxLimit)]?.ToString() ?? "100";
 				list = (await DatabaseHelper.Instance.LoadSongsFromDB(
