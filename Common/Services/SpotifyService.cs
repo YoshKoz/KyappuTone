@@ -107,11 +107,11 @@ public sealed class SpotifyService
 					if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(name))
 						continue;
 
-					var trackCount = item.TryGetProperty("tracks", out var tracks)
+					var trackCount = 0;
+					if ((item.TryGetProperty("items", out var tracks) || item.TryGetProperty("tracks", out tracks))
 						&& tracks.TryGetProperty("total", out var total)
-						&& total.TryGetInt32(out var count)
-							? count
-							: 0;
+						&& total.TryGetInt32(out var count))
+						trackCount = count;
 
 					playlists.Add(new SpotifyPlaylistInfo(id, name, trackCount));
 				}
@@ -126,7 +126,7 @@ public sealed class SpotifyService
 	public async Task<List<SpotifyTrackInfo>> GetPlaylistTracksAsync(string playlistId)
 	{
 		var tracks = new List<SpotifyTrackInfo>();
-		var url = $"{ApiRoot}/playlists/{Uri.EscapeDataString(playlistId)}/tracks?limit=100";
+		var url = $"{ApiRoot}/playlists/{Uri.EscapeDataString(playlistId)}/items?limit=50";
 
 		for (var page = 0; page < 100 && !string.IsNullOrEmpty(url); page++)
 		{

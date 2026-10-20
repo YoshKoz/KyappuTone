@@ -75,7 +75,13 @@ public partial class App : Application
 	public App()
 	{
 		CrashLogger.Initialize();
-		UnhandledException += (_, args) => CrashLogger.Log("Xaml", args.Exception);
+		UnhandledException += (_, args) =>
+		{
+			CrashLogger.Log("Xaml", args.Exception);
+			// Keep the WinForms JIT dialog out of a packaged app. The failure is logged
+			// locally; a UI exception should not take the whole player down.
+			args.Handled = true;
+		};
 
 		Services = ConfigureServices();
 		this.InitializeComponent();
