@@ -1,0 +1,761 @@
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml.Documents;
+using Tunetastic.Views.Common;
+
+namespace Tunetastic.Views.PlaylistViews;
+
+/// <summary>
+/// Represents the Recently Added playlist page that displays songs recently added to the library.
+/// </summary>
+public sealed partial class RecentlyAdded : SongListPageBase
+{
+	/// <summary>
+	/// Gets or sets the collection of songs recently added to the library.
+	/// The collection is dynamically updated based on user-defined
+	/// criteria such as maximum display limit.
+	/// </summary>
+	public ObservableCollection<Song> RecentlyAddedSongs => ViewModel.Songs;
+
+	/// <inheritdoc/>
+	protected override string PlaylistKey => "RecentlyAdded";
+
+	/// <inheritdoc/>
+	protected override Button ShuffleAndPlayControl => ShuffleAndPlay;
+
+	/// <inheritdoc/>
+	protected override Button MoreButtonControl => MoreButton;
+
+	/// <summary>
+	/// Determines the currently selected view style for the song collection display.
+	/// </summary>
+	/// <remarks>
+	/// This method identifies the active view style based on the selection in the view style menu
+	/// and returns the corresponding ListView instance. The supported view styles include
+	/// "List View" and "Compact View", with "Compact View" being the default.
+	/// </remarks>
+	/// <returns>
+	/// The <see cref="ListView"/> instance corresponding to the currently selected view style.
+	/// </returns>
+	protected override ListView GetCurrentViewStyle() => CurrentViewStyleText() switch
+	{
+
+		"List View" => RecentlyAddedSongsListView,
+		"Compact View" => RecentlyAddedSongsCompactView,
+		_ => RecentlyAddedSongsCompactView
+	};
+
+	// Forwarding shims so existing XAML event wiring keeps working unchanged.
+	private void PlayAllButton_OnClick(object sender, RoutedEventArgs e) => PlayAll_OnClick(sender, e);
+
+	private void ShuffleAndPlayButton_OnClick(object sender, RoutedEventArgs e) => ShuffleAndPlay_OnClick(sender, e);
+
+	private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e) => SongListView_SelectionChanged(sender, e);
+	public bool IsRelativeDisplayMode { get; set; } = false;
+
+	/// <summary>
+	/// Represents the page for displaying songs recently added to the music library.
+	/// </summary>
+	/// <remarks>
+	/// This class initializes the user interface of the Recently Added playlist view and manages the loading and presentation of recently added songs.
+	/// It ensures the user interface is updated appropriately during music scanning operations or when retrieving data from the database.
+	/// </remarks>
+	public RecentlyAdded()
+	{
+		this.InitializeComponent();
+		_ = RunScanningAwareInit();
+		StartLiveTimer();
+	}
+
+	/// <inheritdoc/>
+	protected override void OnInitializingContent()
+	{
+		AddGoToSettingsMessage();
+		RecentlyAddedSongsListViewGrid.Visibility = Visibility.Collapsed;
+		RecentlyAddedSongsCompactViewGrid.Visibility = Visibility.Collapsed;
+	}
+
+	/// <inheritdoc/>
+	protected override Page CreateFreshPage() => new RecentlyAdded();
+
+	/// <inheritdoc/>
+	protected override Task OnLibraryReadyAsync()
+	{
+		ViewButton.Visibility = Visibility.Visible;
+		PageButtons.Visibility = Visibility.Visible;
+		UpdateAsPerLastViewStyle();
+		UpdateAsPerLastTimeStyle();
+		UpdateAsPerLastMaxLimit();
+		return Task.CompletedTask;
+	}
+
+	/// <inheritdoc/>
+	protected override List<string> EmptyLibraryMessages => GoToMessages;
+	/// <inheritdoc/>
+	protected override string BuildAddToPlaylistTooltip(bool multiSelect, string playList) =>
+		$"Add {(multiSelect ? "selected songs/tracks" : "this song/track")} to {playList} playlist";
+
+	private void MenuFlyout_Opened(object sender, object e) => MenuFlyoutOpened(sender, e);
+
+	/// <summary>
+	/// Updates the current view style of the song collection display using the last saved preference.
+	/// </summary>
+	/// <remarks>
+	/// This method retrieves the previously saved view style setting from the application's local settings and
+	/// applies it to the song collection display. Supported view styles include "List View", "Compact View", and "Card View".
+	/// If no preference is found, the default view style is set to "Compact View".
+	/// </remarks>
+	private void UpdateAsPerLastViewStyle()
+	{
+		var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+		var viewStyle = localSettings.Values[nameof(LocalSave.RecentlyAddedSongViewStyle)]?.ToString() ?? "Compact View";
+		switch (viewStyle)
+		{
+			case "List View":
+				ListViewStyle.IsChecked = true;
+				break;
+
+			case "Compact View":
+			default:
+				CompactViewStyle.IsChecked = true;
+				break;
+		}
+		_ = UpdateListBasedOnViewStyle();
+	}
+
+	/// <summary>
+	/// Updates the UI elements and layout to match the current view style selected for displaying songs.
+	/// </summary>
+	/// <remarks>
+	/// This method dynamically adjusts the visibility of UI components depending on the selected view style,
+	/// such as "List View" or "Compact View". It also persists the user's selection in local settings for future sessions.
+	/// Additionally, it attempts to scroll to a previously selected song after applying the view style changes.
+	/// </remarks>
+	/// <returns>
+	/// A Task representing the asynchronous operation of updating the view style and scrolling to a specific song.
+	/// </returns>
+	private async Task UpdateListBasedOnViewStyle()
+	{
+		var viewStyle = ViewStyle.Items.OfType<RadioMenuFlyoutItem>().Where(item => item.GroupName == "View" && item.IsChecked).Select(item => item.Text).FirstOrDefault() ?? "Compact View";
+		string? glyph = null;
+		switch (viewStyle)
+		{
+			case "List View":
+				RecentlyAddedSongsListViewGrid.Visibility = Visibility.Visible;
+				RecentlyAddedSongsCompactViewGrid.Visibility = Visibility.Collapsed;
+				glyph = "\uE8FD";
+				break;
+
+			case "Compact View":
+			default:
+				RecentlyAddedSongsListViewGrid.Visibility = Visibility.Collapsed;
+				RecentlyAddedSongsCompactViewGrid.Visibility = Visibility.Visible;
+				glyph = "\uE71D";
+				break;
+		}
+		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedSongViewStyle)] = viewStyle;
+		ViewButton.Content = new FontIcon() { Glyph = glyph };
+		ToolTipService.SetToolTip(ViewButton, viewStyle);
+		await ScrollToSong(selectedSong);       //somehow this doesn't work
+		await Task.Delay(500);
+		await ScrollToSong(selectedSong);
+	}
+
+	/// <summary>
+	/// Updates the selection state of the maximum limit option for the Recently Added playlist
+	/// based on the last saved user preference.
+	/// </summary>
+	/// <remarks>
+	/// This method checks the stored value for the maximum number of songs to display in the Recently Added playlist
+	/// and marks the corresponding UI control (e.g., RadioMenuFlyoutItem) as selected. If no preference is found,
+	/// the default value is set to 100 songs. It also triggers the update of the song list based on the selected limit.
+	/// </remarks>
+	private void UpdateAsPerLastMaxLimit()
+	{
+		var maxLimit = Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedMaxLimit)]?.ToString() ?? "100";
+		switch (maxLimit)
+		{
+			case "50":
+				Limit50.IsChecked = true;
+				break;
+
+			case "200":
+				Limit200.IsChecked = true;
+				break;
+
+			case "500":
+				Limit500.IsChecked = true;
+				break;
+
+			case "Unlimited":
+				Unlimited.IsChecked = true;
+				break;
+
+			case "100":
+			default:
+				Limit100.IsChecked = true;
+				break;
+		}
+
+		_ = UpdateListBasedOnMaxLimit();
+	}
+
+	/// <summary>
+	/// Updates the list of recently added songs based on the selected maximum limit.
+	/// </summary>
+	/// <remarks>
+	/// This method retrieves the maximum limit selection from the user interface and updates the list of recently added songs accordingly.
+	/// It queries the database to fetch the appropriate number of songs and updates the user interface with the new list.
+	/// Additionally, it ensures the selection is saved to application settings and adjusts interface elements like tooltips and labels.
+	/// </remarks>
+	/// <returns>
+	/// A task representing the asynchronous operation of updating the list.
+	/// </returns>
+	private async Task UpdateListBasedOnMaxLimit()
+	{
+		var song = selectedSong;
+		var maxLimit = MaxLimit.Items.OfType<RadioMenuFlyoutItem>().Where(item => item.GroupName == "Limit" && item.IsChecked).Select(item => item.Text).FirstOrDefault() ?? "100";
+
+		var newList = await DatabaseHelper.Instance.LoadSongsFromDB(SongProperty.DateAdded, ascending: false, limit: maxLimit == "Unlimited" ? 0 : int.Parse(maxLimit));
+		RecentlyAddedSongs.Clear();
+		RecentlyAddedSongs.AddRange(newList);
+		newList = null;
+
+		var maxLimitDropDownContent = new TextBlock();
+		maxLimitDropDownContent.Inlines.Add(new Run { Text = "Max Limit: " });
+		maxLimitDropDownContent.Inlines.Add(new Run { Text = maxLimit, FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+
+		var maxLimitDropDownTooltip = new TextBlock();
+		maxLimitDropDownTooltip.Inlines.Add(new Run { Text = "The maximum number of songs/tracks to display in the list: " });
+		maxLimitDropDownTooltip.Inlines.Add(new Run { Text = maxLimit, FontWeight = Microsoft.UI.Text.FontWeights.Bold });
+		maxLimitDropDownTooltip.TextWrapping = TextWrapping.WrapWholeWords;
+
+		MaxLimitDropDown.Content = maxLimitDropDownContent;
+		ToolTipService.SetToolTip(MaxLimitDropDown, maxLimitDropDownTooltip);
+
+		song = RecentlyAddedSongs.Select(s => s).Where(s => s.Path == song?.Path).FirstOrDefault();
+		await ScrollToSong(song);       //somehow this doesn't work
+		await Task.Delay(1000);
+		await ScrollToSong(song);
+		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedMaxLimit)] = maxLimit;
+	}
+
+	/// <summary>
+	/// Handles the ItemClick event for the ListView control in the RecentlyAdded page.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the ListView control.</param>
+	/// <param name="e">Provides data for the ItemClick event, including the clicked item.</param>
+	/// <remarks>
+	/// This method is triggered when a user clicks an item in the song list. It retrieves the clicked song,
+	/// generates a playlist from the current collection of songs, and loads the clicked song into the music player for playback.
+	/// The playlist is also saved as the current playlist in the application's local settings.
+	/// </remarks>
+	private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+	{
+		var track = e.ClickedItem as Song;
+		List<string> songPaths = RecentlyAddedSongs.Select(s => s.Path).ToList();
+		MusicPlayer.Instance.LoadPlaylist(songPaths, track?.Path);
+		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CurrentPlayinglist)] = "RecentlyAdded";
+	}
+
+	/// <summary>
+	/// Handles the Loaded event for the RecentlyAdded page.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the page itself.</param>
+	/// <param name="e">The event data associated with the Loaded event.</param>
+	/// <remarks>
+	/// This method is responsible for managing the initialization operations required when the page is loaded. It checks whether the current playlist corresponds to the "RecentlyAdded" and retrieves the last played song from the application's local settings, if available. It then attempts to scroll to the position of the last played song in the song collection asynchronously with a minor delay.
+	/// </remarks>
+	private async void Page_Loaded(object sender, RoutedEventArgs e)
+	{
+		while (RecentlyAddedSongs == null || RecentlyAddedSongs.Count == 0)
+		{
+			await Task.Delay(100);
+		}
+		ScrollToCurrentPlayingTrack();
+	}
+
+	/// <summary>
+	/// Scrolls the view to the currently playing track if the current playlist corresponds to the "RecentlyAdded".
+	/// </summary>
+	/// <remarks>
+	/// This method checks the local application settings to determine if the "RecentlyAdded" is the active playlist.
+	/// If it is, the method retrieves the last played track based on its path from the saved settings and attempts to scroll
+	/// the page to that specific song within the song collection.
+	/// </remarks>
+	private void ScrollToCurrentPlayingTrack()
+	{
+		var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+		if (localSettings.Values[nameof(LocalSave.CurrentPlayinglist)]?.ToString() == "RecentlyAdded")
+		{
+			var SelectedSong = RecentlyAddedSongs.Select(s => s).Where(s => s.Path == localSettings.Values[nameof(LocalSave.LastPlayedTrack)]?.ToString()).FirstOrDefault();
+			_ = ScrollToSong(SelectedSong);
+		}
+	}
+
+	/// <summary>
+	/// Handles the event triggered when the max limit button is clicked.
+	/// </summary>
+	/// <param name="sender">The source of the event, usually the button that was clicked.</param>
+	/// <param name="e">The event data associated with the button click.</param>
+	/// <remarks>
+	/// This method updates the Recently Added song list based on the selected maximum limit. If the current playlist is "RecentlyAdded",
+	/// it reloads the playlist in the music player to reflect the updated song list.
+	/// </remarks>
+	private async void MaxLimitButton_OnClick(object sender, RoutedEventArgs e)
+	{
+		await UpdateListBasedOnMaxLimit();
+
+		if (Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CurrentPlayinglist)]?.ToString() == "RecentlyAdded")
+		{
+			List<string> songPaths = RecentlyAddedSongs.Select(s => s.Path).ToList();
+			MusicPlayer.Instance.LoadPlaylist(songPaths, MusicPlayer.Instance.CurrentSong, MusicPlayer.Instance.IsPlaying, dontReloadCurrent: true);
+		}
+	}
+
+	/// <summary>
+	/// Handles the click event triggered by a view style button in the UI, updating the display style
+	/// of the song collection based on the selected view style.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the view style button that was clicked.</param>
+	/// <param name="e">The event data associated with the click event.</param>
+	/// <remarks>
+	/// This method is responsible for determining the selected view style (e.g., List View, Compact View, Card View),
+	/// updating the visibility of UI elements accordingly, and persisting the selected view style for future use.
+	/// It also performs additional UI adjustments such as resizing the alphabet display.
+	/// </remarks>
+	private async void ViewButton_OnClick(object sender, RoutedEventArgs e)
+	{
+		await UpdateListBasedOnViewStyle();
+	}
+
+	/// <summary>
+	/// Handles the event when the "Go to Settings" button is clicked.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the button being clicked.</param>
+	/// <param name="e">The event data associated with the button click.</param>
+	/// <remarks>
+	/// This method navigates the application to the SettingsPage. It utilizes the application's navigation service (IJsonNavigationService)
+	/// to redirect the user to the appropriate page.
+	/// </remarks>
+	private void GotoSettigsButton_Click(object sender, RoutedEventArgs e)
+	{
+		App.Current.NavService.NavigateTo(typeof(SettingsPage));
+	}
+
+	protected override async void NewPlaylist_Click(object sender, RoutedEventArgs e)
+	{
+		var result = await MainPage._instance!.ShowAddPlaylistDialog(songsToAddAfterCreate: true);
+
+		if (result.Result != AddPlaylistResult.Cancelled)
+		{
+			string playlistName = result.Name!;
+			var listView = GetCurrentViewStyle();
+			if (listView.IsMultiSelectCheckBoxEnabled)
+			{
+				await AddSongsToPlayList(playlistName);
+			}
+			else
+			{
+				var song = (sender as MenuFlyoutItem)?.DataContext as Song;
+				await AddSongToPlayList(playlistName, song);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Handles the logic for adding songs to a selected playlist from the current view.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the menu item representing a playlist.</param>
+	/// <param name="e">Event data associated with the click action.</param>
+	/// <remarks>
+	/// This method is triggered when a user selects the "Add to Playlist" option for one or more songs.
+	/// It determines the selected songs from the active view style and adds them to the chosen playlist.
+	/// Uses asynchronous operations to interact with the database for playlist updates.
+	/// </remarks>
+	protected override async void AddToPlaylist_Click(object sender, RoutedEventArgs e)
+	{
+		var playlist = (sender as MenuFlyoutItem)?.Text;
+
+		var listView = GetCurrentViewStyle();
+		if (listView.IsMultiSelectCheckBoxEnabled)
+		{
+			await AddSongsToPlayList(playlist);
+		}
+		else
+		{
+			var song = (sender as MenuFlyoutItem)?.DataContext as Song;
+			await AddSongToPlayList(playlist, song);
+		}
+	}
+
+	private async Task AddSongToPlayList(string? playlist, Song? song)
+	{
+		if (playlist != null && song != null)
+		{
+			await DatabaseHelper.Instance.AddSongToPlaylist(playlist, song.Path);
+			GlobalNotification.Info($"{song.Title} added to {playlist} playlist.");
+		}
+	}
+
+	private async Task AddSongsToPlayList(string? playlist)
+	{
+		var listView = GetCurrentViewStyle();
+		var songs = listView.SelectedItems;
+		List<string> songPaths = songs.Select(s => ((Song)s).Path).ToList();
+
+		if (playlist != null)
+		{
+			await DatabaseHelper.Instance.AddSongsToPlaylist(playlist, songPaths);
+			GlobalNotification.Info($"{songs.Count} songs added to {playlist} playlist.");
+		}
+	}
+
+	/// <summary>
+	/// Handles the click event for the "Play" menu flyout item in the song list UI.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically a menu flyout item associated with a song.</param>
+	/// <param name="e">Provides event data for the click event.</param>
+	/// <remarks>
+	/// This method retrieves the selected song's data from the sender control and prepares a playlist with all available songs.
+	/// The playlist is then passed to the application's music player for playback, starting with the selected song.
+	/// Additionally, this method updates the application's local settings to store the current playlist context.
+	/// </remarks>
+	private void MenuFlyoutItemPlay_OnClick(object sender, RoutedEventArgs e)
+	{
+		var songData = (sender as MenuFlyoutItem)?.DataContext as Song;
+		List<string> songPaths = RecentlyAddedSongs.Select(s => s.Path).ToList();
+		MusicPlayer.Instance.LoadPlaylist(songPaths, songData?.Path);
+		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CurrentPlayinglist)] = "RecentlyAdded";
+	}
+
+	/// <summary>
+	/// Handles the click event for the "Add to queue" menu flyout item.
+	/// </summary>
+	/// <remarks>
+	/// This method retrieves the associated song data from the menu item's data context
+	/// and adds the song's file path to the queued playing list asynchronously.
+	/// </remarks>
+	/// <param name="sender">The source of the event, typically the MenuFlyoutItem that was clicked.</param>
+	/// <param name="e">The event data associated with the routed event.</param>
+	private async void MenuFlyoutItemAddToQueue_OnClick(object sender, RoutedEventArgs e)
+	{
+		var songData = (sender as MenuFlyoutItem)?.DataContext as Song;
+		List<string> songPaths = new List<string> { songData?.Path ?? "" };
+		await DatabaseHelper.Instance.AddSongsToQueuedPlayingList(songPaths);
+
+		GlobalNotification.Info($"{songData?.Title} added to queue.");
+	}
+
+	/// <summary>
+	/// Handles the click event for the "Info/Tag" menu flyout item, displaying detailed song information.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the MenuFlyoutItem.</param>
+	/// <param name="e">The event data associated with the click action.</param>
+	/// <remarks>
+	/// This method retrieves the song associated with the selected menu item, queries the song data from
+	/// the database, and invokes the main page to display the song's detailed information.
+	/// </remarks>
+	private async void MenuFlyoutItemInfoTag_OnClick(object sender, RoutedEventArgs e)
+	{
+		var songData = (sender as MenuFlyoutItem)?.DataContext as Song;
+		if (songData is not null) MainPage._instance?.ShowSongInfo(await DatabaseHelper.Instance.GetSongByPath(songData.Path));
+	}
+
+	/// <summary>
+	/// Handles the delete action when a menu flyout item is clicked, initiating a confirmation dialog and deleting the selected song.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically a MenuFlyoutItem representing the delete option.</param>
+	/// <param name="e">The event data associated with the click event.</param>
+	/// <remarks>
+	/// This method displays a confirmation dialog to the user with details about the song to be deleted. If the user confirms the
+	/// action, it deletes the file from the local file system, removes the song entry from the database, and updates the collection
+	/// of displayed songs to reflect the changes.
+	/// </remarks>
+	private async void MenuFlyoutItemDelete_OnClick(object sender, RoutedEventArgs e)
+	{
+		DeleteDialog.Visibility = Visibility.Visible;
+		var songData = (sender as MenuFlyoutItem)?.DataContext as Song;
+
+		if (songData != null)
+		{
+			DeleteDialogText.Text = $"Are you sure you want to delete this song/track from your system?" +
+									$"\nTitle: {songData.Title}" +
+									$"\nArtist: {songData.Artists}" +
+									$"\nAlbum: {songData.Album}" +
+									$"\nFile: {songData.Path}";
+
+			MainWindow._instance.WindowResizePermission(false);
+			var result = await DeleteDialog.ShowAsync();
+			MainWindow._instance.WindowResizePermission(true);
+			if (result == ContentDialogResult.Primary)
+			{
+				if (File.Exists(songData.Path))
+				{
+					LibraryWatcherService.MarkSelfInitiated(songData.Path);
+					File.Delete(songData.Path);
+					await DatabaseHelper.Instance.DeleteSongFromDB(songData.Path);
+					RecentlyAddedSongs.Remove(songData);
+					MusicPlayer.Instance.HandleAfterDelete();
+					GlobalNotification.Success("Song/Track deleted." +
+												$"\nTitle: {songData.Title}" +
+												$"\nArtist: {songData.Artists}" +
+												$"\nAlbum: {songData.Album}" +
+												$"\nFile: {songData.Path}");
+				}
+			}
+			if (await DatabaseHelper.Instance.GetSongsCount() <= 0)
+			{
+				GoToSettings.Visibility = Visibility.Visible;
+				PageButtons.Visibility = Visibility.Collapsed;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Handles the click event for the MultiSelectButton to toggle between multi-select mode
+	/// and single-select mode in the all songs page.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the MultiSelectButton.</param>
+	/// <param name="e">The event data for the RoutedEventArgs associated with the click action.</param>
+	/// <remarks>
+	/// When the button is toggled, it switches the functionality of the song list view between multi-select
+	/// and single-select modes. In multi-select mode, checkboxes are enabled for selecting multiple items,
+	/// and certain UI elements such as context menus are disabled to prevent conflicts. In single-select
+	/// mode, standard selection behavior is restored, and UI elements such as context menus are re-enabled.
+	/// This method also adjusts the visibility and interactivity of related UI components (e.g., MoreButton,
+	/// PlayAllButtonStackPanel) based on the current mode.
+	/// </remarks>
+	private void MultiSelectButton_Click(object sender, RoutedEventArgs e)
+	{
+		var view = GetCurrentViewStyle();
+		if (MultiSelectButton.IsChecked == true)
+		{
+			MoreButton.Visibility = Visibility.Visible;
+			MoreButton.IsEnabled = false;
+			PlayAllButtonStackPanel.Visibility = Visibility.Collapsed;
+			LimitAndViewButtonPanel.Visibility = Visibility.Collapsed;
+			ToolTipService.SetToolTip(MultiSelectButton, "Turn off multi-select mode");
+			view.SelectionMode = ListViewSelectionMode.Multiple;
+			view.IsItemClickEnabled = false;
+			view.IsMultiSelectCheckBoxEnabled = true;
+			view.IsRightTapEnabled = false;
+			var ItemGrids = DevWinUI.DependencyObjectExtensions.FindDescendants(view);
+
+			foreach (var item in ItemGrids)
+			{
+				if (item is UIElement uiElement)
+				{
+					uiElement.IsRightTapEnabled = false;
+				}
+			}
+			if (view.Name == "RecentlyAddedSongsListView") Header.Margin = new Thickness(40, 0, 0, 0);
+		}
+		else
+		{
+			MoreButton.Visibility = Visibility.Collapsed;
+			PlayAllButtonStackPanel.Visibility = Visibility.Visible;
+			LimitAndViewButtonPanel.Visibility = Visibility.Visible;
+			ToolTipService.SetToolTip(MultiSelectButton, "Turn on multi-select mode");
+			view.SelectionMode = ListViewSelectionMode.Single;
+			view.IsItemClickEnabled = true;
+			view.IsMultiSelectCheckBoxEnabled = false;
+			view.IsRightTapEnabled = true;
+			var ItemGrids = DevWinUI.DependencyObjectExtensions.FindDescendants(view);
+
+			foreach (var item in ItemGrids)
+			{
+				if (item is UIElement uiElement)
+				{
+					uiElement.IsRightTapEnabled = true;
+				}
+			}
+			if (view.Name == "RecentlyAddedSongsListView") Header.Margin = new Thickness(12, 0, 0, 0);
+		}
+	}
+
+	/// <summary>
+	/// Handles the click event for adding multiple selected songs from the menu flyout to the playing queue.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically the menu flyout item.</param>
+	/// <param name="e">The event data associated with the routed event.</param>
+	/// <remarks>
+	/// This method retrieves the selected items from the current song view style, extracts their file paths,
+	/// and asynchronously adds them to the queued playing list using the <see cref="DatabaseHelper"/> instance.
+	/// </remarks>
+	private async void MenuFlyoutMultiItemAddToQueue_OnClick(object sender, RoutedEventArgs e)
+	{
+		var songs = GetCurrentViewStyle().SelectedItems;
+		List<string> songPaths = songs.Select(s => ((Song)s).Path).ToList();
+
+		await DatabaseHelper.Instance.AddSongsToQueuedPlayingList(songPaths);
+
+		GlobalNotification.Info($"{songPaths.Count} {(songPaths.Count > 1 ? "songs/tracks" : "song/track")} added to the queue.");
+	}
+
+	/// <summary>
+	/// Handles the click event for the "Delete" menu flyout item, allowing the user to delete selected songs from the system.
+	/// </summary>
+	/// <remarks>
+	/// This method retrieves the currently selected songs, prompts the user for confirmation through a dialog,
+	/// and deletes the selected songs from both the file system and the application's database if confirmed.
+	/// </remarks>
+	/// <param name="sender">The source of the event, typically the menu flyout item.</param>
+	/// <param name="e">Provides data for the routed event, including information about the source and state of the event.</param>
+	private async void MenuFlyoutMultiItemDelete_OnClick(object sender, RoutedEventArgs e)
+	{
+		var songs = GetCurrentViewStyle().SelectedItems;
+
+		List<Song> songList = new();
+		foreach (var item in songs)
+			songList.Add((Song)item);
+
+		DeleteDialog.Visibility = Visibility.Visible;
+		DeleteDialogText.Text = $"Are you sure you want to delete {(songList.Count > 1 ? "these" : "this")} {songList.Count} {(songList.Count > 1 ? "songs/tracks" : "song/track")} from your system?";
+
+		MainWindow._instance.WindowResizePermission(false);
+		var result = await DeleteDialog.ShowAsync();
+		MainWindow._instance.WindowResizePermission(true);
+
+		if (result == ContentDialogResult.Primary)
+		{
+			foreach (Song songData in songList)
+			{
+				if (File.Exists(songData.Path))
+				{
+					LibraryWatcherService.MarkSelfInitiated(songData.Path);
+					File.Delete(songData.Path);
+					await DatabaseHelper.Instance.DeleteSongFromDB(songData.Path);
+					RecentlyAddedSongs.Remove(songData);
+				}
+			}
+			MusicPlayer.Instance.HandleAfterDelete();
+			GlobalNotification.Success($"{songList.Count} {(songList.Count > 1 ? "songs/tracks" : "song/track")} deleted.");
+		}
+		if (await DatabaseHelper.Instance.GetSongsCount() <= 0)
+		{
+			GoToSettings.Visibility = Visibility.Visible;
+			PageButtons.Visibility = Visibility.Collapsed;
+		}
+	}
+
+	/// <summary>
+	/// Handles the click event to change the time display style in the Recently Added playlist view.
+	/// </summary>
+	/// <param name="sender">The source of the event, typically a menu item.</param>
+	/// <param name="e">The event data associated with the click event.</param>
+	/// <remarks>
+	/// This method updates the time style preference, switches between relative and exact date styles, and ensures
+	/// the preference is saved in the application settings. It also refreshes the current page view to reflect the time style change.
+	/// </remarks>
+	private async void TimeStyle_Click(object sender, RoutedEventArgs e)
+	{
+		UpdateTimeStyle();
+		await _dispatcherQueue.EnqueueAsync(() =>
+		{
+			this.Content = new RecentlyAdded();
+		});
+	}
+
+	/// <summary>
+	/// Updates the time display style for recently added songs based on the selected option.
+	/// </summary>
+	/// <remarks>
+	/// This method determines the selected time style from the user interface, updates the display mode accordingly,
+	/// and persists the preference in local settings. It also updates the associated visual icon and tooltip to reflect
+	/// the chosen display style.
+	/// </remarks>
+	private void UpdateTimeStyle()
+	{
+		var timeStyle = TimeFieldStyle.Items.OfType<RadioMenuFlyoutItem>().Where(item => item.GroupName == "Time" && item.IsChecked).Select(item => item.Name).FirstOrDefault() ?? "DateStyle";
+		IsRelativeDisplayMode = timeStyle == "RelativeTimeStyle";
+		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedSongTimeStyle)] = timeStyle;
+		TimeFieldType.Content = new FontIcon() { Glyph = IsRelativeDisplayMode ? "\uEC92" : "\uE787" };
+		ToolTipService.SetToolTip(TimeFieldType, IsRelativeDisplayMode ? "Relative Time Style" : "Date Style");
+	}
+
+	/// <summary>
+	/// Updates the UI to reflect the previously selected time style for displaying song timestamps.
+	/// </summary>
+	/// <remarks>
+	/// This method reads the user's last saved time style preference from application settings, which is stored under the key
+	/// "RecentlyAddedSongTimeStyle". Depending on the value retrieved, it checks either the "DateStyle" (exact date display) or
+	/// the "RelativeTimeStyle" (relative time display) option in the user interface. If no preference is saved, the default
+	/// "DateStyle" is selected. After updating the selection, the UI is refreshed by invoking the time style update logic.
+	/// </remarks>
+	private void UpdateAsPerLastTimeStyle()
+	{
+		var timeStyle = Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.RecentlyAddedSongTimeStyle)]?.ToString() ?? "DateStyle";
+		switch (timeStyle)
+		{
+			case "RelativeTimeStyle":
+				RelativeTimeStyle.IsChecked = true;
+				break;
+
+			case "DateStyle":
+			default:
+				DateStyle.IsChecked = true;
+				break;
+		}
+		UpdateTimeStyle();
+	}
+
+	/// <summary>
+	/// Stores a collection of humorous or witty messages displayed when the user's song library is empty or unconfigured.
+	/// </summary>
+	/// <remarks>
+	/// The <c>GoToMessages</c> field contains a predefined list of strings, each consisting of two lines of text split by a newline character.
+	/// These messages are intended to provide a lighthearted and engaging user experience, encouraging users to either add tracks,
+	/// configure their settings, or scan their music libraries. Each usage randomly selects a message from this list.
+	/// </remarks>
+	private readonly List<string> GoToMessages = new()
+	{
+		"“We rolled out the red carpet, and no one stepped on it.”\nPlease, check your settings to ensure your libraries are added and songs/tracks have been scanned—or this page starts greeting tumbleweeds with confetti.",
+		"“Freshly added: nothing.”\nScan your tracks before this page starts labeling blank space as ‘avant-garde.’",
+		"“This was supposed to be a new era. Instead, it’s just an echo.”\nAdd libraries before the page retires early.",
+		"“The vibe check failed due to missing content.”\nCheck your settings or this page declares bankruptcy in excitement.",
+		"“Even the page title feels awkward now.”\nScan your music before it starts binge-watching its own emptiness.",
+		"“Recently added? Emotionally subtracted.”\nAdd data or this page starts airing reruns of your regret.",
+		"“New music: we thought about it. You didn’t.”\nCheck settings before this page takes up origami.",
+		"“No arrivals, just anxiety.”\nScan your tracks or this page starts setting deadlines for your feelings.",
+		"“Everything’s new except the silence.”\nAdd files before this page applies for emotional delivery service.",
+		"“The freshness expired before anything arrived.”\nCheck your library or the page starts playing ambient regret.",
+	};
+
+	private DispatcherTimer _timer = null!;
+
+	private void StartLiveTimer()
+	{
+		_timer = new DispatcherTimer();
+		_timer.Interval = TimeSpan.FromSeconds(1);
+		_timer.Tick += (s, e) =>
+		{
+			var relativeTimeConverter = new RelativeTimeConverter();
+			for (int i = 0; i < GetCurrentViewStyle().Items.Count; i++)
+			{
+				var container = GetCurrentViewStyle().ContainerFromIndex(i) as ListViewItem;
+				if (container != null)
+				{
+					var song = container.Content as Song;
+					if (song == null) continue;
+					var relativeLiveTime = relativeTimeConverter.Convert(song.DateAdded, null, null, null).ToString();
+					var textBlock = (DevWinUI.DependencyObjectExtensions.FindDescendant(container, "RelativeTime") as TextBlock);
+					textBlock?.Text = relativeLiveTime;
+
+					var dateTooltip = (DevWinUI.DependencyObjectExtensions.FindDescendant(container, "DateTooltip") as TextBlock);
+					dateTooltip?.Text = relativeLiveTime;
+
+					var relativeTimeTooltip = (DevWinUI.DependencyObjectExtensions.FindDescendant(container, "RelativeTimeTooltip") as TextBlock);
+					relativeTimeTooltip?.Text = relativeLiveTime;
+				}
+
+			}
+		};
+		_timer.Start();
+	}
+
+	private void RecentlyAdded_Unloaded(object sender, RoutedEventArgs e)
+	{
+		_timer?.Stop();
+	}
+}

@@ -1,0 +1,17 @@
+KyappuTone
+Copyright (C) 2026 Yoshi Tacke
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+KyappuTone is derived from Tunetastic (https://github.com/AMit-KP/Tunetastic),
+Copyright (C) the Tunetastic contributors, licensed under GPLv3. The user
+interface, project identity, package identity, and image pipeline have been
+modified. Upstream source: https://github.com/AMit-KP/Tunetastic at commit
+79bc3cb.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.

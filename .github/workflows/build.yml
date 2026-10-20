@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ "master", "Development" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [ x64, arm64 ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Create SixLabors license file
+        id: license
+        shell: pwsh
+        env:
+          SIXLABORS_LIC: ${{ secrets.SIXLABORS_LIC }}
+        run: |
+          if ($env:SIXLABORS_LIC) {
+            [System.IO.File]::WriteAllText("$PWD\sixlabors.lic", $env:SIXLABORS_LIC)
+            echo "configuration=Release" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Warning "SIXLABORS_LIC not available (fork PR) - building in Debug without a license."
+            echo "configuration=Debug" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v3
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v3
+
+      - name: Restore NuGet packages
+        run: dotnet restore Tunetastic.sln --configfile nuget.config
+
+      - name: Build (${{ matrix.platform }}, ${{ steps.license.outputs.configuration }})
+        run: msbuild Tunetastic.sln /p:Configuration=${{ steps.license.outputs.configuration }} /p:Platform=${{ matrix.platform }} /p:AppxPackageSigningEnabled=false
