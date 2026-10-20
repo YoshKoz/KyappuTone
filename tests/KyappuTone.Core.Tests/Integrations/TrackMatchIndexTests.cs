@@ -27,6 +27,14 @@ public class TrackMatchIndexTests
     }
 
     [Fact]
+    public void Find_IgnoresDashVersionSuffix()
+    {
+        var index = CreateIndex(new TrackCandidate("a.flac", "Song - Live", "Artist"));
+
+        index.Find("Song", "Artist")!.Path.ShouldBe("a.flac");
+    }
+
+    [Fact]
     public void Find_UsesArtistTokensWhenTitleIsAmbiguous()
     {
         var index = CreateIndex(

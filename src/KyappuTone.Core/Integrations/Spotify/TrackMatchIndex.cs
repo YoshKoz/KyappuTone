@@ -13,6 +13,7 @@ public sealed class TrackMatchIndex
 {
     private static readonly Regex BracketContent = new(@"\s*[\(\[].*?[\)\]]", RegexOptions.Compiled);
     private static readonly Regex FeaturedArtist = new(@"\s+(?:feat\.?|ft\.?|featuring)\s+.*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex TrailingVersion = new(@"\s+-\s+(?:remaster(?:ed)?|live|deluxe|radio edit|single version|album version|mono|stereo).*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex NonWord = new(@"[^\p{L}\p{N}]+", RegexOptions.Compiled);
 
     private readonly Dictionary<string, List<TrackCandidate>> _byTitle = new(StringComparer.Ordinal);
@@ -80,6 +81,7 @@ public sealed class TrackMatchIndex
         var value = title.ToLowerInvariant();
         value = FeaturedArtist.Replace(value, " ");
         value = BracketContent.Replace(value, " ");
+        value = TrailingVersion.Replace(value, " ");
         value = NonWord.Replace(value, " ");
         return value.Trim();
     }

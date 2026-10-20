@@ -1451,7 +1451,7 @@ public sealed partial class SettingsPage : Page
 			ResetUpdateCheckUi();
 			System.Diagnostics.Debug.WriteLine($"Store update check failed: 0x{ex.HResult:X8} {ex.Message}");
 			await MessageBox.ShowInfoAsync(
-				$"Could not check for updates through the Microsoft Store (0x{ex.HResult:X8}).\n\nStore updates are only available for Store-installed copies of KyappuTone.",
+				$"Could not check for updates (0x{ex.HResult:X8}).\n\nCheck the GitHub Releases page or try again later.",
 				"Update check",
 				buttons: MessageBoxButtons.OK);
 		}
