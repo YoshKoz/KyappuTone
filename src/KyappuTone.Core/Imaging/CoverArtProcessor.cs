@@ -14,7 +14,7 @@ public static class CoverArtProcessor
         ArgumentOutOfRangeException.ThrowIfLessThan(maxHeight, 1);
 
         using var bitmap = Decode(source);
-        var scale = Math.Min((float)maxWidth / bitmap.Width, (float)maxHeight / bitmap.Height);
+        var scale = Math.Min(1f, Math.Min((float)maxWidth / bitmap.Width, (float)maxHeight / bitmap.Height));
         var width = Math.Max(1, (int)Math.Round(bitmap.Width * scale));
         var height = Math.Max(1, (int)Math.Round(bitmap.Height * scale));
 
@@ -29,6 +29,44 @@ public static class CoverArtProcessor
     {
         ArgumentNullException.ThrowIfNull(source);
         using var bitmap = Decode(source);
+        return Encode(bitmap);
+    }
+
+    /// <summary>
+    /// Fits <paramref name="primary"/> inside the bounds, falling back to
+    /// <paramref name="fallback"/> when the primary bytes are missing or undecodable.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the fallback bytes are not a decodable image.</exception>
+    public static byte[] BuildThumbnail(byte[]? primary, byte[] fallback, int maxWidth, int maxHeight)
+    {
+        ArgumentNullException.ThrowIfNull(fallback);
+
+        if (primary is { Length: > 0 })
+        {
+            try
+            {
+                return ResizeToPng(primary, maxWidth, maxHeight);
+            }
+            catch (ArgumentException)
+            {
+                // Undecodable embedded artwork: fall through to the fallback image.
+            }
+        }
+
+        return ResizeToPng(fallback, maxWidth, maxHeight);
+    }
+
+    /// <summary>Creates a solid-colour square PNG used when no fallback asset is available.</summary>
+    public static byte[] CreatePlaceholderPng(int size)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(size, 1);
+
+        using var bitmap = new SKBitmap(size, size);
+        using (var canvas = new SKCanvas(bitmap))
+        {
+            canvas.Clear(new SKColor(0x20, 0x20, 0x20));
+        }
+
         return Encode(bitmap);
     }
 

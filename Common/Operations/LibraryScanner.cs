@@ -124,10 +124,21 @@ public class LibraryScanner
 
 			foreach (var folder in uniqueFolders)
 			{
-				var files = Directory.EnumerateFiles(folder, "*.*", options)
-									 .Where(file => extensions.Contains(Path.GetExtension(file).ToLower()));
+				List<string> folderFiles;
+				try
+				{
+					folderFiles = Directory.EnumerateFiles(folder, "*.*", options)
+											.Where(file => extensions.Contains(Path.GetExtension(file).ToLower()))
+											.ToList();
+				}
+				catch (Exception ex) when (ex is PathTooLongException or IOException or UnauthorizedAccessException)
+				{
+					// A single unreadable or over-long subtree must not abort the whole scan.
+					System.Diagnostics.Debug.WriteLine($"Skipped folder '{folder}': {ex.GetType().Name}: {ex.Message}");
+					continue;
+				}
 
-				foreach (var file in files)
+				foreach (var file in folderFiles)
 				{
 					audioFiles.Add(file);
 					foldersWithMusic.Add(Path.GetDirectoryName(file)!);
@@ -162,17 +173,27 @@ public class LibraryScanner
 				new ParallelOptions { MaxDegreeOfParallelism = dop },
 				async (filePath, ct) =>
 				{
-					var (song, succeeded) = await ExtractSongMetadata(filePath, ignoreTrackDuration);
-
-					if (!succeeded)
+					try
 					{
-						failedFiles.Add(filePath);
+						var (song, succeeded) = await ExtractSongMetadata(filePath, ignoreTrackDuration);
+
+						if (!succeeded)
+						{
+							failedFiles.Add(filePath);
+						}
+
+						if (song.Duration > ignoreTrackDuration && (!ignoreDuplicates || uniqueMetadata.TryAdd((song.Title, song.Artists, song.Album), 0)))
+						{
+							songsContainer.Add(song);
+							scanMetaContainer.Add(BuildFileScanMeta(filePath));
+						}
 					}
-
-					if (song.Duration > ignoreTrackDuration && (!ignoreDuplicates || uniqueMetadata.TryAdd((song.Title, song.Artists, song.Album), 0)))
+					catch (Exception ex) when (ex is PathTooLongException or IOException or UnauthorizedAccessException)
 					{
-						songsContainer.Add(song);
-						scanMetaContainer.Add(BuildFileScanMeta(filePath));
+						// Locked, over-long or otherwise unreadable files are skipped and reported,
+						// never allowed to abort the parallel scan.
+						failedFiles.Add(filePath);
+						System.Diagnostics.Debug.WriteLine($"Skipped file '{filePath}': {ex.GetType().Name}: {ex.Message}");
 					}
 
 					// Atomically increment counter; update taskbar every 10 files to

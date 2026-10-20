@@ -55,4 +55,41 @@ public class CoverArtProcessorTests
         var garbage = new byte[] { 0xFF, 0xD8, 0x00, 0x00 };
         Should.Throw<ArgumentException>(() => CoverArtProcessor.ResizeToPng(garbage, 10, 10));
     }
+
+    [Fact]
+    public void ResizeToPng_DoesNotUpscaleSmallSource()
+    {
+        var result = CoverArtProcessor.ResizeToPng(MakePng(4, 4), 10, 10);
+        SizeOf(result).ShouldBe((4, 4));
+    }
+
+    [Fact]
+    public void BuildThumbnail_UsesFallback_WhenPrimaryIsInvalid()
+    {
+        var fallback = MakePng(8, 8);
+        var result = CoverArtProcessor.BuildThumbnail(new byte[] { 0x00, 0x01 }, fallback, 10, 10);
+        SizeOf(result).ShouldBe((8, 8));
+    }
+
+    [Fact]
+    public void BuildThumbnail_UsesFallback_WhenPrimaryIsNull()
+    {
+        var fallback = MakePng(6, 6);
+        var result = CoverArtProcessor.BuildThumbnail(null, fallback, 10, 10);
+        SizeOf(result).ShouldBe((6, 6));
+    }
+
+    [Fact]
+    public void BuildThumbnail_ResizesPrimary_WhenPrimaryIsValid()
+    {
+        var result = CoverArtProcessor.BuildThumbnail(MakePng(40, 20), MakePng(8, 8), 10, 10);
+        SizeOf(result).ShouldBe((10, 5));
+    }
+
+    [Fact]
+    public void CreatePlaceholderPng_ProducesDecodableSquare()
+    {
+        var result = CoverArtProcessor.CreatePlaceholderPng(64);
+        SizeOf(result).ShouldBe((64, 64));
+    }
 }

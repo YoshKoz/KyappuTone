@@ -8,6 +8,8 @@ namespace KyappuTone.Common.Helpers;
 /// </summary>
 public static class ImageResizer
 {
+	private static readonly Lazy<byte[]> FallbackImage = new(LoadFallbackImage, LazyThreadSafetyMode.ExecutionAndPublication);
+
 	/// <summary>
 	/// Creates a thumbnail image from the provided pictures and saves it as a PNG file in the specified thumbnail folder.
 	/// </summary>
@@ -18,10 +20,10 @@ public static class ImageResizer
 	/// <returns>The file path of the created thumbnail image.</returns>
 	public static string CreateThumbnailImage(ThumbnailFolder thumbnailFolder, IPicture[]? pictures, int width, int height)
 	{
-		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), RandomCoverFileName());
+		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), ThumbnailNaming.NewCoverFileName());
 		EnsureDirectory(thumbnailFilePath);
 
-		var imageData = ProcessWithFallback(pictures, data => CoverArtProcessor.ResizeToPng(data, width, height));
+		var imageData = ProcessThumbnail(pictures, width, height);
 		System.IO.File.WriteAllBytes(thumbnailFilePath, imageData);
 
 		return thumbnailFilePath;
@@ -37,10 +39,13 @@ public static class ImageResizer
 	/// <returns>The file path of the created thumbnail image.</returns>
 	public static string CreateThumbnailImage(ThumbnailFolder thumbnailFolder, IPicture[]? pictures, string? fileName = null)
 	{
-		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), fileName ?? RandomCoverFileName());
+		var thumbnailFilePath = Path.Combine(Constants.ThumbnailsFolder, thumbnailFolder.ToString(), fileName ?? ThumbnailNaming.NewCoverFileName());
 		EnsureDirectory(thumbnailFilePath);
 
-		var imageData = ProcessWithFallback(pictures, CoverArtProcessor.ReencodePng);
+		var primary = TryGetPrimaryPictureData(pictures);
+		var imageData = primary is null
+			? CoverArtProcessor.ReencodePng(FallbackImage.Value)
+			: TryReencode(primary) ?? CoverArtProcessor.ReencodePng(FallbackImage.Value);
 		System.IO.File.WriteAllBytes(thumbnailFilePath, imageData);
 
 		return thumbnailFilePath;
@@ -58,36 +63,48 @@ public static class ImageResizer
 		return CreateThumbnailImage(thumbnailFolder, pictures, size, size);
 	}
 
-	private static byte[] ProcessWithFallback(IPicture[]? pictures, Func<byte[], byte[]> process)
+	private static byte[] ProcessThumbnail(IPicture[]? pictures, int width, int height)
 	{
-		var fallback = System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
+		var primary = TryGetPrimaryPictureData(pictures);
+		return CoverArtProcessor.BuildThumbnail(primary, FallbackImage.Value, width, height);
+	}
 
-		byte[] imageData;
+	private static byte[]? TryGetPrimaryPictureData(IPicture[]? pictures)
+	{
 		try
 		{
-			imageData = pictures?.Length > 0
-				? pictures[0].Data.Data
-				: fallback;
+			return pictures?.Length > 0 ? pictures[0].Data.Data : null;
 		}
 		catch (Exception)
 		{
-			imageData = fallback;
-		}
-
-		try
-		{
-			return process(imageData);
-		}
-		catch (ArgumentException)
-		{
-			// Embedded artwork that is not a decodable image falls back to the application icon.
-			return process(fallback);
+			return null;
 		}
 	}
 
-	private static string RandomCoverFileName()
+	private static byte[]? TryReencode(byte[] data)
 	{
-		return "Cover_" + new string(Enumerable.Range(0, 10).Select(_ => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[new Random().Next(62)]).ToArray()) + ".png";
+		try
+		{
+			return CoverArtProcessor.ReencodePng(data);
+		}
+		catch (ArgumentException)
+		{
+			return null;
+		}
+	}
+
+	private static byte[] LoadFallbackImage()
+	{
+		try
+		{
+			return System.IO.File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.png"));
+		}
+		catch (Exception)
+		{
+			// The packaged asset is the normal source; a generated placeholder keeps thumbnails
+			// working if it is ever missing or unreadable.
+			return CoverArtProcessor.CreatePlaceholderPng(256);
+		}
 	}
 
 	private static void EnsureDirectory(string thumbnailFilePath)
