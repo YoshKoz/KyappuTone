@@ -97,6 +97,14 @@ public sealed partial class PlayListTemplate : SongListPageBase
 			return;
 		}
 
+		var path = Path.Combine(ApplicationData.Current.LocalFolder.Path, "PlaylistCovers", coverFileName);
+		if (!File.Exists(path))
+		{
+			PlaylistCoverImage.Source = null;
+			PlaylistCoverImage.Visibility = Visibility.Collapsed;
+			return;
+		}
+
 		try
 		{
 			PlaylistCoverImage.Source = new BitmapImage(

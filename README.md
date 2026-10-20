@@ -52,6 +52,11 @@ Last.fm scrobbling and Spotify playlist import are opt-in and use credentials yo
 They are configured under **Settings → Integrations**. No credentials are bundled and
 nothing is uploaded except the API calls you enable. See `docs/integrations.md`.
 
+## Release
+
+Versioning, signing and the GitHub release checklist are documented in
+`docs/release.md`.
+
 ## CI
 
 `.github/workflows/build.yml` builds x64 and ARM64, runs the unit tests on x64, and
