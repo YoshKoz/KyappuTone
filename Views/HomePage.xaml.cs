@@ -14,11 +14,20 @@ public sealed partial class HomePage : Page
 	private readonly ObservableCollection<Song> _recent = new();
 	private readonly ObservableCollection<Song> _added = new();
 	private readonly ObservableCollection<Song> _memory = new();
+	private readonly ObservableCollection<MixCard> _mixes = new();
+
+	public sealed class MixCard
+	{
+		public string Name { get; init; } = string.Empty;
+		public string Description { get; init; } = string.Empty;
+		public List<Song> Songs { get; init; } = new();
+	}
 
 	public HomePage()
 	{
 		InitializeComponent();
 
+		MixList.ItemsSource = _mixes;
 		TopTracksList.ItemsSource = _topTracks;
 		TopAlbumsList.ItemsSource = _topAlbums;
 		RecentList.ItemsSource = _recent;
@@ -58,6 +67,8 @@ public sealed partial class HomePage : Page
 
 		if (empty) return;
 
+		await LoadMixesAsync();
+
 		var topTracks = await DatabaseHelper.Instance.LoadSongsFromDB(SongProperty.PlayCount, false, SectionLimit, "PlayCount > 0");
 		Fill(_topTracks, topTracks);
 		ShowSection(TopTracksList, TopTracksEmpty, topTracks.Count);
@@ -77,6 +88,34 @@ public sealed partial class HomePage : Page
 		var memory = await DatabaseHelper.Instance.GetSongsPlayedAround(DateTime.UtcNow.AddYears(-1), 7, SectionLimit);
 		Fill(_memory, memory);
 		MemorySection.Visibility = memory.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+	}
+
+	private async Task LoadMixesAsync()
+	{
+		_mixes.Clear();
+		var genres = await DatabaseHelper.Instance.GetTopGenresByPlayCount(3);
+
+		foreach (var genre in genres)
+		{
+			var escaped = genre.Genre.Replace("'", "''");
+			var songs = await DatabaseHelper.Instance.LoadSongsFromDB(
+				SongProperty.PlayCount,
+				ascending: false,
+				limit: 25,
+				whereCondition: $"Genre = '{escaped}'");
+
+			if (songs.Count < 3)
+				continue;
+
+			_mixes.Add(new MixCard
+			{
+				Name = $"{genre.Genre} mix",
+				Description = $"{songs.Count} tracks",
+				Songs = songs,
+			});
+		}
+
+		ShowSection(MixList, MixesEmpty, _mixes.Count);
 	}
 
 	private static void Fill<T>(ObservableCollection<T> target, IEnumerable<T> source)
@@ -104,6 +143,12 @@ public sealed partial class HomePage : Page
 		var hours = (int)duration.TotalHours;
 		var minutes = duration.Minutes;
 		return hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+	}
+
+	private void Mix_ItemClick(object sender, ItemClickEventArgs e)
+	{
+		if (e.ClickedItem is MixCard mix && mix.Songs.Count > 0)
+			Play(mix.Songs, "AllSongsViewPage", mix.Songs[0]);
 	}
 
 	private void TopTracks_ItemClick(object sender, ItemClickEventArgs e)

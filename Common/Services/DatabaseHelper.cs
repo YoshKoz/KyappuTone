@@ -1631,6 +1631,26 @@ public class DatabaseHelper
 		return result.ToList();
 	}
 
+	/// <summary>Returns the genres with the most plays, used to seed the home-page mixes.</summary>
+	public async Task<List<GenreModel>> GetTopGenresByPlayCount(int limit = 3)
+	{
+		try
+		{
+			return await _database.QueryAsync<GenreModel>(@$"SELECT Genre, COUNT(*) AS Count, SUM(Duration) AS TotalDuration
+														   FROM Songs
+														   WHERE Genre IS NOT NULL
+														     AND TRIM(Genre) != ''
+														     AND Genre != 'Unknown Genre'
+														   GROUP BY Genre
+														   ORDER BY SUM(PlayCount) DESC, COUNT(*) DESC
+														   LIMIT {Math.Max(1, limit)}");
+		}
+		catch (Exception)
+		{
+			return new List<GenreModel>();
+		}
+	}
+
 	/// <summary>
 	/// Retrieves the songs grouped by their album, with the song count, the total duration and a cover per album.
 	/// Albums named 'Unknown Album' are grouped as 'Unknown'.

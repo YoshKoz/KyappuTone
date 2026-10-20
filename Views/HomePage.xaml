@@ -59,6 +59,29 @@
 				</StackPanel>
 			</Border>
 		</DataTemplate>
+		<DataTemplate x:Key="MixCardTemplate">
+			<Border Width="200"
+			        Height="112"
+			        Margin="0,0,8,0"
+			        Padding="12"
+			        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+			        CornerRadius="8">
+				<StackPanel Spacing="4">
+					<FontIcon HorizontalAlignment="Left"
+					          FontSize="18"
+					          Glyph="&#xE8D6;" />
+					<TextBlock FontWeight="SemiBold"
+					           MaxLines="2"
+					           Text="{Binding Name}"
+					           TextTrimming="CharacterEllipsis"
+					           TextWrapping="Wrap" />
+					<TextBlock MaxLines="1"
+					           Opacity="0.7"
+					           Text="{Binding Description}"
+					           TextTrimming="CharacterEllipsis" />
+				</StackPanel>
+			</Border>
+		</DataTemplate>
 	</Page.Resources>
 
 	<ScrollViewer>
@@ -126,6 +149,24 @@
 
 			<StackPanel x:Name="ContentPanel"
 			            Spacing="18">
+				<StackPanel Spacing="6">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="Mixes" />
+					<ListView x:Name="MixList"
+					          Height="132"
+					          HorizontalContentAlignment="Left"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="Mix_ItemClick"
+					          ItemTemplate="{StaticResource MixCardTemplate}"
+					          ItemsPanel="{StaticResource HorizontalCardsPanel}"
+					          SelectionMode="None" />
+					<TextBlock x:Name="MixesEmpty"
+					           Opacity="0.7"
+					           Text="Play a few tracks to build mixes from your top genres."
+					           Visibility="Collapsed" />
+				</StackPanel>
+
 				<StackPanel Spacing="6">
 					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
 					           Text="Top tracks" />

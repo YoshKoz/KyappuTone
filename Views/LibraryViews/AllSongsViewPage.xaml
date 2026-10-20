@@ -80,6 +80,10 @@
 			            HorizontalAlignment="Right"
 			            Orientation="Horizontal"
 			            Spacing="15">
+				<TextBox x:Name="QuickFilterBox"
+				         Width="220"
+				         PlaceholderText="Filter title, artist, album"
+				         TextChanged="QuickFilterBox_TextChanged" />
 				<ToggleButton x:Name="MultiSelectButton"
 				              Click="MultiSelectButton_Click"
 				              ToolTipService.ToolTip="Turn on multi-select mode">
