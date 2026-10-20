@@ -85,6 +85,12 @@
           "Title": "Metadata",
           "IconGlyph": "E8EC",
           "HideItem": false
+        },
+        {
+          "UniqueId": "KyappuTone.Views.DiscoverPage",
+          "Title": "Discover",
+          "IconGlyph": "E774",
+          "HideItem": false
         }
       ]
     },
