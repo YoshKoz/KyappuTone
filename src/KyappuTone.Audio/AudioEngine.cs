@@ -28,6 +28,8 @@ public sealed class AudioEngine : IDisposable
     private bool _outputStarted;
     private long _framesInTrack;
     private TimeSpan _positionOrigin;
+    private float _volume = 1f;
+    private bool _muted;
     private bool _disposed;
 
     /// <summary>Creates an engine that renders into <paramref name="output"/>.</summary>
@@ -65,6 +67,32 @@ public sealed class AudioEngine : IDisposable
         }
     }
 
+    /// <summary>Linear output gain (0..1), applied before the equalizer.</summary>
+    public float Volume
+    {
+        get
+        {
+            lock (_gate) return _volume;
+        }
+        set
+        {
+            lock (_gate) _volume = Math.Clamp(value, 0f, 1f);
+        }
+    }
+
+    /// <summary>Mutes the mix without changing <see cref="Volume"/>.</summary>
+    public bool IsMuted
+    {
+        get
+        {
+            lock (_gate) return _muted;
+        }
+        set
+        {
+            lock (_gate) _muted = value;
+        }
+    }
+
     /// <summary>True while the engine is advancing the clock.</summary>
     public bool IsPlaying
     {
@@ -89,8 +117,11 @@ public sealed class AudioEngine : IDisposable
 
             _current?.Dispose();
             _next?.Dispose();
+            _current = null;
+            _next = null;
 
-            _current = new Deck(path);
+            var deck = new Deck(path);
+            _current = deck;
             _next = null;
             _crossfading = false;
             _framesInTrack = 0;
@@ -180,6 +211,12 @@ public sealed class AudioEngine : IDisposable
 
             if (span.Length > 0)
             {
+                var gain = _muted ? 0f : _volume;
+                if (gain != 1f)
+                {
+                    for (var i = 0; i < span.Length; i++) span[i] *= gain;
+                }
+
                 Equalizer.Apply(span);
                 _limiter.Process(span);
                 _fft.Push(span);

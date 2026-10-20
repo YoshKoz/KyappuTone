@@ -190,6 +190,69 @@ public class AudioEngineTests
     }
 
     [Fact]
+    public void Volume_Zero_RendersSilence_And_Mute_Overrides_Gain()
+    {
+        var path = WriteTone("volume", 1.0);
+        try
+        {
+            var (engine, output) = CreateEngine();
+            using var _ = engine;
+
+            engine.Load(path, play: true);
+            var buffer = new float[4800 * 2];
+
+            engine.Volume = 0f;
+            Pull(output, 4800, buffer);
+            buffer.ShouldAllBe(sample => sample == 0f);
+
+            engine.Volume = 1f;
+            engine.IsMuted = true;
+            Pull(output, 4800, buffer);
+            buffer.ShouldAllBe(sample => sample == 0f);
+
+            engine.IsMuted = false;
+            Pull(output, 4800, buffer);
+            buffer.ShouldContain(sample => sample != 0f);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void Volume_Half_Halves_Peak()
+    {
+        var path = WriteTone("volume-half", 1.0, 440, 0.5);
+        try
+        {
+            var (loud, loudOutput) = CreateEngine();
+            using var _ = loud;
+            var (half, halfOutput) = CreateEngine();
+            using var __ = half;
+
+            var bufferLoud = new float[4800 * 2];
+            var bufferHalf = new float[4800 * 2];
+
+            loud.Load(path, play: true);
+            Pull(loudOutput, 4800, bufferLoud);
+
+            half.Load(path, play: true);
+            half.Volume = 0.5f;
+            Pull(halfOutput, 4800, bufferHalf);
+
+            var loudPeak = bufferLoud.Max(sample => Math.Abs(sample));
+            var halfPeak = bufferHalf.Max(sample => Math.Abs(sample));
+
+            halfPeak.ShouldBe(loudPeak * 0.5f, tolerance: 0.01f);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
     public void OfflineRender_60Seconds_WithEqBoost_IsFastAndBounded()
     {
         var path = WriteTone("soak", 60.0, 220, 0.6);

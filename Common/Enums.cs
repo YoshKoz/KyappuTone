@@ -51,7 +51,7 @@ public enum PlaybackState { Playing, Paused, Stopped, Ended }
 /// <summary>
 /// Backend type enum
 /// </summary>
-public enum BackendType { Windows, Flyleaf, Unsupported }
+public enum BackendType { Windows, Flyleaf, Unsupported, KyappuAudio }
 
 // ─────────────────────────────────────────────────────────────
 //  Database/Search enums
@@ -291,7 +291,8 @@ public enum LocalSave
 	ScanResult_FolderCount,
 	ScanResult_Time,
 	ScanResult_Message,
-	PostUpdateScanDoneVersion
+	PostUpdateScanDoneVersion,
+	ModernAudioEngineStatus
 }
 
 public enum AddPlaylistResult

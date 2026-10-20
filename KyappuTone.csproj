@@ -206,7 +206,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
-    <PackageReference Include="NAudio.Wasapi" Version="3.2.0" />
+    <PackageReference Include="NAudio.Wasapi" Version="3.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
@@ -301,6 +301,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="src\KyappuTone.Core\KyappuTone.Core.csproj" />
+    <ProjectReference Include="src\KyappuTone.Audio\KyappuTone.Audio.csproj" />
   </ItemGroup>
   <Target Name="TransformAllT4Templates" BeforeTargets="BeforeBuild">
     <ItemGroup>

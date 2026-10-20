@@ -55,6 +55,7 @@ public class MusicPlayer
 
 	private WindowsMediaBackend _windowsBackend = null!;
 	private FlyleafMediaBackend _flyleafBackend = null!;
+	private KyappuAudioBackend _kyappuBackend = null!;
 	private IMediaBackend _activeBackend = null!;
 	private BackendType _activeBackendType = BackendType.Windows;
 
@@ -179,6 +180,7 @@ public class MusicPlayer
 
 		_windowsBackend = new WindowsMediaBackend(SMTCPlayer);
 		_flyleafBackend = new FlyleafMediaBackend(FlyleafPlayer);
+		_kyappuBackend = new KyappuAudioBackend();
 
 		ActivateBackend(BackendType.Windows);
 	}
@@ -212,11 +214,16 @@ public class MusicPlayer
 		}
 
 		_activeBackendType = type;
-		_activeBackend = type == BackendType.Flyleaf ? (IMediaBackend)_flyleafBackend : _windowsBackend;
+		_activeBackend = type switch
+		{
+			BackendType.Flyleaf => _flyleafBackend,
+			BackendType.KyappuAudio => _kyappuBackend,
+			_ => _windowsBackend
+		};
 
-		// When Flyleaf is active, keep SMTCPlayer silent (SMTC-only dummy)
-		// When Windows is active, SMTCPlayer outputs real audio — volume handled by Play/Pause
-		if (type == BackendType.Flyleaf)
+		// When any non-Windows backend is active, keep SMTCPlayer silent (SMTC-only dummy).
+		// When Windows is active, SMTCPlayer outputs real audio — volume handled by Play/Pause.
+		if (type != BackendType.Windows)
 			SMTCPlayer.Volume = 0;
 
 		_activeBackend.StateChanged += OnBackendStateChanged;
@@ -230,6 +237,23 @@ public class MusicPlayer
 	/// <param name="s">The event sender.</param>
 	/// <param name="e">The playback state change arguments.</param>
 	private void OnBackendStateChanged(object? s, PlaybackStateChangedArgs e) => PlaybackStateChanged?.Invoke(this, e);
+
+	/// <summary>True unless the user disabled the in-process audio engine.</summary>
+	private static bool ModernAudioEngineEnabled =>
+		!string.Equals(
+			Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.ModernAudioEngineStatus)]?.ToString(),
+			"false",
+			StringComparison.OrdinalIgnoreCase);
+
+	/// <summary>Extensions that only the Windows MIDI synthesiser can render.</summary>
+	private static bool IsMidiLike(string path)
+		=> Path.GetExtension(path).ToLowerInvariant() is ".mid" or ".midi" or ".kar" or ".rmi";
+
+	/// <summary>Chooses the backend for a track, preferring the modern engine.</summary>
+	private static BackendType ResolveBackend(string path, string? playerType)
+		=> ModernAudioEngineEnabled && !IsMidiLike(path)
+			? BackendType.KyappuAudio
+			: playerType == "Windows" ? BackendType.Windows : BackendType.Flyleaf;
 
 	/// <summary>
 	/// Handles completion of song opening from the active backend.
@@ -443,7 +467,7 @@ public class MusicPlayer
 			var position = MusicControl._instance?.ViewModel?.ProgressBarValue ?? 0;
 
 			var playerType = await DatabaseHelper.Instance.GetPlayerTypeByPath(songPath);
-			var requiredBackend = playerType == "Windows" ? BackendType.Windows : BackendType.Flyleaf;
+			var requiredBackend = ResolveBackend(songPath, playerType);
 
 			if (songPath == CurrentSong)
 			{
@@ -509,7 +533,29 @@ public class MusicPlayer
 						: CrossfadeTransition(capturedSong, selectedFadeTime));
 				}*/
 
-			await _activeBackend.OpenAsync(capturedSong);
+			try
+			{
+				await _activeBackend.OpenAsync(capturedSong);
+			}
+			catch (Exception) when (_activeBackendType == BackendType.KyappuAudio)
+			{
+				// The engine could not decode this file (or open an output device).
+				// Fall back to the backend the platform assigned to the format.
+				_activeBackend.Stop();
+				var fallback = playerType == "Windows" ? BackendType.Windows : BackendType.Flyleaf;
+				ActivateBackend(fallback);
+
+				if (fallback == BackendType.Flyleaf)
+					SMTCPlayer.Source = Windows.Media.Core.MediaSource.CreateFromUri(new Uri(capturedSong));
+
+				if (fallback == BackendType.Windows && capturedPosition > 0)
+				{
+					_windowsBackend.PendingStartPosition = capturedPosition;
+					capturedPosition = 0.0;
+				}
+
+				await _activeBackend.OpenAsync(capturedSong);
+			}
 
 			if (capturedPlay) Play(capturedPosition);
 
@@ -553,7 +599,7 @@ public class MusicPlayer
 
 		_activeBackend.Pause();
 
-		if (_activeBackendType == BackendType.Flyleaf && SMTC != null)
+		if ((_activeBackendType == BackendType.Flyleaf || _activeBackendType == BackendType.KyappuAudio) && SMTC != null)
 			SMTC.PlaybackStatus = Windows.Media.MediaPlaybackStatus.Paused;
 	}
 
@@ -573,14 +619,14 @@ public class MusicPlayer
 			{
 				_activeBackend.Volume = 0;
 				// Windows: position BEFORE Play() to avoid blip. Flyleaf: position AFTER Play().
-				if (_activeBackendType == BackendType.Windows && playBackPosition > 0)
+				if (_activeBackendType is BackendType.Windows or BackendType.KyappuAudio && playBackPosition > 0)
 					_activeBackend.CurTimeTicks = TimeSpan.FromSeconds(playBackPosition).Ticks;
 				_activeBackend.Play();
 				if (_activeBackendType == BackendType.Flyleaf && playBackPosition > 0)
 					_activeBackend.CurTimeTicks = TimeSpan.FromSeconds(playBackPosition).Ticks;
 
 				// Update SMTC without SMTCPlayer.Play() — avoids double-decode CPU waste
-				if (_activeBackendType == BackendType.Flyleaf && SMTC != null)
+				if ((_activeBackendType == BackendType.Flyleaf || _activeBackendType == BackendType.KyappuAudio) && SMTC != null)
 					SMTC.PlaybackStatus = Windows.Media.MediaPlaybackStatus.Playing;
 
 				var fadeTime = int.Parse(localSettings.Values[nameof(LocalSave.PlayPauseStopFadeValue)]?.ToString() ?? "700");
@@ -603,14 +649,14 @@ public class MusicPlayer
 		{
 			_activeBackend.Volume = initialVolume;
 			// Windows: position BEFORE Play() to avoid blip. Flyleaf: position AFTER Play().
-			if (_activeBackendType == BackendType.Windows && playBackPosition > 0)
+			if (_activeBackendType is BackendType.Windows or BackendType.KyappuAudio && playBackPosition > 0)
 				_activeBackend.CurTimeTicks = TimeSpan.FromSeconds(playBackPosition).Ticks;
 			_activeBackend.Play();
 			if (_activeBackendType == BackendType.Flyleaf && playBackPosition > 0)
 				_activeBackend.CurTimeTicks = TimeSpan.FromSeconds(playBackPosition).Ticks;
 
 			// Update SMTC without SMTCPlayer.Play() — avoids double-decode CPU waste
-			if (_activeBackendType == BackendType.Flyleaf && SMTC != null)
+			if ((_activeBackendType == BackendType.Flyleaf || _activeBackendType == BackendType.KyappuAudio) && SMTC != null)
 				SMTC.PlaybackStatus = Windows.Media.MediaPlaybackStatus.Playing;
 		}
 	}
