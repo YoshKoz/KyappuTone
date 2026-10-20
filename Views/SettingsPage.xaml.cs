@@ -295,6 +295,20 @@ public sealed partial class SettingsPage : Page
 	{
 		var formatList = await DatabaseHelper.Instance.GetAllMusicFormats();
 
+		// The await can resume on a thread-pool thread when this method is invoked before the
+		// WinUI synchronization context is installed (for example during page construction).
+		// Touching XAML objects off the UI thread throws RPC_E_WRONG_THREAD, so marshal back.
+		if (!DispatcherQueue.HasThreadAccess)
+		{
+			DispatcherQueue.TryEnqueue(() => ApplyFormatList(formatList));
+			return;
+		}
+
+		ApplyFormatList(formatList);
+	}
+
+	private void ApplyFormatList(List<MusicFormatModel> formatList)
+	{
 		AllFormats.Clear();
 		AllFormats.AddRange(formatList);
 

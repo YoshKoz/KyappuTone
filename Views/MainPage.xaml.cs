@@ -1178,16 +1178,25 @@ public sealed partial class MainPage : Page
 
 	private async void CheckForUpdate()
 	{
-		var context = StoreContext.GetDefault();
+		// StoreContext requires a package with a Store identity. Sideloaded, developer-registered
+		// and unpackaged builds throw 0x803FB112 here, which used to take the whole app down.
+		try
+		{
+			var context = StoreContext.GetDefault();
 
-		WinRT.Interop.InitializeWithWindow.Initialize(context,
-			WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
+			WinRT.Interop.InitializeWithWindow.Initialize(context,
+				WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
 
-		var updates = await context.GetAppAndOptionalStorePackageUpdatesAsync();
+			var updates = await context.GetAppAndOptionalStorePackageUpdatesAsync();
 
-		if (updates.Count != 0)
-			await MessageBox.ShowInfoAsync("App update is available.\n\nOpen Settings. Click 'Check for New Version' under About section to install it. Or open Microsoft Store to install it.", "Update check",
-				buttons: MessageBoxButtons.OK);
+			if (updates.Count != 0)
+				await MessageBox.ShowInfoAsync("App update is available.\n\nOpen Settings. Click 'Check for New Version' under About section to install it. Or open Microsoft Store to install it.", "Update check",
+					buttons: MessageBoxButtons.OK);
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"Store update check skipped: 0x{ex.HResult:X8} {ex.Message}");
+		}
 	}
 
 	public void SetVersionInfoVisibility(bool visible)
