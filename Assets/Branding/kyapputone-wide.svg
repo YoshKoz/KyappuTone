@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="600" viewBox="0 0 1240 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070C18"/>
+      <stop offset="0.52" stop-color="#0D2337"/>
+      <stop offset="1" stop-color="#0C4A56"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.66" cy="0.1" r="0.9">
+      <stop offset="0" stop-color="#5FE3D2" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#5FE3D2" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="amber" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFB25B"/>
+      <stop offset="1" stop-color="#FF7A66"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8AF0E4"/>
+      <stop offset="1" stop-color="#2FB7AE"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1240" height="600" rx="120" fill="url(#bg)"/>
+  <rect width="1240" height="600" rx="120" fill="url(#glow)"/>
+
+  <g transform="translate(300 300) scale(0.95) translate(-528 -455)">
+    <g fill="none" stroke-linecap="round">
+      <path d="M350 285 L350 625" stroke="#F6F1E7" stroke-width="86"/>
+      <path d="M388 455 C475 432 566 356 706 292" stroke="url(#amber)" stroke-width="86"/>
+      <path d="M388 455 C475 478 566 554 706 618" stroke="url(#teal)" stroke-width="86"/>
+    </g>
+  </g>
+
+  <text x="545" y="340" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-weight="700" font-size="104" letter-spacing="1">
+    <tspan fill="#F6F1E7">Kyappu</tspan><tspan fill="#7BE7DA">Tone</tspan>
+  </text>
+</svg>

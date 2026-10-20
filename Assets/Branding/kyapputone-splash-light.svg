@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="amber" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#C9702F"/>
+      <stop offset="1" stop-color="#B74134"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#177E77"/>
+      <stop offset="1" stop-color="#0C5A56"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(540 500) scale(1.26) translate(-528 -455)">
+    <g fill="none" stroke-linecap="round">
+      <path d="M350 285 L350 625" stroke="#0B1626" stroke-width="88"/>
+      <path d="M388 455 C475 432 566 356 706 292" stroke="url(#amber)" stroke-width="88"/>
+      <path d="M388 455 C475 478 566 554 706 618" stroke="url(#teal)" stroke-width="88"/>
+    </g>
+  </g>
+  <text x="540" y="928" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-weight="700" font-size="116" letter-spacing="1">
+    <tspan fill="#0B1626">Kyappu</tspan><tspan fill="#0F766E">Tone</tspan>
+  </text>
+</svg>

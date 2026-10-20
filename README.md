@@ -1,5 +1,7 @@
 # KyappuTone
 
+<img src="Assets/Branding/kyapputone-icon.svg" width="160" alt="KyappuTone logo">
+
 A music player for Windows. Local library, synced lyrics, tagging, playlists, and deep
 integration with the Windows shell (media controls, tray, taskbar overlay, lock screen).
 
