@@ -74,6 +74,9 @@ public partial class App : Application
 	/// </summary>
 	public App()
 	{
+		CrashLogger.Initialize();
+		UnhandledException += (_, args) => CrashLogger.Log("Xaml", args.Exception);
+
 		Services = ConfigureServices();
 		this.InitializeComponent();
 

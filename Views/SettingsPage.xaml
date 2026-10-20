@@ -603,6 +603,57 @@
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
 
+			<dev:SettingsExpander Description="Import Spotify playlists as local playlists. Only tracks already in your library are added; no audio is downloaded or streamed."
+			                      Header="Spotify import"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Description="Create a Spotify app, then add this exact redirect URI to it."
+					                  Header="Client ID">
+						<StackPanel Spacing="4">
+							<TextBox x:Name="SpotifyClientIdBox"
+							         Width="280"
+							         PlaceholderText="Spotify client ID" />
+							<TextBlock FontFamily="Consolas"
+							           FontSize="12"
+							           IsTextSelectionEnabled="True"
+							           Text="http://127.0.0.1:51234/callback/" />
+							<HyperlinkButton Content="Open Spotify dashboard"
+							                 NavigateUri="https://developer.spotify.com/dashboard" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="Connection">
+						<StackPanel Orientation="Horizontal"
+						            Spacing="8">
+							<TextBlock x:Name="SpotifyStatusText"
+							           VerticalAlignment="Center"
+							           Text="Not connected" />
+							<Button x:Name="SpotifyConnectButton"
+							        Click="SpotifyConnect_Click"
+							        Content="Connect" />
+							<Button x:Name="SpotifyDisconnectButton"
+							        Click="SpotifyDisconnect_Click"
+							        Content="Disconnect"
+							        Visibility="Collapsed" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Choose a playlist to match against your local library."
+					                  Header="Playlist">
+						<StackPanel Orientation="Horizontal"
+						            Spacing="8">
+							<ComboBox x:Name="SpotifyPlaylistBox"
+							          Width="300"
+							          DisplayMemberPath="Name"
+							          PlaceholderText="Connect to load playlists"
+							          SelectionChanged="SpotifyPlaylistBox_SelectionChanged" />
+							<Button x:Name="SpotifyImportButton"
+							        Click="SpotifyImport_Click"
+							        Content="Import"
+							        IsEnabled="False" />
+						</StackPanel>
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
 			<!--  About  -->
 
 			<StackPanel Orientation="Horizontal"
@@ -642,6 +693,11 @@
 					                  Header="Show version info on TitleBar">
 						<ToggleSwitch x:Name="VersionInfoToggle"
 						              Toggled="VersionInfoToggle_Toggled" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Crash logs are written locally and are never uploaded."
+					                  Header="Diagnostics">
+						<Button Click="OpenLogs_Click"
+						        Content="Open log folder" />
 					</dev:SettingsCard>
 					<dev:SettingsCard HorizontalContentAlignment="Left"
 					                  ContentAlignment="Left">

@@ -63,6 +63,8 @@ public sealed partial class SettingsPage : Page
 
 		LoadLastFmSettings();
 
+		_ = LoadSpotifySettingsAsync();
+
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
 		Page_ActualThemeChanged(null, null);
 	}
@@ -1578,6 +1580,127 @@ public sealed partial class SettingsPage : Page
 		LastFmService.Instance.IsEnabled = LastFmEnabledToggle.IsOn;
 	}
 
+	private async Task LoadSpotifySettingsAsync()
+	{
+		SpotifyClientIdBox.Text = SpotifyService.Instance.ClientId;
+		SpotifyPlaylistBox.ItemsSource = null;
+		SpotifyImportButton.IsEnabled = false;
+
+		if (!SpotifyService.Instance.IsConnected)
+		{
+			ShowSpotifyDisconnected();
+			return;
+		}
+
+		ShowSpotifyConnected();
+		await LoadSpotifyPlaylistsAsync();
+	}
+
+	private void ShowSpotifyConnected()
+	{
+		SpotifyStatusText.Text = "Connected";
+		SpotifyConnectButton.Visibility = Visibility.Collapsed;
+		SpotifyDisconnectButton.Visibility = Visibility.Visible;
+	}
+
+	private void ShowSpotifyDisconnected()
+	{
+		SpotifyStatusText.Text = "Not connected";
+		SpotifyConnectButton.Visibility = Visibility.Visible;
+		SpotifyDisconnectButton.Visibility = Visibility.Collapsed;
+		SpotifyPlaylistBox.ItemsSource = null;
+		SpotifyPlaylistBox.PlaceholderText = "Connect to load playlists";
+		SpotifyImportButton.IsEnabled = false;
+	}
+
+	private async Task LoadSpotifyPlaylistsAsync()
+	{
+		try
+		{
+			SpotifyPlaylistBox.ItemsSource = await SpotifyService.Instance.GetPlaylistsAsync();
+			SpotifyPlaylistBox.PlaceholderText = "Choose a playlist";
+		}
+		catch (Exception ex)
+		{
+			SpotifyStatusText.Text = "Connected; playlists unavailable";
+			GlobalNotification.Error($"Spotify: {ex.Message}");
+		}
+	}
+
+	private async void SpotifyConnect_Click(object sender, RoutedEventArgs e)
+	{
+		var clientId = SpotifyClientIdBox.Text.Trim();
+		if (string.IsNullOrEmpty(clientId))
+		{
+			GlobalNotification.Warning("Enter your Spotify client ID first.");
+			return;
+		}
+
+		SpotifyService.Instance.SaveClientId(clientId);
+		SpotifyConnectButton.IsEnabled = false;
+		SpotifyStatusText.Text = "Waiting for browser authorization...";
+
+		try
+		{
+			await SpotifyService.Instance.ConnectAsync();
+			ShowSpotifyConnected();
+			await LoadSpotifyPlaylistsAsync();
+			GlobalNotification.Success("Spotify connected.");
+		}
+		catch (Exception ex)
+		{
+			ShowSpotifyDisconnected();
+			GlobalNotification.Error($"Spotify: {ex.Message}");
+		}
+		finally
+		{
+			SpotifyConnectButton.IsEnabled = true;
+		}
+	}
+
+	private void SpotifyDisconnect_Click(object sender, RoutedEventArgs e)
+	{
+		SpotifyService.Instance.Disconnect();
+		ShowSpotifyDisconnected();
+	}
+
+	private void SpotifyPlaylistBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+	{
+		SpotifyImportButton.IsEnabled = SpotifyPlaylistBox.SelectedItem is SpotifyPlaylistInfo;
+	}
+
+	private async void SpotifyImport_Click(object sender, RoutedEventArgs e)
+	{
+		if (SpotifyPlaylistBox.SelectedItem is not SpotifyPlaylistInfo playlist)
+			return;
+
+		SpotifyImportButton.IsEnabled = false;
+		SpotifyStatusText.Text = "Importing...";
+
+		try
+		{
+			var result = await SpotifyService.Instance.ImportPlaylistAsync(playlist.Id, playlist.Name);
+			if (string.IsNullOrEmpty(result.PlaylistName))
+			{
+				GlobalNotification.Warning($"No local matches found in \"{playlist.Name}\" ({result.Total} tracks).");
+			}
+			else
+			{
+				GlobalNotification.Success(
+					$"Imported {result.Matched} of {result.Total} tracks into \"{result.PlaylistName}\".");
+			}
+		}
+		catch (Exception ex)
+		{
+			GlobalNotification.Error($"Spotify import: {ex.Message}");
+		}
+		finally
+		{
+			SpotifyStatusText.Text = "Connected";
+			SpotifyImportButton.IsEnabled = SpotifyPlaylistBox.SelectedItem is SpotifyPlaylistInfo;
+		}
+	}
+
 	private void CheckForUpdatesStartupToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CheckForUpdatesAtStatup)] = CheckForUpdatesStartupToggle.IsOn;
@@ -1598,6 +1721,13 @@ public sealed partial class SettingsPage : Page
 	private async void GitHubIssues_Click(object sender, RoutedEventArgs e)
 	{
 		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/YoshKoz/KyappuTone/issues"));
+	}
+
+	private async void OpenLogs_Click(object sender, RoutedEventArgs e)
+	{
+		Directory.CreateDirectory(CrashLogger.LogDirectory);
+		var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(CrashLogger.LogDirectory);
+		await Windows.System.Launcher.LaunchFolderAsync(folder);
 	}
 
 	private void TaskBarOverlay_Toggled(object sender, RoutedEventArgs e)

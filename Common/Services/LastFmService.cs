@@ -45,7 +45,8 @@ public sealed class LastFmService
 	public void SaveCredentials(string apiKey, string apiSecret)
 	{
 		ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.LastFmApiKey)] = apiKey.Trim();
-		SetVaultSecret(SecretUser, apiSecret);
+		if (!string.IsNullOrEmpty(apiSecret))
+			SetVaultSecret(SecretUser, apiSecret);
 	}
 
 	public async Task<string> StartAuthorizationAsync()

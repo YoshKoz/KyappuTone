@@ -296,7 +296,8 @@ public enum LocalSave
 	EqualizerSettings,
 	LastFmEnabled,
 	LastFmApiKey,
-	LastFmUsername
+	LastFmUsername,
+	SpotifyClientId
 }
 
 public enum AddPlaylistResult
