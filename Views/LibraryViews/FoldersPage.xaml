@@ -73,10 +73,12 @@
 			            Visibility="Collapsed">
 				<FontIcon FontSize="40"
 				          Glyph="&#xE8B7;" />
-				<TextBlock HorizontalAlignment="Center"
+				<TextBlock x:Name="EmptyStateTitle"
+				           HorizontalAlignment="Center"
 				           Style="{ThemeResource SubtitleTextBlockStyle}"
 				           Text="No folder playlists yet" />
-				<TextBlock HorizontalAlignment="Center"
+				<TextBlock x:Name="EmptyStateMessage"
+				           HorizontalAlignment="Center"
 				           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 				           Text="Add a library folder, then run a scan." />
 			</StackPanel>

@@ -194,6 +194,15 @@ public class MetadataCacheRow
 	public long FetchedAtUtc { get; set; }
 }
 
+/// <summary>An auto playlist plus its track count for the Folders page.</summary>
+public class AutoPlaylistSummaryRow
+{
+	public int Id { get; set; }
+	public string Name { get; set; } = string.Empty;
+	public string RulesJson { get; set; } = string.Empty;
+	public int TrackCount { get; set; }
+}
+
 /// <summary>One saved Radio Browser station.</summary>
 [Table("RadioFavorites")]
 public class RadioFavoriteRow

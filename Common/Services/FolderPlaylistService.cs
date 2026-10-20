@@ -13,8 +13,22 @@ public static class FolderPlaylistService
     {
         PropertyNameCaseInsensitive = true,
     };
+    private static readonly SemaphoreSlim ReconcileGate = new(1, 1);
 
     public static async Task ReconcileAsync()
+    {
+        await ReconcileGate.WaitAsync();
+        try
+        {
+            await ReconcileCoreAsync();
+        }
+        finally
+        {
+            ReconcileGate.Release();
+        }
+    }
+
+    private static async Task ReconcileCoreAsync()
     {
         var libraries = await DatabaseHelper.Instance.GetAllLibraries();
         var roots = libraries
@@ -58,6 +72,7 @@ public static class FolderPlaylistService
             playlist => playlist.Name,
             StringComparer.OrdinalIgnoreCase);
         var existingPlaylists = await DatabaseHelper.Instance.GetAutoPlaylists();
+        var allSongs = await DatabaseHelper.Instance.LoadSongsFromDB();
 
         foreach (var playlist in existingPlaylists)
         {
@@ -89,7 +104,7 @@ public static class FolderPlaylistService
             if (!await DatabaseHelper.Instance.UpsertAutoPlaylist(playlist.Name, rulesJson))
                 continue;
 
-            var songs = await GetSongsUnderFolderAsync(playlist.FolderPath);
+            var songs = GetSongsUnderFolder(playlist.FolderPath, allSongs);
             await DatabaseHelper.Instance.ReplacePlaylistSongs(
                 playlist.Name,
                 songs.Select(song => song.Path).ToList());
@@ -99,24 +114,32 @@ public static class FolderPlaylistService
     /// <summary>Re-evaluates one folder playlist from the current database contents.</summary>
     public static async Task RefreshAsync(string playlistName)
     {
-        var info = await DatabaseHelper.Instance.GetPlaylistInfo(playlistName);
-        if (info is null || !string.Equals(info.Kind, "auto", StringComparison.OrdinalIgnoreCase))
-            return;
+        await ReconcileGate.WaitAsync();
+        try
+        {
+            var info = await DatabaseHelper.Instance.GetPlaylistInfo(playlistName);
+            if (info is null || !string.Equals(info.Kind, "auto", StringComparison.OrdinalIgnoreCase))
+                return;
 
-        var rules = Deserialize(info.RulesJson);
-        if (rules is null)
-            return;
+            var rules = Deserialize(info.RulesJson);
+            if (rules is null)
+                return;
 
-        var songs = await GetSongsUnderFolderAsync(rules.FolderPath);
-        await DatabaseHelper.Instance.ReplacePlaylistSongs(
-            playlistName,
-            songs.Select(song => song.Path).ToList());
+            var allSongs = await DatabaseHelper.Instance.LoadSongsFromDB();
+            var songs = GetSongsUnderFolder(rules.FolderPath, allSongs);
+            await DatabaseHelper.Instance.ReplacePlaylistSongs(
+                playlistName,
+                songs.Select(song => song.Path).ToList());
+        }
+        finally
+        {
+            ReconcileGate.Release();
+        }
     }
 
-    private static async Task<List<Song>> GetSongsUnderFolderAsync(string folderPath)
+    private static List<Song> GetSongsUnderFolder(string folderPath, IReadOnlyList<Song> songs)
     {
         var prefix = Path.TrimEndingDirectorySeparator(folderPath) + Path.DirectorySeparatorChar;
-        var songs = await DatabaseHelper.Instance.LoadSongsFromDB();
         return songs
             .Where(song => song.Path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             .OrderBy(song => song.Artists, StringComparer.OrdinalIgnoreCase)

@@ -37,23 +37,28 @@ public sealed partial class FoldersPage : Page
 
 		_loading = true;
 		RefreshButton.IsEnabled = false;
+		EmptyStateTitle.Text = "Loading folder playlists...";
+		EmptyStateMessage.Text = "Scanning the first-level folders in your libraries.";
+		EmptyState.Visibility = Visibility.Visible;
+		FoldersList.Visibility = Visibility.Collapsed;
 		try
 		{
 			await FolderPlaylistService.ReconcileAsync();
-			var playlists = await DatabaseHelper.Instance.GetAutoPlaylists();
+			var playlists = await DatabaseHelper.Instance.GetAutoPlaylistSummaries();
 
 			_rows.Clear();
 			foreach (var playlist in playlists)
 			{
-				var songs = await DatabaseHelper.Instance.GetSongsInPlaylist(playlist.Name);
 				_rows.Add(new FolderPlaylistRow
 				{
 					Name = playlist.Name,
 					FolderPath = GetFolderPath(playlist.RulesJson),
-					Count = songs.Count,
+					Count = playlist.TrackCount,
 				});
 			}
 
+			EmptyStateTitle.Text = "No folder playlists yet";
+			EmptyStateMessage.Text = "Add a library folder, then run a scan.";
 			EmptyState.Visibility = _rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 			FoldersList.Visibility = _rows.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
 		}

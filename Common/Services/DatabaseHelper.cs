@@ -1336,6 +1336,18 @@ public class DatabaseHelper
 			"SELECT * FROM Playlists WHERE Kind = 'auto' ORDER BY Name COLLATE NOCASE");
 	}
 
+	/// <summary>Returns auto playlists with their track counts in one query.</summary>
+	public async Task<List<AutoPlaylistSummaryRow>> GetAutoPlaylistSummaries()
+	{
+		return await _database.QueryAsync<AutoPlaylistSummaryRow>(
+			@"SELECT p.Id, p.Name, p.RulesJson, COUNT(ps.SongPath) AS TrackCount
+			  FROM Playlists p
+			  LEFT JOIN PlaylistSongs ps ON ps.PlaylistId = p.Id
+			  WHERE p.Kind = 'auto'
+			  GROUP BY p.Id, p.Name, p.RulesJson
+			  ORDER BY p.Name COLLATE NOCASE");
+	}
+
 	/// <summary>
 	/// Creates or updates an auto playlist. A user or smart playlist with the same name is
 	/// never overwritten. Returns false when the name is owned by a non-auto playlist.
@@ -1401,9 +1413,12 @@ public class DatabaseHelper
 	/// <returns>
 	/// A task that represents the asynchronous operation. The task result contains a list of strings representing the playlist names.
 	/// </returns>
-	public async Task<List<string>> GetAllPlaylistNames()
+	public async Task<List<string>> GetAllPlaylistNames(bool includeAuto = false)
 	{
-		var result = await _database.QueryAsync<PlaylistName>("SELECT * FROM Playlists ORDER BY Id ASC");
+		var query = includeAuto
+			? "SELECT * FROM Playlists ORDER BY Id ASC"
+			: "SELECT * FROM Playlists WHERE Kind IS NULL OR Kind <> 'auto' ORDER BY Id ASC";
+		var result = await _database.QueryAsync<PlaylistName>(query);
 		return result.Select(p => p.Name).ToList();
 	}
 

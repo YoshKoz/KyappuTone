@@ -365,7 +365,7 @@ public sealed class SpotifyService
 
 	private async Task<string> GetUniquePlaylistName(string baseName)
 	{
-		var names = await DatabaseHelper.Instance.GetAllPlaylistNames();
+		var names = await DatabaseHelper.Instance.GetAllPlaylistNames(includeAuto: true);
 		var existing = names.ToHashSet(StringComparer.OrdinalIgnoreCase);
 		if (!existing.Contains(baseName))
 			return baseName;
