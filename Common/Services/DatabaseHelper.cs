@@ -244,6 +244,11 @@ public class DatabaseHelper
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_StartedAt ON PlayHistory(StartedAt)");
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_Path ON PlayHistory(Path)");
 
+		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS MetadataCache (
+									   Key TEXT PRIMARY KEY,
+									   Json TEXT NOT NULL,
+									   FetchedAtUtc INTEGER NOT NULL)");
+
 		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS ScrobbleQueue (
 									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
 									   Artist TEXT NOT NULL,
@@ -1190,6 +1195,31 @@ public class DatabaseHelper
 		var result = await _database.QueryAsync<PlaylistName>(
 			"SELECT * FROM Playlists WHERE Name = ? LIMIT 1", playlistName);
 		return result.FirstOrDefault();
+	}
+
+	/// <summary>Returns a cached MusicBrainz response, or null when the key has not been cached.</summary>
+	public async Task<MetadataCacheRow?> GetMetadataCache(string key)
+	{
+		var rows = await _database.QueryAsync<MetadataCacheRow>(
+			"SELECT * FROM MetadataCache WHERE Key = ? LIMIT 1",
+			key);
+		return rows.FirstOrDefault();
+	}
+
+	/// <summary>Stores or replaces a cached MusicBrainz response.</summary>
+	public async Task SetMetadataCache(string key, string json)
+	{
+		await _database.ExecuteAsync(
+			"INSERT OR REPLACE INTO MetadataCache (Key, Json, FetchedAtUtc) VALUES (?, ?, ?)",
+			key,
+			json,
+			DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+	}
+
+	/// <summary>Removes every cached MusicBrainz response.</summary>
+	public async Task ClearMetadataCache()
+	{
+		await _database.ExecuteAsync("DELETE FROM MetadataCache");
 	}
 
 	/// <summary>Returns every auto-managed folder playlist.</summary>

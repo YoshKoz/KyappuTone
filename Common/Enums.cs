@@ -297,7 +297,8 @@ public enum LocalSave
 	LastFmEnabled,
 	LastFmApiKey,
 	LastFmUsername,
-	SpotifyClientId
+	SpotifyClientId,
+	MetadataLookupEnabled
 }
 
 public enum AddPlaylistResult

@@ -186,6 +186,14 @@ public class PlaylistName
 	public string RulesJson { get; set; } = string.Empty;
 }
 
+/// <summary>One cached MusicBrainz response and the time it was fetched.</summary>
+public class MetadataCacheRow
+{
+	public string Key { get; set; } = string.Empty;
+	public string Json { get; set; } = string.Empty;
+	public long FetchedAtUtc { get; set; }
+}
+
 /// <summary>
 /// Represents a row in the PendingTagWrites table, used for deferred tag write processing.
 /// </summary>
