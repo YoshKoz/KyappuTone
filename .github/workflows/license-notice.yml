@@ -33,5 +33,5 @@ jobs:
           fi
           gh pr comment "$PR_NUMBER" --repo "$GH_REPO" --body "👋 Thanks for the PR! GitHub doesn't share repository secrets with PRs from forks, so this PR's **Build** check compiles in Debug without the project's SixLabors license (Release builds need one). A green check here means your changes compile. A maintainer will do the full Release build with the license before merging.
 
-          To build locally, see the setup steps [here](https://github.com/AMit-KP/Tunetastic/tree/master#sixlabors-license)
+          To build locally, see the setup steps [here](https://github.com/AMit-KP/KyappuTone/tree/master#sixlabors-license)
           $marker"

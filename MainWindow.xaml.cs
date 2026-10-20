@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Windowing;
-using Tunetastic.Common.Services.TaskbarOverlay;
+using KyappuTone.Common.Services.TaskbarOverlay;
 using Windows.Graphics;
 using WinUIEx;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 public sealed partial class MainWindow : WindowEx
 {
@@ -49,7 +49,7 @@ public sealed partial class MainWindow : WindowEx
 	public void AddTrayIcon()
 	{
 		uint iconId = 7823;
-		App.TrayIcon ??= new SystemTrayIcon(iconId, Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"), "Tunetastic");
+		App.TrayIcon ??= new SystemTrayIcon(iconId, Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"), "KyappuTone");
 		App.TrayIcon.RightClick += OnTrayIconRightClick;
 		App.TrayIcon.IsVisible = true;
 	}
@@ -68,7 +68,7 @@ public sealed partial class MainWindow : WindowEx
 	private void OnTrayIconRightClick(SystemTrayIcon sender, SystemTrayIconEventArgs args)
 	{
 		var flyout = new MenuFlyout();
-		flyout.Items.Add(new MenuFlyoutItem() { Text = "Tunetastic", IsEnabled = false });
+		flyout.Items.Add(new MenuFlyoutItem() { Text = "KyappuTone", IsEnabled = false });
 		flyout.Items.Add(new MenuFlyoutSeparator());
 		flyout.Items.Add(new MenuFlyoutItem() { Text = "Open" });
 		flyout.Items.Add(new MenuFlyoutItem() { Text = "Exit" });
@@ -145,7 +145,7 @@ public sealed partial class MainWindow : WindowEx
 	}
 
 	/// <summary>
-	/// Exits the Tunetastic application entirely, removing the system tray icon and closing the main window.
+	/// Exits the KyappuTone application entirely, removing the system tray icon and closing the main window.
 	/// </summary>
 	/// <remarks>
 	/// This method is invoked to terminate the application. It detaches the handler for the window close event, makes the system tray icon invisible, and closes the main application window. After calling this method, the application process will end.

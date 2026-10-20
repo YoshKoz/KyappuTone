@@ -39,7 +39,7 @@ jobs:
         uses: NuGet/setup-nuget@v3
 
       - name: Restore NuGet packages
-        run: dotnet restore Tunetastic.sln --configfile nuget.config
+        run: dotnet restore KyappuTone.sln --configfile nuget.config
 
       - name: Build (${{ matrix.platform }}, ${{ steps.license.outputs.configuration }})
-        run: msbuild Tunetastic.sln /p:Configuration=${{ steps.license.outputs.configuration }} /p:Platform=${{ matrix.platform }} /p:AppxPackageSigningEnabled=false
+        run: msbuild KyappuTone.sln /p:Configuration=${{ steps.license.outputs.configuration }} /p:Platform=${{ matrix.platform }} /p:AppxPackageSigningEnabled=false

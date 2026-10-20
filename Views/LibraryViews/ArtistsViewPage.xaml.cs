@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Animation;
 
-using Tunetastic.Views.Common;
-namespace Tunetastic.Views.LibraryViews;
+using KyappuTone.Views.Common;
+namespace KyappuTone.Views.LibraryViews;
 
 /// <summary>
 /// Represents the page that displays a list of artists in the library view.

@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -8,9 +8,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Storage.Pickers;
 using TagLib;
-using Tunetastic.Views.Common;
-using Tunetastic.Views.LibraryViews;
-using Tunetastic.Views.PlaylistViews;
+using KyappuTone.Views.Common;
+using KyappuTone.Views.LibraryViews;
+using KyappuTone.Views.PlaylistViews;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -21,7 +21,7 @@ using Windows.System;
 using File = System.IO.File;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 /// <summary>
 /// Represents the primary page of the application.
@@ -253,17 +253,17 @@ public sealed partial class MainPage : Page
 		switch (keyValuePair.Key)
 		{
 			case SearchItemType.Title:
-				App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.AllSongsViewPage");
-				App.Current.NavService.NavigateTo("Tunetastic.Views.LibraryViews.AllSongsViewPage", keyValuePair.Value);
+				App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.AllSongsViewPage");
+				App.Current.NavService.NavigateTo("KyappuTone.Views.LibraryViews.AllSongsViewPage", keyValuePair.Value);
 				break;
 
 			case SearchItemType.Artist:
-				App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.ArtistsViewPage");
+				App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.ArtistsViewPage");
 				App.Current.NavService.NavigateTo(typeof(ArtistDetailPage), keyValuePair.Value == "Unknown" ? "Unknown Artist" : keyValuePair.Value, false);
 				break;
 
 			case SearchItemType.Album:
-				App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.AlbumsViewPage");
+				App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.AlbumsViewPage");
 				App.Current.NavService.NavigateTo(typeof(AlbumDetailPage), keyValuePair.Value == "Unknown" ? "Unknown Album" : keyValuePair.Value, false);
 				break;
 		}
@@ -304,9 +304,9 @@ public sealed partial class MainPage : Page
 		if (args.SelectedItem is NavigationViewItem selectedItem)
 		{
 			string? selectedTag = selectedItem.Tag?.ToString();
-			IsMainPlayerPageOpened = (selectedTag == "Library") || (selectedTag == "Playlists") || (selectedTag == "AddNewPlaylist") ? IsMainPlayerPageOpened : selectedTag == "Tunetastic.Views.MainPlayerPage";
+			IsMainPlayerPageOpened = (selectedTag == "Library") || (selectedTag == "Playlists") || (selectedTag == "AddNewPlaylist") ? IsMainPlayerPageOpened : selectedTag == "KyappuTone.Views.MainPlayerPage";
 		}
-		if (args.SelectedItemContainer is NavigationViewItem navigationViewItem && Regex.IsMatch(navigationViewItem.Tag.ToString()!, @"^Tunetastic\.Views\.PlaylistViews\.\S+CustomPlaylist$"))
+		if (args.SelectedItemContainer is NavigationViewItem navigationViewItem && Regex.IsMatch(navigationViewItem.Tag.ToString()!, @"^KyappuTone\.Views\.PlaylistViews\.\S+CustomPlaylist$"))
 		{
 			App.Current.NavService.NavigateTo(typeof(PlayListTemplate), (navigationViewItem.DataContext as DataGroup)!.Title);
 		}
@@ -501,7 +501,7 @@ public sealed partial class MainPage : Page
 	private bool CreateNewPlaylist(string playlistName)
 	{
 		var playlistsGroup = App.Current.NavService?.MenuItems?[2] as NavigationViewItem;
-		var tag = "Tunetastic.Views.PlaylistViews." + Regex.Replace(playlistName, @"\s+", "_") + "CustomPlaylist";
+		var tag = "KyappuTone.Views.PlaylistViews." + Regex.Replace(playlistName, @"\s+", "_") + "CustomPlaylist";
 		if (playlistsGroup != null)
 		{
 			DataGroup dataGroup = new();
@@ -556,7 +556,7 @@ public sealed partial class MainPage : Page
 
 				foreach (var playlistName in playLists)
 				{
-					var tag = "Tunetastic.Views.PlaylistViews." + Regex.Replace(playlistName, @"\s+", "_") + "CustomPlaylist";
+					var tag = "KyappuTone.Views.PlaylistViews." + Regex.Replace(playlistName, @"\s+", "_") + "CustomPlaylist";
 					DataGroup dataGroup = new();
 					dataGroup.UniqueId = tag;
 					dataGroup.Title = playlistName;
@@ -655,7 +655,7 @@ public sealed partial class MainPage : Page
 		try
 		{
 			var librariesGroup = App.Current.NavService?.MenuItems?[1] as NavigationViewItem;
-			var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"Tunetastic.Views.LibraryViews.{libraryName}ViewPage");
+			var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"KyappuTone.Views.LibraryViews.{libraryName}ViewPage");
 			if (libraryNavigationItem != null) libraryNavigationItem.Visibility = Visibility.Collapsed;
 			RemovePageFromHistory(libraryName);
 		}
@@ -680,7 +680,7 @@ public sealed partial class MainPage : Page
 		try
 		{
 			var playlistsGroup = App.Current.NavService?.MenuItems?[2] as NavigationViewItem;
-			var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"Tunetastic.Views.PlaylistViews.{playlistName.Replace(" ", "")}");
+			var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"KyappuTone.Views.PlaylistViews.{playlistName.Replace(" ", "")}");
 			if (playListNavigationItem != null) playListNavigationItem.Visibility = Visibility.Collapsed;
 			RemovePageFromHistory(playlistName);
 		}
@@ -1129,7 +1129,7 @@ public sealed partial class MainPage : Page
 						await DatabaseHelper.Instance.InsertMultipleSongs(new List<Song> { songData });
 					}
 					// Refresh the visible library/playlist page's song list so the edited metadata is reflected immediately
-					if (NavFrame.Content is TunetasticPageBase visibleView)
+					if (NavFrame.Content is KyappuTonePageBase visibleView)
 						await visibleView.RefreshListAsync();
 				}
 
@@ -1157,7 +1157,7 @@ public sealed partial class MainPage : Page
 			try
 			{
 				await Task.Delay(300); // merge adjacent rename/flush raises into one refresh
-				if (NavFrame.Content is TunetasticPageBase visibleView)
+				if (NavFrame.Content is KyappuTonePageBase visibleView)
 					await visibleView.RefreshListAsync();
 			}
 			finally

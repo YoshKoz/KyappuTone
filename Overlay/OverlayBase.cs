@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.UI;
 
-namespace Tunetastic.Overlay;
+namespace KyappuTone.Overlay;
 
 /// <summary>
 /// Base class for every overlay layout.

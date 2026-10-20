@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 
-namespace Tunetastic.Common.Controls;
+namespace KyappuTone.Common.Controls;
 
 /// <summary>
 /// A smooth progress bar control that provides visual feedback for media playback position.

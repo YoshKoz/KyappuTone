@@ -1,6 +1,6 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
-namespace Tunetastic.ViewModels;
+namespace KyappuTone.ViewModels;
 
 /// <summary>
 /// View model backing the shared song-list pages. Owns the displayed song collection and

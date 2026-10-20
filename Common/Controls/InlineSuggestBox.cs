@@ -1,8 +1,8 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Microsoft.UI.Xaml.Input;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 
-namespace Tunetastic.Common.Controls;
+namespace KyappuTone.Common.Controls;
 
 /// <summary>
 /// A text box control that provides inline suggestions as the user types.

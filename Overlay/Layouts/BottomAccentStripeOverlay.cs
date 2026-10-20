@@ -1,9 +1,9 @@
-﻿using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 
-namespace Tunetastic.Overlay.Layouts;
+namespace KyappuTone.Overlay.Layouts;
 
 // ══════════════════════════════════════════════════════════════════════
 // BOTTOM STRIPE

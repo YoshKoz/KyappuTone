@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
@@ -6,9 +6,9 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
-using ColorHelper = Tunetastic.Common.Helpers.ColorHelper;
+using ColorHelper = KyappuTone.Common.Helpers.ColorHelper;
 
-namespace Tunetastic.Overlay.Layouts;
+namespace KyappuTone.Overlay.Layouts;
 
 // ══════════════════════════════════════════════════════════════════════
 // ALBUM TINT PROGRESS

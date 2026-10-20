@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
-namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
 /// Watches the tracked library folders and applies file system changes to the database as they happen.
@@ -329,7 +329,7 @@ public static class LibraryWatcherService
 
 			if (!oldTracked && newTracked)
 			{
-				await Tunetastic.Common.Operations.FileChangeProcessor.ProcessFileChange(newPath, FileChangeType.Created);
+				await KyappuTone.Common.Operations.FileChangeProcessor.ProcessFileChange(newPath, FileChangeType.Created);
 				RememberCreated(newPath);
 
 				// A new entry was added — refresh whichever library/playlist page is visible
@@ -337,7 +337,7 @@ public static class LibraryWatcherService
 				return;
 			}
 
-			await Tunetastic.Common.Operations.FileChangeProcessor.ProcessFileChange(oldPath, FileChangeType.Renamed, newPath);
+			await KyappuTone.Common.Operations.FileChangeProcessor.ProcessFileChange(oldPath, FileChangeType.Renamed, newPath);
 
 			// The old entry was repointed, so nothing is left to delete for it.
 			_pending.TryRemove(oldPath, out _);
@@ -546,13 +546,13 @@ public static class LibraryWatcherService
 				catch (Exception) { }
 			}
 
-			var matchResult = Tunetastic.Common.Operations.RenameDetector.DetectRenamesAndMoves(disappeared, appeared);
+			var matchResult = KyappuTone.Common.Operations.RenameDetector.DetectRenamesAndMoves(disappeared, appeared);
 
 			foreach (var (oldPath, newPath) in matchResult.Renames)
 			{
 				try
 				{
-					await Tunetastic.Common.Operations.FileChangeProcessor.ProcessFileChange(oldPath, FileChangeType.Renamed, newPath);
+					await KyappuTone.Common.Operations.FileChangeProcessor.ProcessFileChange(oldPath, FileChangeType.Renamed, newPath);
 
 					// The old entry was repointed, so there is nothing left to delete for it.
 					_pending.TryRemove(oldPath, out _);
@@ -575,7 +575,7 @@ public static class LibraryWatcherService
 			{
 				try
 				{
-					await Tunetastic.Common.Operations.FileChangeProcessor.ProcessFileChange(path, FileChangeType.Created);
+					await KyappuTone.Common.Operations.FileChangeProcessor.ProcessFileChange(path, FileChangeType.Created);
 					RememberCreated(path);
 				}
 				catch (Exception ex)
@@ -588,7 +588,7 @@ public static class LibraryWatcherService
 			{
 				try
 				{
-					await Tunetastic.Common.Operations.FileChangeProcessor.ProcessFileChange(path, FileChangeType.Modified);
+					await KyappuTone.Common.Operations.FileChangeProcessor.ProcessFileChange(path, FileChangeType.Modified);
 				}
 				catch (Exception ex)
 				{

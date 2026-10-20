@@ -1,7 +1,7 @@
-﻿using System.Management;
+using System.Management;
 using System.Runtime.Versioning;
 
-namespace Tunetastic.Common.Infrastructure;
+namespace KyappuTone.Common.Infrastructure;
 
 /// <summary>
 /// Detects the storage type (HDD / SATA SSD / NVMe SSD) of the drive that hosts a

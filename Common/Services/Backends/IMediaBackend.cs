@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Services.Backends;
+namespace KyappuTone.Common.Services.Backends;
 
 /// <summary>
 /// Defines the interface for media playback backends.

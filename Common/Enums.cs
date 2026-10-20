@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common;
+namespace KyappuTone.Common;
 
 // ─────────────────────────────────────────────────────────────
 //  Playback enums
@@ -58,7 +58,7 @@ public enum BackendType { Windows, Flyleaf, Unsupported }
 // ─────────────────────────────────────────────────────────────
 
 /// <summary>
-/// Represents the categories of items that can be searched in the Tunetastic application.
+/// Represents the categories of items that can be searched in the KyappuTone application.
 /// This enumeration is used to specify the type of a search item, allowing differentiation
 /// between titles, artists, and albums during search operations and result categorization.
 /// </summary>

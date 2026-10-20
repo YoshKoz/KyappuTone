@@ -1,4 +1,4 @@
-﻿# Contributing to Tunetastic
+# Contributing to KyappuTone
 
 Thanks for taking the time to contribute! Whether it's a bug fix, a new feature, or just improving the docs — all contributions are welcome.
 
@@ -53,13 +53,13 @@ Open a feature request issue and describe:
 ## Setting Up the Project
 
 ```bash
-git clone -b Development https://github.com/AMit-KP/Tunetastic.git
-cd Tunetastic
-start Tunetastic.sln
+git clone -b Development https://github.com/AMit-KP/KyappuTone.git
+cd KyappuTone
+start KyappuTone.sln
 ```
 
 
-- Save the ImageSharp license file as `sixlabors.lic` in the project root, next to `Tunetastic.csproj`.
+- Save the ImageSharp license file as `sixlabors.lic` in the project root, next to `KyappuTone.csproj`.
 - Do not commit this file. It is already listed in `.gitignore`.
 
 Without this file, the build will fail with a license error.

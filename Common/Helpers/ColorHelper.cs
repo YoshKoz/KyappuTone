@@ -1,6 +1,6 @@
-﻿using Windows.UI;
+using Windows.UI;
 
-namespace Tunetastic.Common.Helpers;
+namespace KyappuTone.Common.Helpers;
 
 
 /// <summary>

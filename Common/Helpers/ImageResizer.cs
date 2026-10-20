@@ -1,10 +1,10 @@
-﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using TagLib;
 using Image = SixLabors.ImageSharp.Image;
 
-namespace Tunetastic.Common.Helpers;
+namespace KyappuTone.Common.Helpers;
 
 /// <summary>
 /// Provides utilities for resizing and creating image thumbnails.

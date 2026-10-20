@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 
-namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
 /// Provides audio service functionality for managing system and application volume controls.
@@ -286,7 +286,7 @@ public class AudioService : IDisposable
 
 	/// <summary>
 	/// Returns the handler of the session that owns the app volume: the most recently added
-	/// session that is still active and carries real volume. Tunetastic has a second, silent
+	/// session that is still active and carries real volume. KyappuTone has a second, silent
 	/// session (the SMTC dummy player, pinned at volume 0) which re-creates on every device
 	/// change - it must never own the app volume, or its zero pushes trip the auto-pause feature
 	/// and the volume UI flickers between the real volume and 0. Sessions with zero volume are

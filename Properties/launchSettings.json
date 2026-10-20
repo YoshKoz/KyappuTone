@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "Tunetastic (Package)": {
+    "KyappuTone (Package)": {
       "commandName": "MsixPackage"
     },
-    "Tunetastic (Unpackaged)": {
+    "KyappuTone (Unpackaged)": {
       "commandName": "Project"
     }
   }

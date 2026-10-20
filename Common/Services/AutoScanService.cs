@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
 /// Owns the Auto Scan (the "Auto Sync" switch) lifecycle: it starts and stops the incremental library watching

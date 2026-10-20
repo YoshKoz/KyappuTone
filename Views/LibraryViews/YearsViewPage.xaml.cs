@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Animation;
 
-using Tunetastic.Views.Common;
-namespace Tunetastic.Views.LibraryViews;
+using KyappuTone.Views.Common;
+namespace KyappuTone.Views.LibraryViews;
 
 /// <summary>
 /// Represents a page in the application that displays a collection of years grouped as part of the library view.

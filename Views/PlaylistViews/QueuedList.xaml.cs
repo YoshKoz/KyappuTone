@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Views.PlaylistViews;
+namespace KyappuTone.Views.PlaylistViews;
 
 public sealed partial class QueuedList : Page
 {

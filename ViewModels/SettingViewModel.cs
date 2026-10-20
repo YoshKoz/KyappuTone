@@ -1,6 +1,6 @@
-﻿using Windows.Storage;
+using Windows.Storage;
 
-namespace Tunetastic.ViewModels;
+namespace KyappuTone.ViewModels;
 
 public partial class SettingViewModel : ObservableObject
 {

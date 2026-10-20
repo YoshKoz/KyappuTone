@@ -2,7 +2,7 @@
 #
 #   1. After a successful Build on a PR: if the PR bumped
 #      <AssemblyVersion>/<FileVersion> (1.x.x.x) relative to the point where
-#      the PR branched off the base branch, <Version> in Tunetastic.csproj is
+#      the PR branched off the base branch, <Version> in KyappuTone.csproj is
 #      set to 1.x.x and <Identity Version> in Package.appxmanifest to
 #      1.x.x.0, and the result is committed to the PR branch.
 #   2. If the PR did NOT bump them, the workflow comments on the PR asking
@@ -225,13 +225,13 @@ jobs:
             [System.IO.File]::WriteAllText($File.Path, $Text, (New-Object System.Text.UTF8Encoding($File.Bom)))
           }
 
-          $projFile = Read-File 'Tunetastic.csproj'
+          $projFile = Read-File 'KyappuTone.csproj'
           $proj = $projFile.Text
           $nl = if ($proj.Contains("`r`n")) { "`r`n" } else { "`n" }
 
           $headVersion = Read-ProjectVersion $proj
           if (-not $headVersion) {
-            throw 'No <AssemblyVersion> or <FileVersion> found in Tunetastic.csproj.'
+            throw 'No <AssemblyVersion> or <FileVersion> found in KyappuTone.csproj.'
           }
           if ($headVersion -notmatch '^\d+\.\d+\.\d+\.\d+$') {
             throw "AssemblyVersion '$headVersion' is not in the 1.x.x.x format."
@@ -247,8 +247,8 @@ jobs:
           if ($LASTEXITCODE -ne 0 -or -not $mergeBase) {
             throw "Could not find a merge base with origin/$env:BASE_REF."
           }
-          $baseRaw = git show "${mergeBase}:Tunetastic.csproj"
-          if ($LASTEXITCODE -ne 0) { throw "Failed to read Tunetastic.csproj at merge base $mergeBase." }
+          $baseRaw = git show "${mergeBase}:KyappuTone.csproj"
+          if ($LASTEXITCODE -ne 0) { throw "Failed to read KyappuTone.csproj at merge base $mergeBase." }
           $baseVersion = Read-ProjectVersion ($baseRaw -join "`n")
 
           if (-not $baseVersion -or $headVersion -eq $baseVersion) {
@@ -323,7 +323,7 @@ jobs:
             echo "Already asked for a version on this PR - skipping."
             exit 0
           fi
-          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The AssemblyVersion / FileVersion lines were not updated in this PR, so there is no version to sync from. @$OWNER - reply with a comment of the form /set-version 1.x.x.x (for example /set-version 1.57.0.0) and I will set AssemblyVersion and FileVersion to that full version and update the Version property in Tunetastic.csproj and the Version in Package.appxmanifest to match.
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The AssemblyVersion / FileVersion lines were not updated in this PR, so there is no version to sync from. @$OWNER - reply with a comment of the form /set-version 1.x.x.x (for example /set-version 1.57.0.0) and I will set AssemblyVersion and FileVersion to that full version and update the Version property in KyappuTone.csproj and the Version in Package.appxmanifest to match.
           $marker"
 
       - name: Set up commit signing (SSH)
@@ -353,7 +353,7 @@ jobs:
           PUSH_TOKEN: ${{ secrets.VERSION_BUMP_PAT || github.token }}
         run: |
           # Stage only the two files this workflow edits.
-          git add -- Tunetastic.csproj Package.appxmanifest
+          git add -- KyappuTone.csproj Package.appxmanifest
           if git diff --cached --quiet; then
             echo "Versions already in sync - nothing to commit."
             exit 0
@@ -531,7 +531,7 @@ jobs:
           # (e.g. development - never master), the same way job 1 does.
           $mergeBase = "$(git merge-base HEAD "origin/$env:BASE_REF")".Trim()
           if ($LASTEXITCODE -eq 0 -and $mergeBase) {
-            $baseRaw = git show "${mergeBase}:Tunetastic.csproj" 2>$null
+            $baseRaw = git show "${mergeBase}:KyappuTone.csproj" 2>$null
             if ($LASTEXITCODE -eq 0) {
               $baseVersion = Read-ProjectVersion ($baseRaw -join "`n")
               if ($baseVersion -and (Compare-Version $full $baseVersion) -lt 0) {
@@ -546,12 +546,12 @@ jobs:
           $p = $full.Split('.')
           $short = "$($p[0]).$($p[1]).$($p[2])"
 
-          $projFile = Read-File 'Tunetastic.csproj'
+          $projFile = Read-File 'KyappuTone.csproj'
           $proj = $projFile.Text
           $nl = if ($proj.Contains("`r`n")) { "`r`n" } else { "`n" }
 
           if ($proj -notmatch '<AssemblyVersion>' -and $proj -notmatch '<FileVersion>') {
-            throw 'No <AssemblyVersion> or <FileVersion> found in Tunetastic.csproj.'
+            throw 'No <AssemblyVersion> or <FileVersion> found in KyappuTone.csproj.'
           }
           $proj = [regex]::Replace($proj, '<AssemblyVersion>[^<]*</AssemblyVersion>', "<AssemblyVersion>$full</AssemblyVersion>")
           $proj = [regex]::Replace($proj, '<FileVersion>[^<]*</FileVersion>', "<FileVersion>$full</FileVersion>")
@@ -614,7 +614,7 @@ jobs:
           PUSH_TOKEN: ${{ secrets.VERSION_BUMP_PAT || github.token }}
         run: |
           # Stage only the two files this workflow edits.
-          git add -- Tunetastic.csproj Package.appxmanifest
+          git add -- KyappuTone.csproj Package.appxmanifest
           if git diff --cached --quiet; then
             echo "Versions already set - nothing to commit."
             gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="All four version fields already match $VERSION - nothing to change." > /dev/null
@@ -625,7 +625,7 @@ jobs:
           # on "Allow edits by maintainers".
           git push "https://x-access-token:${PUSH_TOKEN}@github.com/${HEAD_REPO}.git" "HEAD:$PR_BRANCH"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          body="Set version to $VERSION (AssemblyVersion and FileVersion), and synced the Version property in Tunetastic.csproj and the Version in Package.appxmanifest to match."
+          body="Set version to $VERSION (AssemblyVersion and FileVersion), and synced the Version property in KyappuTone.csproj and the Version in Package.appxmanifest to match."
           if [ "$HAS_PAT" != "true" ]; then
             body="$body Note: this commit did not re-trigger Build (VERSION_BUMP_PAT is not set), so re-run Build if the PR needs passing checks."
           fi

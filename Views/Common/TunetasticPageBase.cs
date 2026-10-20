@@ -1,16 +1,16 @@
-﻿using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Shapes;
 
-namespace Tunetastic.Views.Common;
+namespace KyappuTone.Views.Common;
 
 /// <summary>
 /// Common root for library and playlist pages. Owns the scanning-aware initialization flow,
 /// the empty-library message rotation and shared named-control resolution.
 /// </summary>
-public abstract partial class TunetasticPageBase : Page
+public abstract partial class KyappuTonePageBase : Page
 {
 	/// <summary>
 	/// Dispatcher queue of the UI thread this page was created on.

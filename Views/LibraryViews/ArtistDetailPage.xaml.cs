@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Animation;
-using Tunetastic.Views.Common;
+using KyappuTone.Views.Common;
 
-namespace Tunetastic.Views.LibraryViews;
+namespace KyappuTone.Views.LibraryViews;
 
 /// <summary>
 /// Represents the detail page for a specific artist in the music library.
@@ -823,7 +823,7 @@ public sealed partial class ArtistDetailPage : SongListPageBase
 	{
 		var librariesGroup = App.Current.NavService.MenuItems![1] as NavigationViewItem;
 
-		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"Tunetastic.Views.LibraryViews.ArtistsViewPage");
+		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == $"KyappuTone.Views.LibraryViews.ArtistsViewPage");
 		libraryNavigationItem!.IsSelected = true;
 	}
 }

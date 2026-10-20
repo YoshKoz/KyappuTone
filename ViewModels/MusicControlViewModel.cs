@@ -1,19 +1,19 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using Tunetastic.Common.Services.TaskbarOverlay;
-using Tunetastic.Overlay;
-using Tunetastic.Overlay.Layouts;
+using KyappuTone.Common.Services.TaskbarOverlay;
+using KyappuTone.Overlay;
+using KyappuTone.Overlay.Layouts;
 using Windows.Media;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.ViewManagement;
 
 
-namespace Tunetastic.ViewModels;
+namespace KyappuTone.ViewModels;
 
 /// <summary>
 /// ViewModel for music playback control. All MediaPlayer/FlyleafLib references

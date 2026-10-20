@@ -1,6 +1,6 @@
-﻿using Windows.Foundation;
+using Windows.Foundation;
 
-namespace Tunetastic.Common.Controls;
+namespace KyappuTone.Common.Controls;
 
 /// <summary>
 /// A virtualizing layout that arranges items in a smart wrapping grid with configurable tile sizes and gaps.

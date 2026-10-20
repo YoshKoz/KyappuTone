@@ -1,8 +1,8 @@
-﻿<div align="center">
+<div align="center">
 
-<img src="Assets/AppIcon.png" alt="Tunetastic Logo" width="150" height="150" />
+<img src="Assets/AppIcon.png" alt="KyappuTone Logo" width="150" height="150" />
 
-# Tunetastic
+# KyappuTone
 
 **A next-gen music player for Windows 10 & 11**
 
@@ -13,8 +13,8 @@
 [![Language](https://img.shields.io/badge/Language-C%23-239120?logo=csharp)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue)](LICENSE)
 
-[![Latest Release](https://img.shields.io/github/v/release/AMit-KP/Tunetastic?label=Latest&color=green)](https://github.com/AMit-KP/Tunetastic/releases/latest)
-[![Pre-release](https://img.shields.io/github/v/release/AMit-KP/Tunetastic?include_prereleases&label=Pre-release&color=orange)](https://github.com/AMit-KP/Tunetastic/releases)
+[![Latest Release](https://img.shields.io/github/v/release/AMit-KP/KyappuTone?label=Latest&color=green)](https://github.com/AMit-KP/KyappuTone/releases/latest)
+[![Pre-release](https://img.shields.io/github/v/release/AMit-KP/KyappuTone?include_prereleases&label=Pre-release&color=orange)](https://github.com/AMit-KP/KyappuTone/releases)
 
 <a href="https://apps.microsoft.com/detail/9PCCNQZTD6PX?referrer=appbadge&mode=full" target="_blank" rel="noopener noreferrer">
   <picture>
@@ -57,7 +57,7 @@
 
 ## Overview
 
-Tunetastic is a modern music player built natively for Windows using WinUI 3. It brings Windows 11's design language — Mica, Acrylic, rounded corners, and fluid animations — to both Windows 10 and Windows 11, combining a beautifully crafted interface with deep customization options. Turn your local music library into an experience that's as unique, expressive, and captivating as the music you love.
+KyappuTone is a modern music player built natively for Windows using WinUI 3. It brings Windows 11's design language — Mica, Acrylic, rounded corners, and fluid animations — to both Windows 10 and Windows 11, combining a beautifully crafted interface with deep customization options. Turn your local music library into an experience that's as unique, expressive, and captivating as the music you love.
 
 > <img width="2858" height="1718" alt="image" src="https://github.com/user-attachments/assets/03a76ccf-d134-4a7e-a7d8-9d57382295d8" />
 
@@ -68,7 +68,7 @@ Tunetastic is a modern music player built natively for Windows using WinUI 3. It
 
 ### 🎵 Player
 
-The main player page is the heart of Tunetastic — a full-screen immersive experience built around your currently playing track.
+The main player page is the heart of KyappuTone — a full-screen immersive experience built around your currently playing track.
 
 - Dynamic blurred album art background (blur intensity adjustable)
 - Standard playback controls: play/pause, previous, next, seek forward/rewind
@@ -79,7 +79,7 @@ The main player page is the heart of Tunetastic — a full-screen immersive expe
 
 ### 🎤 Lyrics
 
-Tunetastic displays lyrics in sync with your music — no extra setup needed.
+KyappuTone displays lyrics in sync with your music — no extra setup needed.
 
 - **Synced lyrics** scroll automatically in time with playback, and are sourced from:
 	- Embedded metadata inside the audio file itself
@@ -104,20 +104,20 @@ takes priority for synced playback. If no lyrics are found.
 
 ### 🔊 Volume Control
 
-Tunetastic gives you precise, flexible control over volume without ever leaving the app.
+KyappuTone gives you precise, flexible control over volume without ever leaving the app.
 
 A dedicated volume slider sits right in the player UI, and can operate in two distinct modes — switchable at any time:
 
-- **System Volume** — The slider controls your device's master output volume, in sync with the Windows volume flyout and taskbar speaker icon. Dragging it in Tunetastic is identical to dragging it from the system tray.
-- **App Volume** — The slider controls only Tunetastic's volume as an independent channel, leaving all other audio on your system untouched. This maps directly to Tunetastic's entry in the Windows Volume Mixer, so changes made in either place are always reflected in the other in real time.
+- **System Volume** — The slider controls your device's master output volume, in sync with the Windows volume flyout and taskbar speaker icon. Dragging it in KyappuTone is identical to dragging it from the system tray.
+- **App Volume** — The slider controls only KyappuTone's volume as an independent channel, leaving all other audio on your system untouched. This maps directly to KyappuTone's entry in the Windows Volume Mixer, so changes made in either place are always reflected in the other in real time.
 
-**Pause on Mute** — When enabled, Tunetastic will automatically pause playback the moment the volume reaches zero (whether muted via the in-app slider, the system mute key, or any other source), and will resume the instant sound is restored — no need to manually hit play again.
+**Pause on Mute** — When enabled, KyappuTone will automatically pause playback the moment the volume reaches zero (whether muted via the in-app slider, the system mute key, or any other source), and will resume the instant sound is restored — no need to manually hit play again.
 
 ---
 
 ### 📚 Library
 
-Tunetastic automatically organizes your music collection into clean, browsable views:
+KyappuTone automatically organizes your music collection into clean, browsable views:
 
 | View | Description |
 |---|---|
@@ -132,7 +132,7 @@ Tunetastic automatically organizes your music collection into clean, browsable v
 
 ### 🏷️ Tag Editor
 
-Clean up and manage your music metadata without ever leaving Tunetastic or reaching for a third-party tool.
+Clean up and manage your music metadata without ever leaving KyappuTone or reaching for a third-party tool.
 
 - Edit **all standard ID3 tags** — title, artist, album, genre, year, lyrics and cover/album art
 - **Inline suggestions** appear as you type, drawn from data already in your library, so tags stay consistent across your collection instead of drifting into duplicates and typos (e.g. start typing an artist name and matching spellings already in your library show up)
@@ -166,7 +166,7 @@ A quick search bar sits in the top panel, letting you instantly search across yo
 
 ### 🖥️ System Integration
 
-Tunetastic integrates deeply with Windows for a native, seamless experience — all system integration features work on both Windows 10 and Windows 11 unless noted otherwise.
+KyappuTone integrates deeply with Windows for a native, seamless experience — all system integration features work on both Windows 10 and Windows 11 unless noted otherwise.
 
 **🎛️ System Media Transport Controls (SMTC)**
 Full SMTC support means you can control playback from anywhere:
@@ -185,14 +185,14 @@ On Windows 11, playback controls surface directly on the lock screen, so you can
 
 
 **🖱️ Thumbnail Toolbar**
-Tunetastic adds playback buttons directly to its taskbar thumbnail preview — the small popup that appears when you hover over the app on the taskbar. Without switching to the app, you can:
+KyappuTone adds playback buttons directly to its taskbar thumbnail preview — the small popup that appears when you hover over the app on the taskbar. Without switching to the app, you can:
 - Play or pause the current track
 - Skip to the previous or next track
 
 > <img width="172" height="214" alt="image" src="https://github.com/user-attachments/assets/bc20f448-179c-4cb9-9236-5b67336f25b8" />
 
 
-It's the fastest way to manage playback when Tunetastic is sitting in the background.
+It's the fastest way to manage playback when KyappuTone is sitting in the background.
 
 **🪟 Taskbar Overlay Controls**
 A playback overlay lives right on the taskbar itself, giving you controls at a glance without hovering for the thumbnail preview.
@@ -207,10 +207,10 @@ A playback overlay lives right on the taskbar itself, giving you controls at a g
 
 
 **📊 Taskbar Progress**
-Track playback progress is shown live on the Tunetastic taskbar icon, so you always know where you are in a track at a glance — without switching windows.
+Track playback progress is shown live on the KyappuTone taskbar icon, so you always know where you are in a track at a glance — without switching windows.
 
 **🔔 System Tray**
-- Minimize to the system tray on close, keeping Tunetastic out of the way but always ready
+- Minimize to the system tray on close, keeping KyappuTone out of the way but always ready
 - **Click** the tray icon to play or pause instantly
 - **Hover** the tray icon to see the current track and artist
 
@@ -220,7 +220,7 @@ Track playback progress is shown live on the Tunetastic taskbar icon, so you alw
 
 ### 📁 Library Management
 
-- **Add Folders** — Point Tunetastic to your local music directories
+- **Add Folders** — Point KyappuTone to your local music directories
 - **File Extensions** — Choose which audio formats to include
 - **Minimum Track Duration** — Ignore files below a set length (great for skipping short intros or sound effects)
 - **Duplicate Detection** — Options to detect and handle duplicate tracks
@@ -236,7 +236,7 @@ Track playback progress is shown live on the Tunetastic taskbar icon, so you alw
 
 ### 🎨 Appearance & Behavior
 
-Tunetastic gives you fine-grained control over how it looks and feels.
+KyappuTone gives you fine-grained control over how it looks and feels.
 
 **Theme**
 Choose between Light, Dark, or follow the system setting.
@@ -270,7 +270,7 @@ When **Mica** is selected, you can also dial in a custom tint color — anywhere
 
 
 **Accent Color**
-Certain player UI elements pick up your Windows accent color automatically. A shortcut to the Windows accent color settings page is available directly from within Tunetastic.
+Certain player UI elements pick up your Windows accent color automatically. A shortcut to the Windows accent color settings page is available directly from within KyappuTone.
 
 **Player Background**
 Control the blur intensity of the album art background on the main player page.
@@ -282,7 +282,7 @@ Add an animated rainbow border to the player:
 - Adjust the animation speed
 
 **Window Behavior**
-- **Minimize to tray on close** — Keep Tunetastic running silently in the background instead of fully quitting
+- **Minimize to tray on close** — Keep KyappuTone running silently in the background instead of fully quitting
 
 ---
 
@@ -299,19 +299,19 @@ Add an animated rainbow border to the player:
 
 ### Microsoft Store *(Recommended)*
 
-Search for **Tunetastic** in the [Microsoft Store](https://github.com/AMit-KP/Tunetastic/tree/master#tunetastic), or follow the store link once available. No manual setup or certificate trust required — just install and play.
+Search for **KyappuTone** in the [Microsoft Store](https://github.com/AMit-KP/KyappuTone/tree/master#KyappuTone), or follow the store link once available. No manual setup or certificate trust required — just install and play.
 
 ### Winget Package Manager
 
 Open Command Prompt or Powershell on your windows and type the following
 ```bash
-winget install Tunetastic
+winget install KyappuTone
 ```
 
 ### GitHub Releases *(Recommended only if you want new versions before the Store gets them)*
 
-1. Open the [Releases](https://github.com/AMit-KP/Tunetastic/releases) page and download these two files:
-   - `Tunetastic_Certificate.cer`
+1. Open the [Releases](https://github.com/AMit-KP/KyappuTone/releases) page and download these two files:
+   - `KyappuTone_Certificate.cer`
    - The `.msix` file for your system architecture (`x64` or `arm64`)
 2. Install the certificate first:
    - Double-click the `.cer` file and choose **Install Certificate**.
@@ -328,11 +328,11 @@ winget install Tunetastic
 
 ```bash
 # Clone the repository
-git clone https://github.com/AMit-KP/Tunetastic.git
-cd tunetastic
+git clone https://github.com/AMit-KP/KyappuTone.git
+cd KyappuTone
 
 # Open in Visual Studio 2026
-start Tunetastic.sln
+start KyappuTone.sln
 ```
 
 Ensure the following workloads are installed in Visual Studio 2026:
@@ -346,7 +346,7 @@ This project uses [ImageSharp](https://github.com/SixLabors/ImageSharp), which r
 To build locally:
 
 1. Get your own license key at [licensing.sixlabors.com](https://licensing.sixlabors.com/).
-2. Save the license file as `sixlabors.lic` in the project root, next to `Tunetastic.csproj`.
+2. Save the license file as `sixlabors.lic` in the project root, next to `KyappuTone.csproj`.
 3. Do not commit this file. It is already listed in `.gitignore`.
 
 Without this file, the build will fail with a license error.

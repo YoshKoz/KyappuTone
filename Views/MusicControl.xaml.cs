@@ -1,7 +1,7 @@
-﻿using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 /// <summary>
 /// The MusicControl class provides functionality to control the playback of audio tracks.

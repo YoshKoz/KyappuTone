@@ -1,6 +1,6 @@
-﻿using Windows.Media.Playback;
+using Windows.Media.Playback;
 
-namespace Tunetastic.Common.Services.Backends;
+namespace KyappuTone.Common.Services.Backends;
 
 /// <summary>
 /// A media backend implementation using Windows MediaPlayer for audio playback.

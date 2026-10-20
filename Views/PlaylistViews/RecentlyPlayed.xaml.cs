@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Documents;
-using Tunetastic.Views.Common;
+using KyappuTone.Views.Common;
 
-namespace Tunetastic.Views.PlaylistViews;
+namespace KyappuTone.Views.PlaylistViews;
 
 /// <summary>
 /// Represents the Recently Played playlist page that displays songs recently played.

@@ -1,6 +1,6 @@
-﻿using System.IO.Pipes;
+using System.IO.Pipes;
 
-namespace Tunetastic;
+namespace KyappuTone;
 
 /// <summary>
 /// Provides the entry point configuration for the application startup process.
@@ -8,7 +8,7 @@ namespace Tunetastic;
 public static class Startup
 {
 	/// <summary>
-	/// The main entry point for the Tunetastic application that enforces single instance behavior.
+	/// The main entry point for the KyappuTone application that enforces single instance behavior.
 	/// </summary>
 	/// <param name="args">Command-line arguments passed to the application.</param>
 	/// <remarks>
@@ -21,13 +21,13 @@ public static class Startup
 	static void Main(string[] args)
 	{
 		bool createdNew;
-		using var mutex = new Mutex(true, "Tunetastic.Mutex", out createdNew);
+		using var mutex = new Mutex(true, "KyappuTone.Mutex", out createdNew);
 
 		if (!createdNew)
 		{
 			try
 			{
-				using var client = new NamedPipeClientStream(".", "Tunetastic.InstancePing", PipeDirection.Out);
+				using var client = new NamedPipeClientStream(".", "KyappuTone.InstancePing", PipeDirection.Out);
 				client.Connect(200);
 				using var writer = new StreamWriter(client) { AutoFlush = true };
 				writer.WriteLine("PING");

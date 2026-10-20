@@ -1,7 +1,7 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Windows.Storage;
 
-namespace Tunetastic.Common.Operations;
+namespace KyappuTone.Common.Operations;
 
 /// <summary>
 /// Provides services for managing and updating metadata related to music libraries in the application.

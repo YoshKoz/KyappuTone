@@ -56,11 +56,11 @@ jobs:
 
       - name: Restore NuGet packages
         if: steps.gate.outputs.run == 'true'
-        run: dotnet restore Tunetastic.sln --configfile nuget.config
+        run: dotnet restore KyappuTone.sln --configfile nuget.config
 
       - name: Build
         if: steps.gate.outputs.run == 'true'
-        run: msbuild Tunetastic.sln /p:Configuration=Debug /p:Platform=x64 /p:AppxPackageSigningEnabled=false
+        run: msbuild KyappuTone.sln /p:Configuration=Debug /p:Platform=x64 /p:AppxPackageSigningEnabled=false
 
       - name: Perform CodeQL analysis
         if: steps.gate.outputs.run == 'true'

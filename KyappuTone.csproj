@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
-    <RootNamespace>Tunetastic</RootNamespace>
+    <RootNamespace>KyappuTone</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
@@ -35,7 +35,7 @@
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
     <PackageIcon>AppIcon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/AMit-KP/Tunetastic.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/YoshKoz/KyappuTone.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>1.66.19.3830</AssemblyVersion>
     <FileVersion>1.66.19.3430</FileVersion>
@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
@@ -111,7 +112,7 @@
     <Content Remove="Assets\Store\Logo_Light.PNG" />
     <Content Remove="Assets\Store\MS_Dark.png" />
     <Content Remove="Assets\Store\MS_Light.png" />
-    <Content Remove="Assets\Store\Tunetastic_Store_Publisher_Certificate.cer" />
+    <Content Remove="Assets\Store\KyappuTone_Store_Publisher_Certificate.cer" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\FFmpeg\avcodec-62.dll" />
@@ -276,7 +277,7 @@
   </PropertyGroup>
   <PropertyGroup>
   <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-  <StartupObject>Tunetastic.Startup</StartupObject>
+  <StartupObject>KyappuTone.Startup</StartupObject>
   <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
   <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
   <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>

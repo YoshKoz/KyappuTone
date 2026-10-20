@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Documents;
-using Tunetastic.Views.Common;
+using KyappuTone.Views.Common;
 
-namespace Tunetastic.Views.LibraryViews;
+namespace KyappuTone.Views.LibraryViews;
 
 /// <summary>
 /// Represents a page in the application that displays a collection of all available songs.

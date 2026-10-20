@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common;
+namespace KyappuTone.Common;
 
 /// <summary>
 /// Provides application-wide constants such as directory paths and commonly used file paths.

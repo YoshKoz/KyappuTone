@@ -1,6 +1,6 @@
-﻿using Tunetastic.Overlay.Layouts;
+using KyappuTone.Overlay.Layouts;
 
-namespace Tunetastic.Overlay;
+namespace KyappuTone.Overlay;
 
 public static class OverlayFactory
 {

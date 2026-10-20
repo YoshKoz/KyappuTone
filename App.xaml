@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Application x:Class="Tunetastic.App"
+<?xml version="1.0" encoding="utf-8" ?>
+<Application x:Class="KyappuTone.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:Tunetastic">
+             xmlns:local="using:KyappuTone">
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>

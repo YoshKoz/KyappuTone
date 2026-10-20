@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
-namespace Tunetastic.Common.Operations;
+namespace KyappuTone.Common.Operations;
 
 /// <summary>
 /// Reconciles the scanned library snapshot with the files currently on disk, applying the changes that

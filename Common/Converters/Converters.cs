@@ -1,9 +1,9 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Globalization;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace Tunetastic.Common.Converters;
+namespace KyappuTone.Common.Converters;
 
 /// <summary>
 /// Converts a duration in seconds to a human-readable formatted string representation.

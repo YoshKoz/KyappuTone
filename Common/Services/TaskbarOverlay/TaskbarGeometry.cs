@@ -1,9 +1,9 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32;
-using static Tunetastic.Common.Services.TaskbarOverlay.NativeMethods;
+using static KyappuTone.Common.Services.TaskbarOverlay.NativeMethods;
 
-namespace Tunetastic.Common.Services.TaskbarOverlay;
+namespace KyappuTone.Common.Services.TaskbarOverlay;
 
 /// <summary>Windows 11 taskbar icon alignment (HKCU\…\Explorer\Advanced\TaskbarAl).</summary>
 internal enum TaskbarAlignment { Left, Center }

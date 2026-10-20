@@ -24,7 +24,7 @@ What actually happened. Include screenshots if helpful.
 ## Environment
 - **Windows version:** (e.g. Windows 11 24H2, Windows 10 22H2)
 - **Install source:** Microsoft Store / GitHub Release / Built from source
-- **Tunetastic version:** (visible in Settings)
+- **KyappuTone version:** (visible in Settings)
 
 ## Additional Context
 Any other details that might be relevant — specific audio formats, library size, hardware, etc.

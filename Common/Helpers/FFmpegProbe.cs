@@ -1,6 +1,6 @@
-﻿using FFmpeg.AutoGen;
+using FFmpeg.AutoGen;
 
-namespace Tunetastic.Common.Helpers;
+namespace KyappuTone.Common.Helpers;
 
 public static unsafe class FFmpegProbe
 {

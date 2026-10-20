@@ -1,7 +1,7 @@
-﻿using System.IO.Pipes;
+using System.IO.Pipes;
 using WinUIEx;
 
-namespace Tunetastic;
+namespace KyappuTone;
 
 public partial class App : Application
 {
@@ -183,7 +183,7 @@ public partial class App : Application
 			{
 				try
 				{
-					using var server = new NamedPipeServerStream("Tunetastic.InstancePing", PipeDirection.In);
+					using var server = new NamedPipeServerStream("KyappuTone.InstancePing", PipeDirection.In);
 					await server.WaitForConnectionAsync().ConfigureAwait(false);
 
 					using var reader = new StreamReader(server);
@@ -214,7 +214,7 @@ public partial class App : Application
 	{
 		ContextMenuItem menu = new ContextMenuItem
 		{
-			Title = "Open Tunetastic Here",
+			Title = "Open KyappuTone Here",
 			Param = @"""{path}""",
 			AcceptFileFlag = (int)FileMatchFlagEnum.All,
 			AcceptDirectoryFlag = (int)(DirectoryMatchFlagEnum.Directory | DirectoryMatchFlagEnum.Background | DirectoryMatchFlagEnum.Desktop),
@@ -222,7 +222,7 @@ public partial class App : Application
 			Index = 0,
 			Enabled = true,
 			Icon = ProcessInfoHelper.GetFileVersionInfo().FileName,
-			Exe = "Tunetastic.exe"
+			Exe = "KyappuTone.exe"
 		};
 
 		var menuFolder = await ContextMenuService.CreateDefualtMenusFolderAsync();

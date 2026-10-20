@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
 /// Triggers a one-time full library scan on the first launch of the app after it was updated to a targeted version.

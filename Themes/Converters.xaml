@@ -1,6 +1,6 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="using:Tunetastic.Common.Converters"
+                    xmlns:converters="using:KyappuTone.Common.Converters"
                     xmlns:toolkit="using:CommunityToolkit.WinUI.Converters">
 	<converters:DurationConverter x:Key="DurationConverter" />
 	<converters:DateFormatConverter x:Key="DateFormatConverter" />

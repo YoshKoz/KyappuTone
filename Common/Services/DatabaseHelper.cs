@@ -1,10 +1,10 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using SQLite;
 
-namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
-/// Provides utility methods for managing database interactions within the Tunetastic application.
+/// Provides utility methods for managing database interactions within the KyappuTone application.
 /// This class includes functionality to initialize the database, manage songs, playlists, and related entries.
 /// It ensures efficient operations like insertion, query, update, and deletion of song and playlist data.
 /// </summary>
@@ -186,7 +186,7 @@ public class DatabaseHelper
 	/// <returns>A <see cref="Task"/> that completes once schema creation, migration, and seeding have finished.</returns>
 	public async Task InitializeDatabase()
 	{
-		var dbPath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "tunetastic.db3");
+		var dbPath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "KyappuTone.db3");
 		_database = new SQLiteAsyncConnection(dbPath);
 
 		await _database.ExecuteAsync("PRAGMA foreign_keys = ON");
@@ -2580,7 +2580,7 @@ public class DatabaseHelper
 	}
 
 	/// <summary>
-	/// Represents a database row containing an artist's name in the Tunetastic application.
+	/// Represents a database row containing an artist's name in the KyappuTone application.
 	/// This class is used for querying and retrieving artist-related data from the database.
 	/// </summary>
 	private sealed class ArtistNameRow
@@ -2592,7 +2592,7 @@ public class DatabaseHelper
 	}
 
 	/// <summary>
-	/// Represents a database row mapping for album names used within the Tunetastic application.
+	/// Represents a database row mapping for album names used within the KyappuTone application.
 	/// This class serves as a lightweight data structure for querying and processing album information
 	/// from the database, specifically in scenarios involving album search operations.
 	/// </summary>
@@ -2606,7 +2606,7 @@ public class DatabaseHelper
 
 	/// <summary>
 	/// Defines the various categories used for organizing and prioritizing search results
-	/// in the Tunetastic application.
+	/// in the KyappuTone application.
 	/// </summary>
 	/// <remarks>
 	/// This enumeration represents the primary classifications to filter or group music searches.

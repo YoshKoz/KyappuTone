@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Documents;
-using Tunetastic.Views.Common;
+using KyappuTone.Views.Common;
 
-namespace Tunetastic.Views.PlaylistViews;
+namespace KyappuTone.Views.PlaylistViews;
 
 /// <summary>
 /// Represents a page designed to display and manage a playlist within the application.
@@ -95,7 +95,7 @@ public sealed partial class PlayListTemplate : SongListPageBase
 		if (result == ContentDialogResult.Primary)
 		{
 			App.Current.NavService.GoBack();
-			var playListTag = "Tunetastic.Views.PlaylistViews." + Regex.Replace(playListName, @"\s+", "_") + "CustomPlaylist";
+			var playListTag = "KyappuTone.Views.PlaylistViews." + Regex.Replace(playListName, @"\s+", "_") + "CustomPlaylist";
 
 			await DatabaseHelper.Instance.RemovePlaylist(playListName);
 
@@ -810,14 +810,14 @@ public sealed partial class PlayListTemplate : SongListPageBase
 		if (result == ContentDialogResult.Primary)
 		{
 			var playlistsGroup = App.Current.NavService.MenuItems![2] as NavigationViewItem;
-			var tag = "Tunetastic.Views.PlaylistViews." + Regex.Replace(PlaylistNameBox.Text.Trim(), @"\s+", "_") + "CustomPlaylist";
+			var tag = "KyappuTone.Views.PlaylistViews." + Regex.Replace(PlaylistNameBox.Text.Trim(), @"\s+", "_") + "CustomPlaylist";
 			if (playlistsGroup != null)
 			{
 				DataGroup dataGroup = new();
 				dataGroup.UniqueId = tag;
 				dataGroup.Title = PlaylistNameBox.Text.Trim();
 
-				var playListNavigationItem = playlistsGroup.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.PlaylistViews." + Regex.Replace(PlaylistHeader.Text, @"\s+", "_") + "CustomPlaylist");
+				var playListNavigationItem = playlistsGroup.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.PlaylistViews." + Regex.Replace(PlaylistHeader.Text, @"\s+", "_") + "CustomPlaylist");
 				if (playListNavigationItem != null)
 				{
 					var oldTag = playListNavigationItem.Tag.ToString();

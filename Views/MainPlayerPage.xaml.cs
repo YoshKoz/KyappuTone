@@ -1,15 +1,15 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Tunetastic.Views.LibraryViews;
+using KyappuTone.Views.LibraryViews;
 using Windows.Media;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 /// <summary>
 /// Represents the main player page within the application.
@@ -330,50 +330,50 @@ public sealed partial class MainPlayerPage : Page
 			switch (Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CurrentPlayinglist)]?.ToString())
 			{
 				case "MostPlayed":
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.PlaylistViews.MostPlayed");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.PlaylistViews.MostPlayed");
 					break;
 
 				case "RecentlyPlayed":
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.PlaylistViews.RecentlyPlayed");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.PlaylistViews.RecentlyPlayed");
 					break;
 
 				case "RecentlyAdded":
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.PlaylistViews.RecentlyAdded");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.PlaylistViews.RecentlyAdded");
 					break;
 
 				case var playlist when playlist?.StartsWith("CustomPlaylist__") == true:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.PlaylistViews." + Regex.Replace(playlist.Substring("CustomPlaylist__".Length), @"\s+", "_") + "CustomPlaylist");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.PlaylistViews." + Regex.Replace(playlist.Substring("CustomPlaylist__".Length), @"\s+", "_") + "CustomPlaylist");
 					break;
 
 				case var artist when artist?.StartsWith("ArtistGroup>") == true:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.ArtistsViewPage");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.ArtistsViewPage");
 					App.Current.NavService.NavigateTo(typeof(ArtistDetailPage), artist?.Substring("ArtistGroup>".Length) == "Unknown" ? "Unknown Artist" : artist?.Substring("ArtistGroup>".Length), false);
 					break;
 
 				case var album when album?.StartsWith("AlbumGroup>") == true:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.AlbumsViewPage");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.AlbumsViewPage");
 					App.Current.NavService.NavigateTo(typeof(AlbumDetailPage), album?.Substring("AlbumGroup>".Length) == "Unknown" ? "Unknown Album" : album?.Substring("AlbumGroup>".Length), false);
 					break;
 
 				case var genre when genre?.StartsWith("GenreGroup>") == true:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.GenresViewPage");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.GenresViewPage");
 					App.Current.NavService.NavigateTo(typeof(GenreDetailPage), genre?.Substring("GenreGroup>".Length) == "Unknown" ? "Unknown Genre" : genre?.Substring("GenreGroup>".Length), false);
 					break;
 
 				case var year when year?.StartsWith("YearGroup>") == true:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.YearsViewPage");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.YearsViewPage");
 					App.Current.NavService.NavigateTo(typeof(YearDetailPage), year?.Substring("YearGroup>".Length) == "Unknown" ? "Unknown Year" : year?.Substring("YearGroup>".Length), false);
 					break;
 
 				case "AllSongsViewPage":
 				default:
-					App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.AllSongsViewPage");
+					App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.AllSongsViewPage");
 					break;
 			}
 		}
 		catch (Exception)
 		{
-			App.Current.NavService.EnsureNavigationSelection("Tunetastic.Views.LibraryViews.AllSongsViewPage");
+			App.Current.NavService.EnsureNavigationSelection("KyappuTone.Views.LibraryViews.AllSongsViewPage");
 		}
 	}
 

@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using SQLite;
 
-namespace Tunetastic.Common;
+namespace KyappuTone.Common;
 
 /// <summary>
 /// Represents a song entity that is stored in the `Songs` table of the database.
@@ -36,7 +36,7 @@ public class Song
 }
 
 /// <summary>
-/// Represents a library resource within the Tunetastic application.
+/// Represents a library resource within the KyappuTone application.
 /// This model is mapped to the "Library" database table and is used to store information
 /// such as the library's name and its file path.
 /// </summary>
@@ -141,7 +141,7 @@ public class MusicFormatCategoryModel : INotifyPropertyChanged
 }
 
 /// <summary>
-/// Represents a playlist within the Tunetastic application.
+/// Represents a playlist within the KyappuTone application.
 /// This class models the structure of a playlist entry in the database, including its unique identifier and name.
 /// Used in conjunction with database interactions to manage user-created playlists.
 /// </summary>
@@ -162,7 +162,7 @@ public class PendingTagWriteRow
 }
 
 /// <summary>
-/// Represents an artist entity within the music database of the Tunetastic application.
+/// Represents an artist entity within the music database of the KyappuTone application.
 /// This class provides properties to store details about an artist,
 /// including their name, description, and associated image.
 /// </summary>
@@ -178,7 +178,7 @@ public class Artist
 
 /// <summary>
 /// Represents data aggregation for a specific year, used for displaying and managing
-/// year-based song statistics within the Tunetastic application.
+/// year-based song statistics within the KyappuTone application.
 /// This model includes properties to represent the year, the number of songs recorded
 /// for that year and the total playback duration of those songs.
 /// </summary>
@@ -216,7 +216,7 @@ public class GenreModel
 }
 
 /// <summary>
-/// Represents a model for an artist and associated metadata within the Tunetastic application.
+/// Represents a model for an artist and associated metadata within the KyappuTone application.
 /// This class encapsulates the artist's name, the count of songs associated with the artist,
 /// and the total duration of those songs.
 /// </summary>
@@ -228,7 +228,7 @@ public class ArtistModel
 }
 
 /// <summary>
-/// Represents a rule for splitting or categorizing artist names in the Tunetastic application. <br/>
+/// Represents a rule for splitting or categorizing artist names in the KyappuTone application. <br/>
 /// The rule can be configured as either a "Splitter" to break apart artist names, or an "Exception" to preserve specific artist names intact. <br/>
 /// The Pattern field can be treated as a literal string or regular expression based on IsRegex. <br/>
 /// Rules can be temporarily disabled by setting Active to false. <br/>

@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Helpers;
+namespace KyappuTone.Common.Helpers;
 
 /// <summary>
 /// Represents a single line of parsed LRC lyrics.

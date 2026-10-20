@@ -1,10 +1,10 @@
-﻿namespace Tunetastic.Views.Common;
+namespace KyappuTone.Views.Common;
 
 /// <summary>
-/// Shared base for library tile-grid pages (albums/artists/genres/years) built on <see cref="TunetasticPageBase"/>:
+/// Shared base for library tile-grid pages (albums/artists/genres/years) built on <see cref="KyappuTonePageBase"/>:
 /// single-tile selection tracking, A-Z navigation and the shared "Add to playlist" context menu.
 /// </summary>
-public abstract partial class TileListPageBase : TunetasticPageBase
+public abstract partial class TileListPageBase : KyappuTonePageBase
 {
 	/// <summary>The grid showing the page's tiles.</summary>
 	protected abstract ListViewBase TileView { get; }

@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Operations;
+namespace KyappuTone.Common.Operations;
 
 /// <summary>
 /// Applies individual file-system changes in the music libraries (created, modified, deleted and renamed files)

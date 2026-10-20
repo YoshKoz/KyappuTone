@@ -1,6 +1,6 @@
-﻿using FlyleafLib.MediaPlayer;
+using FlyleafLib.MediaPlayer;
 
-namespace Tunetastic.Common.Services.Backends;
+namespace KyappuTone.Common.Services.Backends;
 
 /// <summary>
 /// A media backend implementation using Flyleaf for audio playback.

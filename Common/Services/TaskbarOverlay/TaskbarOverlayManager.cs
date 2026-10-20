@@ -1,8 +1,8 @@
-﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media;
-using static Tunetastic.Common.Services.TaskbarOverlay.NativeMethods;
+using static KyappuTone.Common.Services.TaskbarOverlay.NativeMethods;
 
-namespace Tunetastic.Common.Services.TaskbarOverlay;
+namespace KyappuTone.Common.Services.TaskbarOverlay;
 
 /// <summary>Which side of the taskbar free zone to anchor the overlay.</summary>
 internal enum OverlaySide { Left, Right }

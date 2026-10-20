@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Numerics;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Dispatching;
@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
-namespace Tunetastic.Common.Controls;
+namespace KyappuTone.Common.Controls;
 
 /// <summary>
 /// Android style A–Z fast scroll rail for the library pages: press and drag the letter strip to scrub

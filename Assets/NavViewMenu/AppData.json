@@ -1,15 +1,15 @@
-﻿{
+{
   "$schema": "https://raw.githubusercontent.com/Ghost1372/DevWinUI/refs/heads/main/AppData.Schema.json",
   "Groups":
   [
     {
-      "UniqueId": "Tunetastic.Views.MainPlayerPage",
+      "UniqueId": "KyappuTone.Views.MainPlayerPage",
       "IconGlyph": "E8D6",
       "ShowItemsWithoutGroup": true,
       "Items":
       [
         {
-          "UniqueId": "Tunetastic.Views.MainPlayerPage",
+          "UniqueId": "KyappuTone.Views.MainPlayerPage",
           "Title": "Player",
           "IconGlyph": "E8D6",
           "HideItem": true
@@ -27,31 +27,31 @@
       "Items":
       [
         {
-          "UniqueId": "Tunetastic.Views.LibraryViews.AllSongsViewPage",
+          "UniqueId": "KyappuTone.Views.LibraryViews.AllSongsViewPage",
           "Title": "All Songs",
           "IconGlyph": "E71d",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.LibraryViews.ArtistsViewPage",
+          "UniqueId": "KyappuTone.Views.LibraryViews.ArtistsViewPage",
           "Title": "Artists",
           "IconGlyph": "E716",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.LibraryViews.AlbumsViewPage",
+          "UniqueId": "KyappuTone.Views.LibraryViews.AlbumsViewPage",
           "Title": "Albums",
           "IconGlyph": "E93C",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.LibraryViews.GenresViewPage",
+          "UniqueId": "KyappuTone.Views.LibraryViews.GenresViewPage",
           "Title": "Genres",
           "IconGlyph": "E955",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.LibraryViews.YearsViewPage",
+          "UniqueId": "KyappuTone.Views.LibraryViews.YearsViewPage",
           "Title": "Years",
           "IconGlyph": "E787",
           "HideItem": false
@@ -69,26 +69,26 @@
       "Items":
       [
         {
-          "UniqueId": "Tunetastic.Views.PlaylistViews.QueuedList",
+          "UniqueId": "KyappuTone.Views.PlaylistViews.QueuedList",
           "Title": "Queue",
           "HideNavigationViewItem": true,
           "IconGlyph": "E84F",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.PlaylistViews.RecentlyAdded",
+          "UniqueId": "KyappuTone.Views.PlaylistViews.RecentlyAdded",
           "Title": "Recently Added",
           "IconGlyph": "E823",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.PlaylistViews.RecentlyPlayed",
+          "UniqueId": "KyappuTone.Views.PlaylistViews.RecentlyPlayed",
           "Title": "Recently Played",
           "IconGlyph": "E81C",
           "HideItem": false
         },
         {
-          "UniqueId": "Tunetastic.Views.PlaylistViews.MostPlayed",
+          "UniqueId": "KyappuTone.Views.PlaylistViews.MostPlayed",
           "Title": "Most Played",
           "IconGlyph": "E96A",
           "HideItem": false

@@ -1,15 +1,15 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Storage.Pickers;
-using Tunetastic.Common.Services.TaskbarOverlay;
+using KyappuTone.Common.Services.TaskbarOverlay;
 using Windows.Services.Store;
 using Windows.UI;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 /// <summary>
 /// Represents the settings page in the application, allowing users to manage and modify various application settings.
@@ -1029,7 +1029,7 @@ public sealed partial class SettingsPage : Page
 	private async void ArtistsToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var librariesGroup = App.Current.NavService.MenuItems![1] as NavigationViewItem;
-		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.LibraryViews.ArtistsViewPage");
+		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.LibraryViews.ArtistsViewPage");
 
 		if (libraryNavigationItem != null) libraryNavigationItem.Visibility = ArtistsToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1038,7 +1038,7 @@ public sealed partial class SettingsPage : Page
 		if (!ArtistsToggle.IsOn)
 		{
 			MainPage._instance?.RemovePageFromHistory("Artists");
-			MainPage._instance?.RemovePageFromHistory("Tunetastic.Views.LibraryViews.ArtistDetailPage");
+			MainPage._instance?.RemovePageFromHistory("KyappuTone.Views.LibraryViews.ArtistDetailPage");
 		}
 
 		var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -1062,7 +1062,7 @@ public sealed partial class SettingsPage : Page
 	private async void AlbumsToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var librariesGroup = App.Current.NavService!.MenuItems![1] as NavigationViewItem;
-		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.LibraryViews.AlbumsViewPage");
+		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.LibraryViews.AlbumsViewPage");
 
 		if (libraryNavigationItem != null) libraryNavigationItem.Visibility = AlbumsToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1071,7 +1071,7 @@ public sealed partial class SettingsPage : Page
 		if (!AlbumsToggle.IsOn)
 		{
 			MainPage._instance?.RemovePageFromHistory("Albums");
-			MainPage._instance?.RemovePageFromHistory("Tunetastic.Views.LibraryViews.AlbumDetailPage");
+			MainPage._instance?.RemovePageFromHistory("KyappuTone.Views.LibraryViews.AlbumDetailPage");
 		}
 
 		var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -1095,7 +1095,7 @@ public sealed partial class SettingsPage : Page
 	private async void GenresToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var librariesGroup = App.Current.NavService!.MenuItems![1] as NavigationViewItem;
-		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.LibraryViews.GenresViewPage");
+		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.LibraryViews.GenresViewPage");
 
 		if (libraryNavigationItem != null) libraryNavigationItem.Visibility = GenresToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1104,7 +1104,7 @@ public sealed partial class SettingsPage : Page
 		if (!GenresToggle.IsOn)
 		{
 			MainPage._instance?.RemovePageFromHistory("Genres");
-			MainPage._instance?.RemovePageFromHistory("Tunetastic.Views.LibraryViews.GenreDetailPage");
+			MainPage._instance?.RemovePageFromHistory("KyappuTone.Views.LibraryViews.GenreDetailPage");
 		}
 
 		var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -1127,7 +1127,7 @@ public sealed partial class SettingsPage : Page
 	private async void YearsToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var librariesGroup = App.Current.NavService!.MenuItems![1] as NavigationViewItem;
-		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.LibraryViews.YearsViewPage");
+		var libraryNavigationItem = librariesGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.LibraryViews.YearsViewPage");
 
 		if (libraryNavigationItem != null) libraryNavigationItem.Visibility = YearsToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1137,7 +1137,7 @@ public sealed partial class SettingsPage : Page
 		if (!YearsToggle.IsOn)
 		{
 			MainPage._instance?.RemovePageFromHistory("Years");
-			MainPage._instance?.RemovePageFromHistory("Tunetastic.Views.LibraryViews.YearDetailPage");
+			MainPage._instance?.RemovePageFromHistory("KyappuTone.Views.LibraryViews.YearDetailPage");
 		}
 
 		localSettings.Values[nameof(LocalSave.YearsEnabled)] = YearsToggle.IsOn;
@@ -1160,7 +1160,7 @@ public sealed partial class SettingsPage : Page
 	private async void RecentlyAddedToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var playlistsGroup = App.Current.NavService!.MenuItems![2] as NavigationViewItem;
-		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.PlaylistViews.RecentlyAdded");
+		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.PlaylistViews.RecentlyAdded");
 
 		if (playListNavigationItem != null) playListNavigationItem.Visibility = RecentlyAddedToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1188,7 +1188,7 @@ public sealed partial class SettingsPage : Page
 	private async void RecentlyPlayedToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var playlistsGroup = App.Current.NavService!.MenuItems![2] as NavigationViewItem;
-		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.PlaylistViews.RecentlyPlayed");
+		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.PlaylistViews.RecentlyPlayed");
 
 		if (playListNavigationItem != null) playListNavigationItem.Visibility = RecentlyPlayedToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1216,7 +1216,7 @@ public sealed partial class SettingsPage : Page
 	private async void MostPlayedToggle_Toggled(object sender, RoutedEventArgs e)
 	{
 		var playlistsGroup = App.Current.NavService!.MenuItems![2] as NavigationViewItem;
-		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "Tunetastic.Views.PlaylistViews.MostPlayed");
+		var playListNavigationItem = playlistsGroup?.MenuItems.Select(x => x as NavigationViewItem).FirstOrDefault(x => x?.Tag.ToString() == "KyappuTone.Views.PlaylistViews.MostPlayed");
 
 		if (playListNavigationItem != null) playListNavigationItem.Visibility = MostPlayedToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1303,12 +1303,12 @@ public sealed partial class SettingsPage : Page
 
 	private async void GitHubIssues_Click(object sender, RoutedEventArgs e)
 	{
-		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/AMit-KP/Tunetastic/issues"));
+		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/AMit-KP/KyappuTone/issues"));
 	}
 
 	private async void BuyMeACoffee_Click(object sender, RoutedEventArgs e)
 	{
-		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://ko-fi.com/tunetastic"));
+		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://ko-fi.com/KyappuTone"));
 	}
 
 	private void TaskBarOverlay_Toggled(object sender, RoutedEventArgs e)

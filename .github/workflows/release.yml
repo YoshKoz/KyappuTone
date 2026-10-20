@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   release:
@@ -42,7 +42,7 @@ jobs:
           $securePw = ConvertTo-SecureString $env:CERT_PASSWORD -AsPlainText -Force
           $cert = Get-PfxCertificate -FilePath $pfxPath -Password $securePw
           Write-Host "Cert subject: $($cert.Subject)"
-          $cerPath = Join-Path $env:RUNNER_TEMP "Tunetastic_Certificate.cer"
+          $cerPath = Join-Path $env:RUNNER_TEMP "KyappuTone_Certificate.cer"
           Export-Certificate -Cert $cert -FilePath $cerPath | Out-Null
           echo "CER_PATH=$cerPath" >> $env:GITHUB_ENV
 
@@ -50,13 +50,13 @@ jobs:
         uses: microsoft/setup-msbuild@v3
 
       - name: Restore NuGet packages
-        run: dotnet restore Tunetastic.sln --configfile nuget.config
+        run: dotnet restore KyappuTone.sln --configfile nuget.config
 
       - name: Build and package MSIX (${{ matrix.platform }})
         env:
           CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
         run: |
-          msbuild Tunetastic.csproj `
+          msbuild KyappuTone.csproj `
             /t:Build `
             /p:Configuration=Release `
             /p:Platform=${{ matrix.platform }} `
@@ -104,7 +104,7 @@ jobs:
           $version = "${{ github.ref_name }}"
           # Strip leading 'v' if present, and trailing '.0' if present
           $version = $version -replace '^v', '' -replace '\.0$', ''
-          $newName = "Tunetastic_${version}_${platform}.msix"
+          $newName = "KyappuTone_${version}_${platform}.msix"
           $newPath = Join-Path (Split-Path $msix) $newName
           Rename-Item -Path $msix -NewName $newName
           echo "MSIX_RENAMED=$newPath" >> $env:GITHUB_OUTPUT

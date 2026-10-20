@@ -1,11 +1,11 @@
-﻿using FlyleafLib;
+using FlyleafLib;
 using FlyleafLib.MediaPlayer;
 using TagLib;
 using Windows.Media;
 using Windows.Media.Playback;
 using File = System.IO.File;
 
-namespace Tunetastic.Common.Services;
+namespace KyappuTone.Common.Services;
 
 /// <summary>
 /// Provides event arguments for playback state changes.

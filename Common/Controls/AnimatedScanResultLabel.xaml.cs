@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Globalization;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Media;
@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 
-namespace Tunetastic.Common.Controls;
+namespace KyappuTone.Common.Controls;
 
 /// <summary>
 /// A label that shows the latest library scan results (library count, songs count and last scan time)

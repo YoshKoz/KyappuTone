@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Common.Operations;
+namespace KyappuTone.Common.Operations;
 /// <summary>
 /// Represents the outcome of detecting renamed or moved files by comparing
 /// disappeared and appeared file entries from a library scan.

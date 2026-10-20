@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using static Tunetastic.Common.Services.TaskbarOverlay.NativeMethods;
+using System.Runtime.InteropServices;
+using static KyappuTone.Common.Services.TaskbarOverlay.NativeMethods;
 
-namespace Tunetastic.Common.Services.TaskbarOverlay;
+namespace KyappuTone.Common.Services.TaskbarOverlay;
 
 internal sealed partial class TaskbarStateService : IDisposable
 {

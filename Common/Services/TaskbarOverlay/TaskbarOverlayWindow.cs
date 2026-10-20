@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Input;
 using WinUIEx;
-using static Tunetastic.Common.Services.TaskbarOverlay.NativeMethods;
+using static KyappuTone.Common.Services.TaskbarOverlay.NativeMethods;
 
-namespace Tunetastic.Common.Services.TaskbarOverlay;
+namespace KyappuTone.Common.Services.TaskbarOverlay;
 
 /// <summary>
 /// Top-level, topmost, borderless WinUIEx.WindowEx that hosts user-supplied overlay content.

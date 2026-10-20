@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace Tunetastic.Common.Infrastructure;
+namespace KyappuTone.Common.Infrastructure;
 
 /// <summary>
 /// Provides utility methods for displaying global notifications to the user.
@@ -85,7 +85,7 @@ public static class GlobalNotification
 			StaysOpen = false,
 			IsClosable = true,
 			WaitTime = TimeSpan.FromSeconds(10),
-			Title = "Tunetastic",
+			Title = "KyappuTone",
 			Message = message
 		});
 
@@ -110,7 +110,7 @@ public static class GlobalNotification
 			StaysOpen = false,
 			WaitTime = TimeSpan.FromSeconds(10),
 			IsClosable = true,
-			Title = "Tunetastic",
+			Title = "KyappuTone",
 			Message = message
 		});
 

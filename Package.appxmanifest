@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -16,15 +16,15 @@
   IgnorableNamespaces="uap rescap uap18">
 
   <Identity
-	  Name="AMit-KP.Tunetastic"
-	  Publisher="CN=B90A5939-9B2E-481A-9AAB-88AC3440759B"
+	  Name="YoshKoz.KyappuTone"
+	  Publisher="CN=KyappuTone Development"
 	  Version="1.66.19.0"/>
 
   <mp:PhoneIdentity PhoneProductId="1e56cd21-fffd-4018-bebd-94b2cb6d6063" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Tunetastic</DisplayName>
-    <PublisherDisplayName>AMit-KP</PublisherDisplayName>
+    <DisplayName>KyappuTone</DisplayName>
+    <PublisherDisplayName>YoshKoz</PublisherDisplayName>
     <Logo>Assets\Store\StoreLogo.png</Logo>
     <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
@@ -44,10 +44,10 @@
 		  Executable="$targetnametoken$.exe"
 		  EntryPoint="$targetentrypoint$" uap18:TrustLevel="mediumIL" uap18:RuntimeBehavior="packagedClassicApp">
       <uap:VisualElements
-			  DisplayName="Tunetastic"
+			  DisplayName="KyappuTone"
 			  BackgroundColor="transparent"
 			  Square150x150Logo="Assets\Store\Square150x150Logo.png"
-			  Square44x44Logo="Assets\Store\Square44x44Logo.png" Description="Tunetastic is a next gen music player for Windows 11 that blends sleek design and deep personalization, turning your library into an experience that’s as unique, expressive and captivating as the music you love. 🎶">
+			  Square44x44Logo="Assets\Store\Square44x44Logo.png" Description="KyappuTone is a next gen music player for Windows 11 that blends sleek design and deep personalization, turning your library into an experience that’s as unique, expressive and captivating as the music you love. 🎶">
         <uap:DefaultTile Wide310x150Logo="Assets\Store\Wide310x150Logo.png" Square71x71Logo="Assets\Store\SmallTile.png" Square310x310Logo="Assets\Store\LargeTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo"/>
@@ -86,11 +86,11 @@
         </com:Extension>
         <uap3:Extension Category="windows.appExecutionAlias">
           <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="Tunetastic.exe"/>
+            <desktop:ExecutionAlias Alias="KyappuTone.exe"/>
           </uap3:AppExecutionAlias>
         </uap3:Extension>
         <uap5:Extension Category="windows.startupTask">
-          <uap5:StartupTask TaskId="TunetasticStartOnLoginTask" Enabled="false" DisplayName="Tunetastic"/>
+          <uap5:StartupTask TaskId="KyappuToneStartOnLoginTask" Enabled="false" DisplayName="KyappuTone"/>
         </uap5:Extension>
         <uap:Extension Category="windows.mediaPlayback">
           <uap:MediaPlayback>

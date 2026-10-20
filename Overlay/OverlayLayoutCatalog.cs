@@ -1,4 +1,4 @@
-﻿namespace Tunetastic.Overlay;
+namespace KyappuTone.Overlay;
 
 /// <summary>
 /// Static registry of all layout display names and descriptions.

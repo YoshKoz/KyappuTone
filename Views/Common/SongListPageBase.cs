@@ -1,12 +1,12 @@
-﻿using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI;
 
-namespace Tunetastic.Views.Common;
+namespace KyappuTone.Views.Common;
 
 /// <summary>
-/// Shared base for song-list pages built on <see cref="TunetasticPageBase"/> that offer Play All / Shuffle &amp; Play,
+/// Shared base for song-list pages built on <see cref="KyappuTonePageBase"/> that offer Play All / Shuffle &amp; Play,
 /// a compact/list view toggle, A-Z navigation and the shared "Add to playlist" context menu.
 /// </summary>
-public abstract partial class SongListPageBase : TunetasticPageBase
+public abstract partial class SongListPageBase : KyappuTonePageBase
 {
 	/// <summary>The view model owning this page's song collection, selection and playback commands.</summary>
 	protected SongListViewModel ViewModel { get; } = new();

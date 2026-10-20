@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace Tunetastic.Views;
+namespace KyappuTone.Views;
 
 /// <summary>
 /// Represents the splash screen page of the application.

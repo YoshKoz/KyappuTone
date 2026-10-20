@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.UI;
 
-namespace Tunetastic.Overlay.Layouts;
+namespace KyappuTone.Overlay.Layouts;
 
 // ══════════════════════════════════════════════════════════════════════
 // ARC RING

@@ -36,12 +36,12 @@ jobs:
             exit 1
           fi
 
-      - name: Read Version from Tunetastic.csproj
+      - name: Read Version from KyappuTone.csproj
         id: version
         run: |
-          CSPROJ=$(find . -name "Tunetastic.csproj" -not -path "*/node_modules/*" | head -n 1)
+          CSPROJ=$(find . -name "KyappuTone.csproj" -not -path "*/node_modules/*" | head -n 1)
           if [ -z "$CSPROJ" ]; then
-            echo "::error::Tunetastic.csproj not found."
+            echo "::error::KyappuTone.csproj not found."
             exit 1
           fi
 
@@ -58,7 +58,7 @@ jobs:
         run: |
           TAG="v${{ steps.version.outputs.version }}"
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null 2>&1; then
-            echo "::error::Tag $TAG already exists. Bump <Version> in Tunetastic.csproj first."
+            echo "::error::Tag $TAG already exists. Bump <Version> in KyappuTone.csproj first."
             exit 1
           fi
 

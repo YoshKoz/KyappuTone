@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Foundation;
 using Windows.UI;
 
-namespace Tunetastic.Common.Helpers;
+namespace KyappuTone.Common.Helpers;
 
 public static class HighlightExtensions
 {

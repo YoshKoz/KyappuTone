@@ -1,4 +1,4 @@
-﻿<#@ template language="C#" hostspecific="true" #>
+<#@ template language="C#" hostspecific="true" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="System.IO" #>
 <#@ assembly name="System.Text.Json" #>
@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tunetastic;
+namespace KyappuTone;
 public partial class NavigationPageMappings
 {
     public static Dictionary<string, Type> PageDictionary { get; } = new Dictionary<string, Type>

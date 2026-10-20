@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Page x:Class="Tunetastic.Views.SettingsPage"
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="KyappuTone.Views.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:common="using:Tunetastic.Common"
-      xmlns:controls="using:Tunetastic.Common.Controls"
+      xmlns:common="using:KyappuTone.Common"
+      xmlns:controls="using:KyappuTone.Common.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:dev="using:DevWinUI"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:overlay="using:Tunetastic.Overlay"
+      xmlns:overlay="using:KyappuTone.Overlay"
       ActualThemeChanged="Page_ActualThemeChanged"
       mc:Ignorable="d">
 
@@ -288,7 +288,7 @@
 				<ToggleSwitch x:Name="RestartTrackOnSelection"
 				              Toggled="RestartTrackOnSelection_OnToggled" />
 			</dev:SettingsCard>
-			<dev:SettingsCard Description="When turned on, the app will use the system volume control. When turned off, the app will use the Tunetastic app volume control."
+			<dev:SettingsCard Description="When turned on, the app will use the system volume control. When turned off, the app will use the KyappuTone app volume control."
 			                  Header="Use System Volume Control">
 				<ToggleSwitch x:Name="UseSystemVolume"
 				              Toggled="UseSystemVolume_OnToggled" />
@@ -521,8 +521,8 @@
 				           Text="About" />
 			</StackPanel>
 
-			<dev:SettingsExpander Description="Tunetastic is a next gen music player for Windows 11 that blends sleek design and deep personalization, turning your library into an experience that’s as unique, expressive and captivating as the music you love. 🎶"
-			                      Header="Tunetastic by AMit-KP"
+			<dev:SettingsExpander Description="KyappuTone is a next gen music player for Windows 11 that blends sleek design and deep personalization, turning your library into an experience that’s as unique, expressive and captivating as the music you love. 🎶"
+			                      Header="KyappuTone by AMit-KP"
 			                      HeaderIcon="{dev:BitmapIcon Source=Assets/AppIcon.png}"
 			                      IsExpanded="False">
 				<StackPanel Orientation="Horizontal"
@@ -560,7 +560,7 @@
 								<Image x:Name="SourceCodeImage"
 								       Height="30" />
 								<HyperlinkButton Content="Source Code"
-								                 NavigateUri="https://github.com/AMit-KP/Tunetastic" />
+								                 NavigateUri="https://github.com/AMit-KP/KyappuTone" />
 								<TextBlock VerticalAlignment="Center"
 								           Foreground="{ThemeResource SystemColorDisabledTextColor}"
 								           Text="(Please, leave a star ⭐)" />
