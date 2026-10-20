@@ -1580,6 +1580,46 @@ public class DatabaseHelper
 		return result.ToList();
 	}
 
+	/// <summary>Returns the albums whose songs have the highest combined play count.</summary>
+	public async Task<List<AlbumModel>> GetTopAlbumsByPlayCount(int limit = 5)
+	{
+		try
+		{
+			return await _database.QueryAsync<AlbumModel>(@$"SELECT CASE WHEN TRIM(Album) = 'Unknown Album' THEN 'Unknown' ELSE Album END AS Album,
+															   COUNT(*) AS Count,
+															   SUM(Duration) AS TotalDuration,
+															   MAX(Cover) AS Cover
+															FROM Songs
+															WHERE Album IS NOT NULL AND TRIM(Album) != ''
+															GROUP BY Album
+															HAVING SUM(PlayCount) > 0
+															ORDER BY SUM(PlayCount) DESC, Count DESC
+															LIMIT {Math.Max(1, limit)}");
+		}
+		catch (Exception)
+		{
+			return new List<AlbumModel>();
+		}
+	}
+
+	/// <summary>Returns songs whose last play falls within <paramref name="days"/> days of <paramref name="centerUtc"/>.</summary>
+	public async Task<List<Song>> GetSongsPlayedAround(DateTime centerUtc, int days = 7, int limit = 10)
+	{
+		try
+		{
+			var center = DateTime.SpecifyKind(centerUtc.Date, DateTimeKind.Utc);
+			return await _database.QueryAsync<Song>(
+				"SELECT * FROM Songs WHERE DateLastPlayed IS NOT NULL AND DateLastPlayed >= ? AND DateLastPlayed < ? ORDER BY DateLastPlayed DESC LIMIT ?",
+				center.AddDays(-days),
+				center.AddDays(days + 1),
+				Math.Max(1, limit));
+		}
+		catch (Exception)
+		{
+			return new List<Song>();
+		}
+	}
+
 	/// <summary>
 	/// A private regex variable used to split artist names from a given string.
 	/// It defines patterns for common separators such as ",", "&amp;", "and", "feat.", "ft.", "x", etc.,

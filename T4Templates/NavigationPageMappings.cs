@@ -16,6 +16,7 @@ public partial class NavigationPageMappings
     public static Dictionary<string, Type> PageDictionary { get; } = new Dictionary<string, Type>
     {
         {"KyappuTone.Views.MainPlayerPage", typeof(KyappuTone.Views.MainPlayerPage)},
+        {"KyappuTone.Views.HomePage", typeof(KyappuTone.Views.HomePage)},
         {"KyappuTone.Views.LibraryViews.AllSongsViewPage", typeof(KyappuTone.Views.LibraryViews.AllSongsViewPage)},
         {"KyappuTone.Views.LibraryViews.ArtistsViewPage", typeof(KyappuTone.Views.LibraryViews.ArtistsViewPage)},
         {"KyappuTone.Views.LibraryViews.AlbumsViewPage", typeof(KyappuTone.Views.LibraryViews.AlbumsViewPage)},

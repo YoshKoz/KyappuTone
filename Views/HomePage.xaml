@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="KyappuTone.Views.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      Loaded="Page_Loaded"
+      mc:Ignorable="d">
+
+	<Page.Resources>
+		<DataTemplate x:Key="SongCardTemplate">
+			<Border Width="200"
+			        Height="112"
+			        Margin="0,0,8,0"
+			        Padding="12"
+			        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+			        CornerRadius="8">
+				<StackPanel Spacing="4">
+					<FontIcon HorizontalAlignment="Left"
+					          FontSize="18"
+					          Glyph="&#xE8D6;" />
+					<TextBlock FontWeight="SemiBold"
+					           MaxLines="2"
+					           Text="{Binding Title}"
+					           TextTrimming="CharacterEllipsis"
+					           TextWrapping="Wrap" />
+					<TextBlock MaxLines="1"
+					           Opacity="0.7"
+					           Text="{Binding Artists}"
+					           TextTrimming="CharacterEllipsis" />
+				</StackPanel>
+			</Border>
+		</DataTemplate>
+
+		<DataTemplate x:Key="AlbumCardTemplate">
+			<Border Width="200"
+			        Height="112"
+			        Margin="0,0,8,0"
+			        Padding="12"
+			        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+			        CornerRadius="8">
+				<StackPanel Spacing="4">
+					<FontIcon HorizontalAlignment="Left"
+					          FontSize="18"
+					          Glyph="&#xE93F;" />
+					<TextBlock FontWeight="SemiBold"
+					           MaxLines="2"
+					           Text="{Binding Album}"
+					           TextTrimming="CharacterEllipsis"
+					           TextWrapping="Wrap" />
+					<TextBlock Opacity="0.7">
+						<Run Text="{Binding Count}" />
+						<Run Text=" tracks" />
+					</TextBlock>
+				</StackPanel>
+			</Border>
+		</DataTemplate>
+	</Page.Resources>
+
+	<ScrollViewer>
+		<StackPanel Margin="20,10,20,24"
+		            Spacing="18">
+			<StackPanel Spacing="2">
+				<TextBlock x:Name="GreetingText"
+				           Style="{ThemeResource TitleTextBlockStyle}"
+				           Text="Welcome back" />
+				<TextBlock x:Name="DateText"
+				           Opacity="0.7"
+				           Text="Today" />
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal"
+			            Spacing="12">
+				<Border MinWidth="180"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="ListeningText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0m" />
+						<TextBlock Opacity="0.7"
+						           Text="Listening, last 7 days" />
+					</StackPanel>
+				</Border>
+				<Border MinWidth="140"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="PlaysText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0" />
+						<TextBlock Opacity="0.7"
+						           Text="Plays, last 7 days" />
+					</StackPanel>
+				</Border>
+				<Border MinWidth="140"
+				        Padding="16,12"
+				        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+				        CornerRadius="10">
+					<StackPanel Spacing="4">
+						<TextBlock x:Name="FavoritesText"
+						           FontSize="24"
+						           FontWeight="SemiBold"
+						           Text="0" />
+						<TextBlock Opacity="0.7"
+						           Text="Favorites" />
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<TextBlock x:Name="EmptyLibraryText"
+			           HorizontalAlignment="Center"
+			           Margin="0,40,0,0"
+			           Opacity="0.7"
+			           Text="Your library is empty. Scan a folder to get started."
+			           TextWrapping="Wrap"
+			           Visibility="Collapsed" />
+
+			<StackPanel x:Name="ContentPanel"
+			            Spacing="18">
+				<StackPanel Spacing="6">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="Top tracks" />
+					<ListView x:Name="TopTracksList"
+					          Height="132"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="TopTracks_ItemClick"
+					          ItemTemplate="{StaticResource SongCardTemplate}"
+					          SelectionMode="None" />
+					<TextBlock x:Name="TopTracksEmpty"
+					           Opacity="0.7"
+					           Text="Nothing played yet."
+					           Visibility="Collapsed" />
+				</StackPanel>
+
+				<StackPanel Spacing="6">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="Top albums" />
+					<ListView x:Name="TopAlbumsList"
+					          Height="132"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="TopAlbums_ItemClick"
+					          ItemTemplate="{StaticResource AlbumCardTemplate}"
+					          SelectionMode="None" />
+					<TextBlock x:Name="TopAlbumsEmpty"
+					           Opacity="0.7"
+					           Text="Nothing played yet."
+					           Visibility="Collapsed" />
+				</StackPanel>
+
+				<StackPanel Spacing="6">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="Recently played" />
+					<ListView x:Name="RecentList"
+					          Height="132"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="Recent_ItemClick"
+					          ItemTemplate="{StaticResource SongCardTemplate}"
+					          SelectionMode="None" />
+					<TextBlock x:Name="RecentEmpty"
+					           Opacity="0.7"
+					           Text="No recent plays."
+					           Visibility="Collapsed" />
+				</StackPanel>
+
+				<StackPanel Spacing="6">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="Recently added" />
+					<ListView x:Name="AddedList"
+					          Height="132"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="Added_ItemClick"
+					          ItemTemplate="{StaticResource SongCardTemplate}"
+					          SelectionMode="None" />
+					<TextBlock x:Name="AddedEmpty"
+					           Opacity="0.7"
+					           Text="No songs in the library."
+					           Visibility="Collapsed" />
+				</StackPanel>
+
+				<StackPanel x:Name="MemorySection"
+				            Spacing="6"
+				            Visibility="Collapsed">
+					<TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+					           Text="A year ago" />
+					<ListView x:Name="MemoryList"
+					          Height="132"
+					          Padding="0"
+					          IsItemClickEnabled="True"
+					          ItemClick="Memory_ItemClick"
+					          ItemTemplate="{StaticResource SongCardTemplate}"
+					          SelectionMode="None" />
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
+</Page>

@@ -9,6 +9,12 @@
       "Items":
       [
         {
+          "UniqueId": "KyappuTone.Views.HomePage",
+          "Title": "Home",
+          "IconGlyph": "E80F",
+          "HideItem": false
+        },
+        {
           "UniqueId": "KyappuTone.Views.MainPlayerPage",
           "Title": "Player",
           "IconGlyph": "E8D6",
