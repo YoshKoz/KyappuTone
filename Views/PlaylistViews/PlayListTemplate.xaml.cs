@@ -23,6 +23,8 @@ public sealed partial class PlayListTemplate : SongListPageBase
 	/// </summary>
 	public ObservableCollection<Song> PlayListSongs => ViewModel.Songs;
 
+	private string _playlistKind = "user";
+
 	/// <inheritdoc/>
 	protected override string PlaylistKey => "CustomPlaylist__" + PlaylistHeader.Text;
 
@@ -120,6 +122,9 @@ public sealed partial class PlayListTemplate : SongListPageBase
 
 	private async void ChangePlaylistCover_Click(object sender, RoutedEventArgs e)
 	{
+		if (_playlistKind is "smart" or "auto")
+			return;
+
 		try
 		{
 			var picker = new FileOpenPicker
@@ -158,6 +163,9 @@ public sealed partial class PlayListTemplate : SongListPageBase
 
 	private async void RemovePlaylistCover_Click(object sender, RoutedEventArgs e)
 	{
+		if (_playlistKind is "smart" or "auto")
+			return;
+
 		var cover = await DatabaseHelper.Instance.GetPlaylistCover(PlaylistHeader.Text);
 		await DatabaseHelper.Instance.SetPlaylistCover(PlaylistHeader.Text, string.Empty);
 		ShowPlaylistCover(null);
@@ -185,6 +193,9 @@ public sealed partial class PlayListTemplate : SongListPageBase
 	/// <param name="e">An object containing event data.</param>
 	private async void DeletePlayList_Click(object sender, RoutedEventArgs e)
 	{
+		if (_playlistKind is "smart" or "auto")
+			return;
+
 		var playListName = PlaylistHeader.Text;
 		DeleteDialog.Visibility = Visibility.Visible;
 		DeleteDialogText.Inlines.Clear();
@@ -243,6 +254,16 @@ public sealed partial class PlayListTemplate : SongListPageBase
 	{
 		ViewButton.Visibility = Visibility.Visible;
 		PageButtons.Visibility = Visibility.Visible;
+
+		var info = await DatabaseHelper.Instance.GetPlaylistInfo(PlaylistHeader.Text);
+		_playlistKind = info?.Kind ?? "user";
+		var managed = _playlistKind is "smart" or "auto";
+		RenamePlayList.Visibility = managed ? Visibility.Collapsed : Visibility.Visible;
+		ChangePlaylistCover.Visibility = managed ? Visibility.Collapsed : Visibility.Visible;
+		RemovePlaylistCover.Visibility = managed ? Visibility.Collapsed : Visibility.Visible;
+		DeletePlayList.Visibility = managed ? Visibility.Collapsed : Visibility.Visible;
+
+		await FolderPlaylistService.RefreshAsync(PlaylistHeader.Text);
 		await SmartPlaylistService.RefreshAsync(PlaylistHeader.Text);
 		UpdateAsPerLastViewStyle();
 		LoadPlayListSongs();
@@ -901,6 +922,9 @@ public sealed partial class PlayListTemplate : SongListPageBase
 	/// <param name="e">The event-specific data for the click action.</param>
 	private async void RenamePlayList_Click(object sender, RoutedEventArgs e)
 	{
+		if (_playlistKind is "smart" or "auto")
+			return;
+
 		RenamePlaylistDialog.Visibility = Visibility.Visible;
 		RenamePlaylistDialog.RequestedTheme = App.Current.ThemeService.ElementTheme;
 		PlaylistNameBox.Text = PlaylistHeader.Text;

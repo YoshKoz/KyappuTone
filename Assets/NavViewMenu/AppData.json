@@ -73,6 +73,12 @@
           "Title": "Statistics",
           "IconGlyph": "E9D2",
           "HideItem": false
+        },
+        {
+          "UniqueId": "KyappuTone.Views.LibraryViews.FoldersPage",
+          "Title": "Folders",
+          "IconGlyph": "E8B7",
+          "HideItem": false
         }
       ]
     },

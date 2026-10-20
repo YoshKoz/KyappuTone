@@ -230,6 +230,7 @@ public class LibraryScanner
 			foldersWithMusic = null!;
 
 			await RefreshAutoScanResultMessage(foldersCount);
+			await FolderPlaylistService.ReconcileAsync();
 			ScanProgress = 100;
 			TaskbarHelper.SetProgressValue(App.Hwnd, ScanProgress, 100);
 			await Task.Delay(10);

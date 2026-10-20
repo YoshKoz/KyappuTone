@@ -1192,6 +1192,50 @@ public class DatabaseHelper
 		return result.FirstOrDefault();
 	}
 
+	/// <summary>Returns every auto-managed folder playlist.</summary>
+	public async Task<List<PlaylistName>> GetAutoPlaylists()
+	{
+		return await _database.QueryAsync<PlaylistName>(
+			"SELECT * FROM Playlists WHERE Kind = 'auto' ORDER BY Name COLLATE NOCASE");
+	}
+
+	/// <summary>
+	/// Creates or updates an auto playlist. A user or smart playlist with the same name is
+	/// never overwritten. Returns false when the name is owned by a non-auto playlist.
+	/// </summary>
+	public async Task<bool> UpsertAutoPlaylist(string playlistName, string rulesJson)
+	{
+		var existing = await GetPlaylistInfo(playlistName);
+		if (existing is not null
+			&& !string.Equals(existing.Kind, "auto", StringComparison.OrdinalIgnoreCase))
+			return false;
+
+		if (existing is null)
+		{
+			await _database.ExecuteAsync(
+				"INSERT INTO Playlists (Name, Kind, RulesJson) VALUES (?, 'auto', ?)",
+				playlistName,
+				rulesJson);
+		}
+		else
+		{
+			await _database.ExecuteAsync(
+				"UPDATE Playlists SET Kind = 'auto', RulesJson = ? WHERE Name = ?",
+				rulesJson,
+				playlistName);
+		}
+
+		return true;
+	}
+
+	/// <summary>Removes an auto playlist, leaving user and smart playlists untouched.</summary>
+	public async Task RemoveAutoPlaylist(string playlistName)
+	{
+		await _database.ExecuteAsync(
+			"DELETE FROM Playlists WHERE Name = ? AND Kind = 'auto'",
+			playlistName);
+	}
+
 	/// <summary>Replaces all songs in a playlist, preserving the supplied order.</summary>
 	public async Task ReplacePlaylistSongs(string playlistName, IReadOnlyList<string> songPaths)
 	{

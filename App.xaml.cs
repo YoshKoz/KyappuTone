@@ -165,6 +165,8 @@ public partial class App : Application
 		if (autoSync)
 			await AutoScanService.ResumeIfEnabled();
 
+		_ = FolderPlaylistService.ReconcileAsync();
+
 		rootFrame.Navigate(typeof(MainPage));
 
 		RainbowFrame.Initialize(App.MainWindow);

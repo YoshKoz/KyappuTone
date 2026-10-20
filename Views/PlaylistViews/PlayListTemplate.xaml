@@ -232,19 +232,22 @@
 								</MenuFlyoutSubItem>
 							</MenuFlyoutSubItem>
 							<MenuFlyoutSeparator />
-							<MenuFlyoutItem Click="RenamePlayList_Click"
+							<MenuFlyoutItem x:Name="RenamePlayList"
+							                Click="RenamePlayList_Click"
 							                Text="Rename Playlist">
 								<MenuFlyoutItem.Icon>
 									<FontIcon Glyph="&#xE8AC;" />
 								</MenuFlyoutItem.Icon>
 							</MenuFlyoutItem>
-							<MenuFlyoutItem Click="ChangePlaylistCover_Click"
+							<MenuFlyoutItem x:Name="ChangePlaylistCover"
+							                Click="ChangePlaylistCover_Click"
 							                Text="Change cover">
 								<MenuFlyoutItem.Icon>
 									<FontIcon Glyph="&#xE8B9;" />
 								</MenuFlyoutItem.Icon>
 							</MenuFlyoutItem>
-							<MenuFlyoutItem Click="RemovePlaylistCover_Click"
+							<MenuFlyoutItem x:Name="RemovePlaylistCover"
+							                Click="RemovePlaylistCover_Click"
 							                Text="Remove cover">
 								<MenuFlyoutItem.Icon>
 									<FontIcon Glyph="&#xE74D;" />
@@ -258,7 +261,8 @@
 								</MenuFlyoutItem.Icon>
 							</MenuFlyoutItem>
 							<MenuFlyoutSeparator />
-							<MenuFlyoutItem Click="DeletePlayList_Click"
+							<MenuFlyoutItem x:Name="DeletePlayList"
+							                Click="DeletePlayList_Click"
 							                Text="Delete Playlist">
 								<MenuFlyoutItem.Icon>
 									<FontIcon Glyph="&#xE74D;" />
