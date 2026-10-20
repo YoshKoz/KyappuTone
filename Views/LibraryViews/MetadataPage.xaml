@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="KyappuTone.Views.LibraryViews.MetadataPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+	<Grid Margin="24,20,24,20"
+	      RowSpacing="16">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0"
+		      ColumnSpacing="12">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<StackPanel Spacing="4">
+				<TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+				           Text="Metadata" />
+				<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				           Text="Find missing album, year, genre, and cover information from MusicBrainz. Nothing is written without a preview." />
+			</StackPanel>
+			<StackPanel Grid.Column="1"
+			            Orientation="Horizontal"
+			            Spacing="8">
+				<Button x:Name="RefreshButton"
+				        Click="RefreshButton_Click"
+				        Content="Refresh" />
+				<Button x:Name="LookupButton"
+				        Click="LookupButton_Click"
+				        Content="Look up selected"
+				        Style="{ThemeResource AccentButtonStyle}" />
+			</StackPanel>
+		</Grid>
+
+		<Grid Grid.Row="1">
+			<ListView x:Name="TracksList"
+			          SelectionMode="Multiple">
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<Grid MinWidth="620"
+						      Padding="12,10"
+						      ColumnSpacing="16">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="180" />
+								<ColumnDefinition Width="180" />
+							</Grid.ColumnDefinitions>
+							<StackPanel Grid.Column="0"
+							            Spacing="2">
+								<TextBlock FontWeight="SemiBold"
+								           Text="{Binding Title}"
+								           TextTrimming="CharacterEllipsis" />
+								<TextBlock FontSize="12"
+								           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								           Text="{Binding Artists}"
+								           TextTrimming="CharacterEllipsis" />
+							</StackPanel>
+							<TextBlock Grid.Column="1"
+							           VerticalAlignment="Center"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="{Binding Album}"
+							           TextTrimming="CharacterEllipsis" />
+							<StackPanel Grid.Column="2"
+							            VerticalAlignment="Center"
+							            Spacing="2">
+								<TextBlock FontSize="12"
+								           Text="{Binding Year}" />
+								<TextBlock FontSize="12"
+								           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								           Text="{Binding Genre}"
+								           TextTrimming="CharacterEllipsis" />
+							</StackPanel>
+						</Grid>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+
+			<StackPanel x:Name="DisabledPanel"
+			            HorizontalAlignment="Center"
+			            VerticalAlignment="Center"
+			            Spacing="10"
+			            Visibility="Collapsed">
+				<FontIcon FontSize="40"
+				          Glyph="&#xE946;" />
+				<TextBlock HorizontalAlignment="Center"
+				           Style="{ThemeResource SubtitleTextBlockStyle}"
+				           Text="Metadata lookup is off" />
+				<TextBlock HorizontalAlignment="Center"
+				           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				           Text="Enable it in Settings → Integrations before looking up tracks." />
+				<Button HorizontalAlignment="Center"
+				        Click="OpenSettings_Click"
+				        Content="Open Settings" />
+			</StackPanel>
+
+			<StackPanel x:Name="EmptyPanel"
+			            HorizontalAlignment="Center"
+			            VerticalAlignment="Center"
+			            Spacing="8"
+			            Visibility="Collapsed">
+				<FontIcon FontSize="40"
+				          Glyph="&#xE73E;" />
+				<TextBlock HorizontalAlignment="Center"
+				           Style="{ThemeResource SubtitleTextBlockStyle}"
+				           Text="No missing metadata" />
+				<TextBlock HorizontalAlignment="Center"
+				           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				           Text="Every track has an album, year, and genre." />
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Page>

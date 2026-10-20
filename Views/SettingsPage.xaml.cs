@@ -63,6 +63,8 @@ public sealed partial class SettingsPage : Page
 
 		LoadLastFmSettings();
 
+		LoadMetadataSettings();
+
 		_ = LoadSpotifySettingsAsync();
 
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
@@ -1570,6 +1572,25 @@ public sealed partial class SettingsPage : Page
 		GitHubTokenBox.Password = string.Empty;
 		UpdateGitHubTokenStatus();
 		GlobalNotification.Info("GitHub token removed.");
+	}
+
+	private void LoadMetadataSettings()
+	{
+		var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+		MetadataLookupToggle.IsOn = bool.Parse(
+			settings.Values[nameof(LocalSave.MetadataLookupEnabled)]?.ToString() ?? "false");
+	}
+
+	private void MetadataLookupToggle_Toggled(object sender, RoutedEventArgs e)
+	{
+		Windows.Storage.ApplicationData.Current.LocalSettings
+			.Values[nameof(LocalSave.MetadataLookupEnabled)] = MetadataLookupToggle.IsOn;
+	}
+
+	private async void ClearMetadataCache_Click(object sender, RoutedEventArgs e)
+	{
+		await DatabaseHelper.Instance.ClearMetadataCache();
+		GlobalNotification.Success("Metadata cache cleared.");
 	}
 
 	private void LoadLastFmSettings()

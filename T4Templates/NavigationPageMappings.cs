@@ -25,6 +25,7 @@ public partial class NavigationPageMappings
         {"KyappuTone.Views.LibraryViews.FavoritesPage", typeof(KyappuTone.Views.LibraryViews.FavoritesPage)},
         {"KyappuTone.Views.LibraryViews.StatisticsPage", typeof(KyappuTone.Views.LibraryViews.StatisticsPage)},
         {"KyappuTone.Views.LibraryViews.FoldersPage", typeof(KyappuTone.Views.LibraryViews.FoldersPage)},
+        {"KyappuTone.Views.LibraryViews.MetadataPage", typeof(KyappuTone.Views.LibraryViews.MetadataPage)},
         {"KyappuTone.Views.PlaylistViews.QueuedList", typeof(KyappuTone.Views.PlaylistViews.QueuedList)},
         {"KyappuTone.Views.PlaylistViews.RecentlyAdded", typeof(KyappuTone.Views.PlaylistViews.RecentlyAdded)},
         {"KyappuTone.Views.PlaylistViews.RecentlyPlayed", typeof(KyappuTone.Views.PlaylistViews.RecentlyPlayed)},

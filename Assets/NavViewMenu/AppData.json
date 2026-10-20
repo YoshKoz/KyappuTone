@@ -79,6 +79,12 @@
           "Title": "Folders",
           "IconGlyph": "E8B7",
           "HideItem": false
+        },
+        {
+          "UniqueId": "KyappuTone.Views.LibraryViews.MetadataPage",
+          "Title": "Metadata",
+          "IconGlyph": "E8EC",
+          "HideItem": false
         }
       ]
     },

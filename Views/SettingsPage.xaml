@@ -654,6 +654,23 @@
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
 
+			<dev:SettingsExpander Description="Look up missing album, year, genre, and cover art on MusicBrainz. Every write is previewed first."
+			                      Header="Metadata enrichment"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Description="When off, the Metadata page and per-track lookup stay disabled. No requests are made."
+					                  Header="Enable online lookup">
+						<ToggleSwitch x:Name="MetadataLookupToggle"
+						              Toggled="MetadataLookupToggle_Toggled" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Responses are cached in SQLite for seven days."
+					                  Header="Lookup cache">
+						<Button Click="ClearMetadataCache_Click"
+						        Content="Clear cache" />
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
 			<!--  About  -->
 
 			<StackPanel Orientation="Horizontal"
