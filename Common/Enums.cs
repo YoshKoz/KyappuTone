@@ -293,7 +293,10 @@ public enum LocalSave
 	ScanResult_Message,
 	PostUpdateScanDoneVersion,
 	ModernAudioEngineStatus,
-	EqualizerSettings
+	EqualizerSettings,
+	LastFmEnabled,
+	LastFmApiKey,
+	LastFmUsername
 }
 
 public enum AddPlaylistResult

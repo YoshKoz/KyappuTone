@@ -244,6 +244,15 @@ public class DatabaseHelper
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_StartedAt ON PlayHistory(StartedAt)");
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_PlayHistory_Path ON PlayHistory(Path)");
 
+		await _database.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS ScrobbleQueue (
+									   Id INTEGER PRIMARY KEY AUTOINCREMENT,
+									   Artist TEXT NOT NULL,
+									   Title TEXT NOT NULL,
+									   Album TEXT NOT NULL DEFAULT '',
+									   Duration INTEGER NOT NULL,
+									   PlayedAtUnix INTEGER NOT NULL,
+									   Attempts INTEGER NOT NULL DEFAULT 0)");
+
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_Songs_Title_nocase ON Songs(Title COLLATE NOCASE)");
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_Songs_Album_nonempty ON Songs(Album) WHERE Album IS NOT NULL AND TRIM(Album) != ''");
 		await _database.ExecuteAsync(@"CREATE INDEX IF NOT EXISTS idx_Songs_Genre_nonempty ON Songs(Genre) WHERE Genre IS NOT NULL AND TRIM(Genre) != ''");
@@ -1008,6 +1017,40 @@ public class DatabaseHelper
 		{
 			return new List<PlayHistoryRow>();
 		}
+	}
+
+	/// <summary>Adds one scrobble to the offline queue.</summary>
+	public async Task EnqueueScrobbleAsync(string artist, string title, string album, int durationSeconds, long playedAtUnix)
+	{
+		await _database.ExecuteAsync(
+			"INSERT INTO ScrobbleQueue (Artist, Title, Album, Duration, PlayedAtUnix, Attempts) VALUES (?, ?, ?, ?, ?, 0)",
+			artist, title, album, durationSeconds, playedAtUnix);
+	}
+
+	/// <summary>Returns queued scrobbles in the order they were played.</summary>
+	public async Task<List<ScrobbleQueueRow>> GetPendingScrobblesAsync(int limit = 50)
+	{
+		try
+		{
+			return await _database.QueryAsync<ScrobbleQueueRow>(
+				$"SELECT * FROM ScrobbleQueue ORDER BY Id ASC LIMIT {Math.Max(1, limit)}");
+		}
+		catch (Exception)
+		{
+			return new List<ScrobbleQueueRow>();
+		}
+	}
+
+	/// <summary>Removes a scrobble that Last.fm accepted.</summary>
+	public async Task DeleteScrobbleAsync(int id)
+	{
+		await _database.ExecuteAsync("DELETE FROM ScrobbleQueue WHERE Id = ?", id);
+	}
+
+	/// <summary>Records a rejected or failed delivery attempt.</summary>
+	public async Task MarkScrobbleFailedAsync(int id)
+	{
+		await _database.ExecuteAsync("UPDATE ScrobbleQueue SET Attempts = Attempts + 1 WHERE Id = ?", id);
 	}
 
 	/// <summary>

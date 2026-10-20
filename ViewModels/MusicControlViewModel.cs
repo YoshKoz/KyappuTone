@@ -629,6 +629,8 @@ public partial class MusicControlViewModel : ObservableRecipient
 				_midpointTimer.Tick += MidpointTimer_Tick;
 				_midpointTimer.Start();
 
+				_ = LastFmService.Instance.UpdateNowPlayingAsync(songPath!);
+
 				Title = track.Title;
 				Artist = track.Artists;
 				Cover = track.Cover;
@@ -672,6 +674,8 @@ public partial class MusicControlViewModel : ObservableRecipient
 				DateTime.UtcNow - played,
 				(long)played.TotalMilliseconds,
 				completed: true);
+
+			await LastFmService.Instance.ScrobbleAsync(songPath, played, DateTime.UtcNow - played);
 		}
 	}
 

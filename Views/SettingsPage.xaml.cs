@@ -61,6 +61,8 @@ public sealed partial class SettingsPage : Page
 
 		LoadAboutSectionSettings();
 
+		LoadLastFmSettings();
+
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
 		Page_ActualThemeChanged(null, null);
 	}
@@ -1479,6 +1481,101 @@ public sealed partial class SettingsPage : Page
 	{
 		CheckForUpdatesStartupToggle.IsOn = bool.Parse(Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CheckForUpdatesAtStatup)]?.ToString() ?? "true");
 		VersionInfoToggle.IsOn = bool.Parse(Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.ShowVersionInfoOnTitleBar)]?.ToString() ?? "true");
+	}
+
+	private void LoadLastFmSettings()
+	{
+		var settings = Windows.Storage.ApplicationData.Current.LocalSettings;
+		LastFmApiKeyBox.Text = settings.Values[nameof(LocalSave.LastFmApiKey)]?.ToString() ?? string.Empty;
+		LastFmApiSecretBox.Password = string.Empty;
+		LastFmEnabledToggle.IsOn = LastFmService.Instance.IsEnabled;
+
+		if (LastFmService.Instance.IsConnected)
+			ShowLastFmConnected();
+		else
+			ShowLastFmDisconnected();
+	}
+
+	private void ShowLastFmConnected()
+	{
+		var username = LastFmService.Instance.Username;
+		LastFmStatusText.Text = string.IsNullOrWhiteSpace(username)
+			? "Connected"
+			: $"Connected as {username}";
+		LastFmConnectButton.Visibility = Visibility.Collapsed;
+		LastFmFinishButton.Visibility = Visibility.Collapsed;
+		LastFmDisconnectButton.Visibility = Visibility.Visible;
+	}
+
+	private void ShowLastFmDisconnected()
+	{
+		LastFmStatusText.Text = "Not connected";
+		LastFmConnectButton.Visibility = Visibility.Visible;
+		LastFmFinishButton.Visibility = Visibility.Collapsed;
+		LastFmDisconnectButton.Visibility = Visibility.Collapsed;
+	}
+
+	private async void LastFmConnect_Click(object sender, RoutedEventArgs e)
+	{
+		var key = LastFmApiKeyBox.Text.Trim();
+		var secret = LastFmApiSecretBox.Password;
+
+		if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(secret))
+		{
+			GlobalNotification.Warning("Enter your Last.fm API key and API secret first.");
+			return;
+		}
+
+		try
+		{
+			LastFmService.Instance.SaveCredentials(key, secret);
+			var url = await LastFmService.Instance.StartAuthorizationAsync();
+			await Windows.System.Launcher.LaunchUriAsync(new Uri(url));
+
+			LastFmStatusText.Text = "Authorize in the browser, then click Finish connection.";
+			LastFmFinishButton.Visibility = Visibility.Visible;
+		}
+		catch (Exception ex)
+		{
+			GlobalNotification.Error($"Last.fm: {ex.Message}");
+		}
+	}
+
+	private async void LastFmFinish_Click(object sender, RoutedEventArgs e)
+	{
+		try
+		{
+			await LastFmService.Instance.CompleteAuthorizationAsync();
+			ShowLastFmConnected();
+			LastFmEnabledToggle.IsOn = true;
+			LastFmService.Instance.IsEnabled = true;
+			GlobalNotification.Success("Last.fm connected.");
+		}
+		catch (Exception ex)
+		{
+			GlobalNotification.Error($"Last.fm: {ex.Message}");
+		}
+	}
+
+	private void LastFmDisconnect_Click(object sender, RoutedEventArgs e)
+	{
+		LastFmService.Instance.Disconnect();
+		LastFmService.Instance.IsEnabled = false;
+		LastFmEnabledToggle.IsOn = false;
+		ShowLastFmDisconnected();
+	}
+
+	private void LastFmEnabled_Toggled(object sender, RoutedEventArgs e)
+	{
+		if (LastFmEnabledToggle.IsOn && !LastFmService.Instance.IsConnected)
+		{
+			LastFmService.Instance.IsEnabled = false;
+			LastFmEnabledToggle.IsOn = false;
+			GlobalNotification.Info("Connect Last.fm before enabling scrobbling.");
+			return;
+		}
+
+		LastFmService.Instance.IsEnabled = LastFmEnabledToggle.IsOn;
 	}
 
 	private void CheckForUpdatesStartupToggle_Toggled(object sender, RoutedEventArgs e)

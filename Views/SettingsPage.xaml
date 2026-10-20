@@ -545,6 +545,64 @@
 				</dev:SettingsExpander.Items>
 			</dev:SettingsExpander>
 
+			<!--  Integrations  -->
+
+			<StackPanel Orientation="Horizontal"
+			            Spacing="10">
+				<FontIcon FontSize="{Binding ElementName=IntegrationsTextBlock, Path=FontSize}"
+				          Glyph="&#xE774;" />
+				<TextBlock x:Name="IntegrationsTextBlock"
+				           Style="{ThemeResource TitleTextBlockStyle}"
+				           Text="Integrations" />
+			</StackPanel>
+
+			<dev:SettingsExpander Description="Optionally scrobble played tracks to your Last.fm profile. Credentials stay on this PC."
+			                      Header="Last.fm"
+			                      IsExpanded="False">
+				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Header="Enable scrobbling">
+						<ToggleSwitch x:Name="LastFmEnabledToggle"
+						              Toggled="LastFmEnabled_Toggled" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Create a Last.fm API account to get an API key and secret."
+					                  Header="API key">
+						<StackPanel Orientation="Horizontal"
+						            Spacing="8">
+							<TextBox x:Name="LastFmApiKeyBox"
+							         Width="280"
+							         PlaceholderText="API key" />
+							<HyperlinkButton Content="Create API account"
+							                 NavigateUri="https://www.last.fm/api/account/create" />
+						</StackPanel>
+					</dev:SettingsCard>
+					<dev:SettingsCard Header="API secret">
+						<PasswordBox x:Name="LastFmApiSecretBox"
+						             Width="280"
+						             PlaceholderText="API secret" />
+					</dev:SettingsCard>
+					<dev:SettingsCard Description="Authorize KyappuTone in your browser, then finish the connection here."
+					                  Header="Connection">
+						<StackPanel Orientation="Horizontal"
+						            Spacing="8">
+							<TextBlock x:Name="LastFmStatusText"
+							           VerticalAlignment="Center"
+							           Text="Not connected" />
+							<Button x:Name="LastFmConnectButton"
+							        Click="LastFmConnect_Click"
+							        Content="Connect" />
+							<Button x:Name="LastFmFinishButton"
+							        Click="LastFmFinish_Click"
+							        Content="Finish connection"
+							        Visibility="Collapsed" />
+							<Button x:Name="LastFmDisconnectButton"
+							        Click="LastFmDisconnect_Click"
+							        Content="Disconnect"
+							        Visibility="Collapsed" />
+						</StackPanel>
+					</dev:SettingsCard>
+				</dev:SettingsExpander.Items>
+			</dev:SettingsExpander>
+
 			<!--  About  -->
 
 			<StackPanel Orientation="Horizontal"

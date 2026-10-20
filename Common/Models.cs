@@ -51,6 +51,20 @@ public class PlayHistoryRow
 	public bool Completed { get; set; }
 }
 
+/// <summary>One scrobble waiting to be accepted by Last.fm. Survives offline periods and restarts.</summary>
+[Table("ScrobbleQueue")]
+public class ScrobbleQueueRow
+{
+	[PrimaryKey, AutoIncrement]
+	public int Id { get; set; }
+	public string Artist { get; set; } = string.Empty;
+	public string Title { get; set; } = string.Empty;
+	public string Album { get; set; } = string.Empty;
+	public int Duration { get; set; }
+	public long PlayedAtUnix { get; set; }
+	public int Attempts { get; set; }
+}
+
 /// <summary>
 /// Represents a library resource within the KyappuTone application.
 /// This model is mapped to the "Library" database table and is used to store information
