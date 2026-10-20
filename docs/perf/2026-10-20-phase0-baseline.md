@@ -55,3 +55,9 @@ Phase 0; they belong to the Phase 1/2 performance gates.
 Run `39395337086` on `main`: both matrix legs succeeded (x64 3m09s, ARM64 3m05s),
 unit tests passed, `KyappuTone-msix-unsigned` artifact uploaded. Only annotation is the
 pre-existing CS8604 nullable warning in `MainPlayerPage` clipboard call.
+
+## Post-review verification (2026-10-20)
+
+- Fixes for long-path scan skips, thumbnail fallback caching and unique thumbnail names built cleanly (0 errors, 3 warnings).
+- Relaunched the packaged app after the fixes: window titled `KyappuTone`, process alive after 20 s, 332 MB working set, zero `.NET Runtime` crash events, 8 thumbnails intact.
+
