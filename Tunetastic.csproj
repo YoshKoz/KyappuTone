@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <RootNamespace>Tunetastic</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -278,8 +278,7 @@
   <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
   <StartupObject>Tunetastic.Startup</StartupObject>
   <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-  <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-  <PackageCertificateThumbprint>90305AD4941265C4E75A82E2B291085C30891B48</PackageCertificateThumbprint>
+  <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
   <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
   <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
   <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
@@ -287,7 +286,7 @@
   <AppxBundle>Never</AppxBundle>
   <AppxBundlePlatforms>x64</AppxBundlePlatforms>
   <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-  <AppxPackageDir>C:\Users\amitp\source\repos\Tunetastic\AppPackages\</AppxPackageDir>
+  <AppxPackageDir>$(MSBuildThisFileDirectory)AppPackages\</AppxPackageDir>
   <CreateMSIXPackage>True</CreateMSIXPackage>
   <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 </PropertyGroup>
