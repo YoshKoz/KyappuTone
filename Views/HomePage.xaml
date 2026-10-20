@@ -8,6 +8,10 @@
       mc:Ignorable="d">
 
 	<Page.Resources>
+		<ItemsPanelTemplate x:Key="HorizontalCardsPanel">
+			<StackPanel Orientation="Horizontal" />
+		</ItemsPanelTemplate>
+
 		<DataTemplate x:Key="SongCardTemplate">
 			<Border Width="200"
 			        Height="112"
@@ -127,6 +131,8 @@
 					           Text="Top tracks" />
 					<ListView x:Name="TopTracksList"
 					          Height="132"
+			          HorizontalContentAlignment="Left"
+			          ItemsPanel="{StaticResource HorizontalCardsPanel}"
 					          Padding="0"
 					          IsItemClickEnabled="True"
 					          ItemClick="TopTracks_ItemClick"
@@ -143,6 +149,8 @@
 					           Text="Top albums" />
 					<ListView x:Name="TopAlbumsList"
 					          Height="132"
+			          HorizontalContentAlignment="Left"
+			          ItemsPanel="{StaticResource HorizontalCardsPanel}"
 					          Padding="0"
 					          IsItemClickEnabled="True"
 					          ItemClick="TopAlbums_ItemClick"
@@ -159,6 +167,8 @@
 					           Text="Recently played" />
 					<ListView x:Name="RecentList"
 					          Height="132"
+			          HorizontalContentAlignment="Left"
+			          ItemsPanel="{StaticResource HorizontalCardsPanel}"
 					          Padding="0"
 					          IsItemClickEnabled="True"
 					          ItemClick="Recent_ItemClick"
@@ -175,6 +185,8 @@
 					           Text="Recently added" />
 					<ListView x:Name="AddedList"
 					          Height="132"
+			          HorizontalContentAlignment="Left"
+			          ItemsPanel="{StaticResource HorizontalCardsPanel}"
 					          Padding="0"
 					          IsItemClickEnabled="True"
 					          ItemClick="Added_ItemClick"
@@ -193,6 +205,8 @@
 					           Text="A year ago" />
 					<ListView x:Name="MemoryList"
 					          Height="132"
+			          HorizontalContentAlignment="Left"
+			          ItemsPanel="{StaticResource HorizontalCardsPanel}"
 					          Padding="0"
 					          IsItemClickEnabled="True"
 					          ItemClick="Memory_ItemClick"
