@@ -9,7 +9,7 @@ current development package is `0.3.0.0`; the product version is `0.3.0`.
   over an older build.
 - Keep `<Version>`, `<AssemblyVersion>` and `<FileVersion>` in `KyappuTone.csproj` in
   sync with the package version.
-- Tag public releases as `vMAJOR.MINOR.PATCH` (for example `v0.3.0`). The GitHub update
+- Tag releases as `vMAJOR.MINOR.PATCH` (for example `v0.3.0`). The GitHub update
   checker ignores drafts and prereleases.
 - Never reuse a version. An MSIX cannot be downgraded in place.
 
@@ -56,8 +56,9 @@ PFX; keep the same publisher identity.
 3. Attach the signed x64 and ARM64 MSIX files (and their SHA-256 checksums) to the GitHub
    release.
 4. Publish the release. The sideloaded update check reads
-   `https://api.github.com/repos/YoshKoz/KyappuTone/releases/latest`; private repositories
-   return 404, so the repository must be public for that check to work.
+   `https://api.github.com/repos/YoshKoz/KyappuTone/releases/latest` with an optional
+   fine-grained token stored in Windows Credential Locker. The token needs only
+   `Contents: read`. Without a token the check is skipped and Settings explains why.
 5. Download the release MSIX manually and verify the publisher before installing.
 
 The app currently opens the GitHub release page for manual installation; it does not

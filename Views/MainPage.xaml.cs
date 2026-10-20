@@ -1273,7 +1273,11 @@ public sealed partial class MainPage : Page
 			// and unpackaged builds throw 0x803FB112 here, which used to take the whole app down.
 			if (Windows.ApplicationModel.Package.Current.SignatureKind != Windows.ApplicationModel.PackageSignatureKind.Store)
 			{
-				var latest = await UpdateService.GetLatestReleaseAsync();
+				var token = GitHubTokenService.Load();
+				if (string.IsNullOrWhiteSpace(token))
+					return;
+
+				var latest = await UpdateService.GetLatestReleaseAsync(token);
 				var packageVersion = Windows.ApplicationModel.Package.Current.Id.Version;
 				var current = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build);
 				if (latest is not null && UpdateService.IsNewer(current, latest.Version))

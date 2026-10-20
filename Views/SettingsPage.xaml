@@ -684,6 +684,26 @@
 					                    ProgressRingVisibility="Visible" />
 				</StackPanel>
 				<dev:SettingsExpander.Items>
+					<dev:SettingsCard Description="The repository is private. Store a fine-grained GitHub token with Contents: read to check for releases. The token stays in Windows Credential Locker."
+					                  Header="Private update checks">
+						<StackPanel Spacing="6">
+							<StackPanel Orientation="Horizontal"
+							            Spacing="8">
+								<PasswordBox x:Name="GitHubTokenBox"
+								             Width="280"
+								             PlaceholderText="Fine-grained GitHub token" />
+								<Button x:Name="SaveGitHubTokenButton"
+								        Click="SaveGitHubToken_Click"
+								        Content="Save" />
+								<Button x:Name="ClearGitHubTokenButton"
+								        Click="ClearGitHubToken_Click"
+								        Content="Clear" />
+							</StackPanel>
+							<TextBlock x:Name="GitHubTokenStatusText"
+							           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+							           Text="Token not set" />
+						</StackPanel>
+					</dev:SettingsCard>
 					<dev:SettingsCard Description="When turned on, the app will automatically check for updates at startup."
 					                  Header="Check for updates at startup">
 						<ToggleSwitch x:Name="CheckForUpdatesStartupToggle"

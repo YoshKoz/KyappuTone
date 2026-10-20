@@ -1457,14 +1457,24 @@ public sealed partial class SettingsPage : Page
 		}
 	}
 
-	/// <summary>Checks the public GitHub Releases feed used by sideloaded builds.</summary>
+	/// <summary>Checks the private GitHub Releases feed used by sideloaded builds.</summary>
 	private async Task CheckGitHubUpdateAsync()
 	{
-		var latest = await UpdateService.GetLatestReleaseAsync();
+		var token = GitHubTokenService.Load();
+		if (string.IsNullOrWhiteSpace(token))
+		{
+			await MessageBox.ShowInfoAsync(
+				"The KyappuTone repository is private. Add a fine-grained GitHub token with Contents: read under About, then check again.",
+				"Update check",
+				buttons: MessageBoxButtons.OK);
+			return;
+		}
+
+		var latest = await UpdateService.GetLatestReleaseAsync(token);
 		if (latest is null)
 		{
 			await MessageBox.ShowInfoAsync(
-				$"No public release feed was found for {UpdateService.Repository}.\n\nCheck the GitHub Releases page for a manual download.",
+				$"No published release was found for {UpdateService.Repository}.\n\nCheck that the token can read the repository and that a release exists.",
 				"Update check",
 				buttons: MessageBoxButtons.OK);
 			return;
@@ -1526,6 +1536,40 @@ public sealed partial class SettingsPage : Page
 	{
 		CheckForUpdatesStartupToggle.IsOn = bool.Parse(Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.CheckForUpdatesAtStatup)]?.ToString() ?? "true");
 		VersionInfoToggle.IsOn = bool.Parse(Windows.Storage.ApplicationData.Current.LocalSettings.Values[nameof(LocalSave.ShowVersionInfoOnTitleBar)]?.ToString() ?? "true");
+		GitHubTokenBox.Password = string.Empty;
+		UpdateGitHubTokenStatus();
+	}
+
+	private void UpdateGitHubTokenStatus()
+	{
+		var hasToken = GitHubTokenService.HasToken;
+		GitHubTokenStatusText.Text = hasToken
+			? "Private update checks enabled"
+			: "Token not set";
+		ClearGitHubTokenButton.IsEnabled = hasToken;
+	}
+
+	private void SaveGitHubToken_Click(object sender, RoutedEventArgs e)
+	{
+		var token = GitHubTokenBox.Password.Trim();
+		if (token.Length == 0)
+		{
+			GlobalNotification.Warning("Enter a GitHub token first.");
+			return;
+		}
+
+		GitHubTokenService.Save(token);
+		GitHubTokenBox.Password = string.Empty;
+		UpdateGitHubTokenStatus();
+		GlobalNotification.Success("GitHub token saved in Windows Credential Locker.");
+	}
+
+	private void ClearGitHubToken_Click(object sender, RoutedEventArgs e)
+	{
+		GitHubTokenService.Remove();
+		GitHubTokenBox.Password = string.Empty;
+		UpdateGitHubTokenStatus();
+		GlobalNotification.Info("GitHub token removed.");
 	}
 
 	private void LoadLastFmSettings()

@@ -1,23 +1,27 @@
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
+using System.Net.Http.Headers;
+using KyappuTone.Core.Integrations.GitHub;
 
 namespace KyappuTone.Common.Services;
 
 public sealed record UpdateInfo(Version Version, string Tag, string ReleaseUrl, string Notes);
 
 /// <summary>
-/// Checks the public GitHub Releases feed for a newer KyappuTone build. The app does not
-/// download or execute an update automatically; the release page is opened for a manual
-/// MSIX install.
+/// Checks the GitHub Releases feed for a newer KyappuTone build. The repository is private,
+/// so the caller supplies a fine-grained token with Contents: read. The app does not download
+/// or execute an update automatically; the release page is opened for a manual MSIX install.
 /// </summary>
 public static class UpdateService
 {
 	public const string Repository = "YoshKoz/KyappuTone";
 	private static readonly HttpClient Http = CreateClient();
 
-	public static async Task<UpdateInfo?> GetLatestReleaseAsync()
+	public static async Task<UpdateInfo?> GetLatestReleaseAsync(string? token = null)
 	{
+		if (string.IsNullOrWhiteSpace(token))
+			return null;
+
 		try
 		{
 			using var request = new HttpRequestMessage(
@@ -25,6 +29,7 @@ public static class UpdateService
 				$"https://api.github.com/repos/{Repository}/releases/latest");
 			request.Headers.UserAgent.ParseAdd("KyappuTone");
 			request.Headers.Accept.ParseAdd("application/vnd.github+json");
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
 			using var response = await Http.SendAsync(request);
 			if (response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Forbidden)
@@ -32,29 +37,10 @@ public static class UpdateService
 			if (!response.IsSuccessStatusCode)
 				return null;
 
-			var body = await response.Content.ReadAsStringAsync();
-			using var document = JsonDocument.Parse(body);
-			var root = document.RootElement;
-
-			if (root.TryGetProperty("draft", out var draft) && draft.ValueKind == JsonValueKind.True)
-				return null;
-			if (root.TryGetProperty("prerelease", out var prerelease) && prerelease.ValueKind == JsonValueKind.True)
-				return null;
-
-			var tag = GetString(root, "tag_name");
-			var url = GetString(root, "html_url");
-			if (string.IsNullOrWhiteSpace(tag) || string.IsNullOrWhiteSpace(url))
-				return null;
-
-			var versionText = tag.TrimStart('v', 'V');
-			if (!Version.TryParse(versionText, out var version))
-				return null;
-
-			return new UpdateInfo(
-				version,
-				tag,
-				url,
-				GetString(root, "body") ?? string.Empty);
+			var release = GitHubReleaseParser.Parse(await response.Content.ReadAsStringAsync());
+			return release is null
+				? null
+				: new UpdateInfo(release.Version, release.Tag, release.ReleaseUrl, release.Notes);
 		}
 		catch (Exception ex)
 		{
@@ -77,9 +63,4 @@ public static class UpdateService
 		var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 		return client;
 	}
-
-	private static string? GetString(JsonElement element, string name)
-		=> element.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
-			? value.GetString()
-			: null;
 }
