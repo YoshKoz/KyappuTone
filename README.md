@@ -1,397 +1,53 @@
-<div align="center">
-
-<img src="Assets/AppIcon.png" alt="KyappuTone Logo" width="150" height="150" />
-
 # KyappuTone
 
-**A next-gen music player for Windows 10 & 11**
+A music player for Windows. Local library, synced lyrics, tagging, playlists, and deep
+integration with the Windows shell (media controls, tray, taskbar overlay, lock screen).
 
-*Sleek design meets deep personalization — your library, your experience.*
+KyappuTone is derived from [Tunetastic](https://github.com/AMit-KP/Tunetastic) and is
+licensed under the GNU General Public License v3.0. See `LICENSE` and `NOTICE`.
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D4?logo=windows11)](https://microsoft.com/windows)
-[![Framework](https://img.shields.io/badge/Framework-WinUI%203-512BD4?logo=dotnet)](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/)
-[![Language](https://img.shields.io/badge/Language-C%23-239120?logo=csharp)](https://learn.microsoft.com/en-us/dotnet/csharp/)
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue)](LICENSE)
+The repository is private until the first release.
 
-[![Latest Release](https://img.shields.io/github/v/release/AMit-KP/KyappuTone?label=Latest&color=green)](https://github.com/AMit-KP/KyappuTone/releases/latest)
-[![Pre-release](https://img.shields.io/github/v/release/AMit-KP/KyappuTone?include_prereleases&label=Pre-release&color=orange)](https://github.com/AMit-KP/KyappuTone/releases)
+## Status
 
-<a href="https://apps.microsoft.com/detail/9PCCNQZTD6PX?referrer=appbadge&mode=full" target="_blank" rel="noopener noreferrer">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://get.microsoft.com/images/en-us%20dark.svg">
-    <img alt="Get it from Microsoft" src="https://get.microsoft.com/images/en-us%20light.svg" width="200">
-  </picture>
-</a>
-
-</div>
-
-
-## Store stats
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/charts/installs-dark.svg">
-  <img alt="Installs over time" src="Assets/charts/installs-light.svg">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/charts/map-dark.svg">
-  <img alt="Where people install from" src="Assets/charts/map-light.svg">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/charts/ratings-dark.svg">
-  <img alt="Ratings" src="Assets/charts/ratings-light.svg">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/charts/github-views-dark.svg">
-  <img alt="Repo views" src="Assets/charts/github-views-light.svg">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Assets/charts/github-clones-dark.svg">
-  <img alt="Git clones" src="Assets/charts/github-clones-light.svg">
-</picture>
-
----
-
-## Overview
-
-KyappuTone is a modern music player built natively for Windows using WinUI 3. It brings Windows 11's design language — Mica, Acrylic, rounded corners, and fluid animations — to both Windows 10 and Windows 11, combining a beautifully crafted interface with deep customization options. Turn your local music library into an experience that's as unique, expressive, and captivating as the music you love.
-
-> <img width="2858" height="1718" alt="image" src="https://github.com/user-attachments/assets/03a76ccf-d134-4a7e-a7d8-9d57382295d8" />
-
-
----
-
-## Features
-
-### 🎵 Player
-
-The main player page is the heart of KyappuTone — a full-screen immersive experience built around your currently playing track.
-
-- Dynamic blurred album art background (blur intensity adjustable)
-- Standard playback controls: play/pause, previous, next, seek forward/rewind
-- Shuffle and repeat modes
-- Track progress bar with seek support
-
----
-
-### 🎤 Lyrics
-
-KyappuTone displays lyrics in sync with your music — no extra setup needed.
-
-- **Synced lyrics** scroll automatically in time with playback, and are sourced from:
-	- Embedded metadata inside the audio file itself
-	- External `.lrc` files placed alongside the track (same folder, matching filename)
-
-- **Unsynced lyrics** are displayed as plain scrollable text and are always read
-from embedded metadata.
-
-- Embedded lyrics can be edited/cleared in the app.
-
-- When both an embedded source and an `.lrc` file are available, the embedded lyrics
-takes priority for synced playback. If no lyrics are found.
-
-- Synced Lyrics can be synchronized. Offsets have 2 modes which can be changed from settings. *Currently only embedded lyrics are supported for lyrics synchronization.*
-   - *Official Standard* - Follows the formal LRC specification. Positive values subtract time to display lyrics sooner (advancing them), while negative values delay lyrics. Recommended for compatibility with spec-compliant files.
-   - *Intuitive/Logical* (Default) - Applies straightforward timestamp addition. Positive values add time to delay lyrics, while negative values shift lyrics earlier. Ideal if you expect + to push lyrics forward into the timeline.
-
-> <img width="2282" height="1717" alt="Screenshot 2026-04-10 144915" src="https://github.com/user-attachments/assets/d14623ff-26a9-4711-a8a6-10114e88f623" />
-
-
----
-
-### 🔊 Volume Control
-
-KyappuTone gives you precise, flexible control over volume without ever leaving the app.
-
-A dedicated volume slider sits right in the player UI, and can operate in two distinct modes — switchable at any time:
-
-- **System Volume** — The slider controls your device's master output volume, in sync with the Windows volume flyout and taskbar speaker icon. Dragging it in KyappuTone is identical to dragging it from the system tray.
-- **App Volume** — The slider controls only KyappuTone's volume as an independent channel, leaving all other audio on your system untouched. This maps directly to KyappuTone's entry in the Windows Volume Mixer, so changes made in either place are always reflected in the other in real time.
-
-**Pause on Mute** — When enabled, KyappuTone will automatically pause playback the moment the volume reaches zero (whether muted via the in-app slider, the system mute key, or any other source), and will resume the instant sound is restored — no need to manually hit play again.
-
----
-
-### 📚 Library
-
-KyappuTone automatically organizes your music collection into clean, browsable views:
-
-| View | Description |
-|---|---|
-| All Songs | Every track in your library |
-| Artists | Grouped by artist name |
-| Albums | Grouped by album, with artwork |
-| Genres | Sorted by genre tag |
-| Years | Sorted by release year |
-
-
----
-
-### 🏷️ Tag Editor
-
-Clean up and manage your music metadata without ever leaving KyappuTone or reaching for a third-party tool.
-
-- Edit **all standard ID3 tags** — title, artist, album, genre, year, lyrics and cover/album art
-- **Inline suggestions** appear as you type, drawn from data already in your library, so tags stay consistent across your collection instead of drifting into duplicates and typos (e.g. start typing an artist name and matching spellings already in your library show up)
-- Embedded lyrics can also be edited or cleared from the same place *(see [Lyrics](#-lyrics))*
-
----
-
-### 📋 Playlists
-
-Smart playlists keep your most-reached-for music always at hand, and you can build your own on top of them.
-
-**Built-in smart playlists:**
-- **Recently Added** — Newest arrivals in your library
-- **Recently Played** — Picks up right where you left off
-- **Most Played** — Your personal all-time favorites
-
-**User playlists:**
-- Create your own playlists and give them any name
-- Rename or delete user-created playlists at any time
-- Add individual tracks, or bulk-add entire albums, genres, or years in one go
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 123156" src="https://github.com/user-attachments/assets/33f53836-7338-46e3-80da-fa1d2402628c" />
-
----
-
-### 🔍 Quick Search
-
-A quick search bar sits in the top panel, letting you instantly search across your entire library by song title, artist, album, genre, or year — no need to navigate away from wherever you are.
-
----
-
-### 🖥️ System Integration
-
-KyappuTone integrates deeply with Windows for a native, seamless experience — all system integration features work on both Windows 10 and Windows 11 unless noted otherwise.
-
-**🎛️ System Media Transport Controls (SMTC)**
-Full SMTC support means you can control playback from anywhere:
-- Windows notification / media flyout
-- Any SMTC-compatible third-party app
-- Keyboard media keys (play, pause, next, previous)
-- Bluetooth headphones and controllers
-
-> <img width="439" height="713" alt="Screenshot 2026-03-31 123416" src="https://github.com/user-attachments/assets/8071a19b-31d4-41af-9053-4537d569f5c8" />
-
-
-**🔒 Lock Screen Controls (Windows 11)**
-On Windows 11, playback controls surface directly on the lock screen, so you can play/pause and skip tracks without ever unlocking your PC.
-
-> <img width="2880" height="1800" alt="Untitled" src="https://github.com/user-attachments/assets/7843365b-e39f-4a63-aeab-ce76f0e99c25" />
-
-
-**🖱️ Thumbnail Toolbar**
-KyappuTone adds playback buttons directly to its taskbar thumbnail preview — the small popup that appears when you hover over the app on the taskbar. Without switching to the app, you can:
-- Play or pause the current track
-- Skip to the previous or next track
-
-> <img width="172" height="214" alt="image" src="https://github.com/user-attachments/assets/bc20f448-179c-4cb9-9236-5b67336f25b8" />
-
-
-It's the fastest way to manage playback when KyappuTone is sitting in the background.
-
-**🪟 Taskbar Overlay Controls**
-A playback overlay lives right on the taskbar itself, giving you controls at a glance without hovering for the thumbnail preview.
-- Choose from several predefined layouts to match your taskbar and workflow
-- More layouts are being added over time based on user requests
-
-> <img width="260" height="54" alt="image" src="https://github.com/user-attachments/assets/fd0004c0-b171-45de-9c9b-c3ed610a9123" />
-
-> <img width="276" height="50" alt="image" src="https://github.com/user-attachments/assets/3c2a3106-5273-460d-8752-def86dcef130" />
-
-> <img width="226" height="50" alt="image" src="https://github.com/user-attachments/assets/05335dfd-fb25-4fc7-9938-bcfc084e8c92" />
-
-
-**📊 Taskbar Progress**
-Track playback progress is shown live on the KyappuTone taskbar icon, so you always know where you are in a track at a glance — without switching windows.
-
-**🔔 System Tray**
-- Minimize to the system tray on close, keeping KyappuTone out of the way but always ready
-- **Click** the tray icon to play or pause instantly
-- **Hover** the tray icon to see the current track and artist
-
----
-
-## Settings
-
-### 📁 Library Management
-
-- **Add Folders** — Point KyappuTone to your local music directories
-- **File Extensions** — Choose which audio formats to include
-- **Minimum Track Duration** — Ignore files below a set length (great for skipping short intros or sound effects)
-- **Duplicate Detection** — Options to detect and handle duplicate tracks
-- **Show / Hide Library Views** — Independently toggle the visibility of Artists, Albums, Genres, Years, and each individual playlist (All Songs is always shown)
-  - Note: Built-in smart playlists can be hidden; user-created playlists can be renamed or deleted
-
-### 🎚️ Playback
-
-- Crossfade between tracks with adjustable duration
-- **Volume Mode** — Choose between System Volume and App Volume for the in-app slider
-- **Pause on Mute** — Automatically pause playback when volume drops to zero, and resume when sound is restored
-- Additional playback behavior settings
-
-### 🎨 Appearance & Behavior
-
-KyappuTone gives you fine-grained control over how it looks and feels.
-
-**Theme**
-Choose between Light, Dark, or follow the system setting.
-
-**UI Material**
-Pick the backdrop material used throughout the app:
-
-| Material | Description |
-|---|---|
-| Mica | Subtle tinted blur sampling your desktop wallpaper |
-| Mica Alt | A higher-contrast variation of Mica |
-| Acrylic | Frosted-glass blur showing content behind the window |
-| Acrylic Thin | A lighter, more transparent acrylic |
-| Transparent | Fully transparent window background |
-
-When **Mica** is selected, you can also dial in a custom tint color — anywhere from fully transparent to any color you choose.
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121532" src="https://github.com/user-attachments/assets/8787ca72-1bac-47ce-9798-25c744b9bcd9" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121606" src="https://github.com/user-attachments/assets/761aa5fe-4553-42b5-a2ce-e5189be0f569" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121748" src="https://github.com/user-attachments/assets/9f8eaf81-c47e-44b4-ac4a-6a92d2100b04" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121850" src="https://github.com/user-attachments/assets/2feab746-b3f3-46ea-8283-e74c8be9b91a" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121923" src="https://github.com/user-attachments/assets/5bea4ee2-125f-47e6-b9aa-952d8d612ade" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 121944" src="https://github.com/user-attachments/assets/c0f118ce-a2c9-41c2-a9cc-31ee52a0a55f" />
-
-> <img width="2858" height="1717" alt="Screenshot 2026-03-31 122232" src="https://github.com/user-attachments/assets/87c18cef-0ea7-4b24-a8b2-cb6d97f37024" />
-
-
-**Accent Color**
-Certain player UI elements pick up your Windows accent color automatically. A shortcut to the Windows accent color settings page is available directly from within KyappuTone.
-
-**Player Background**
-Control the blur intensity of the album art background on the main player page.
-
-**Rainbow Border**
-Add an animated rainbow border to the player:
-- Toggle on/off
-- Configure when it appears (e.g., always, or only during playback)
-- Adjust the animation speed
-
-**Window Behavior**
-- **Minimize to tray on close** — Keep KyappuTone running silently in the background instead of fully quitting
-
----
+Phase 0: foundation. Rebranded, retargeted to .NET 10, ImageSharp replaced with
+SkiaSharp. Feature work (audio core, library intelligence, downloads, radio, polish)
+lands in later phases; see `docs/superpowers/specs/`.
 
 ## Requirements
 
-- **Windows 10** (version 1903 / Build 18362 or later) or **Windows 11**
-- **.NET Framework 4.7** or later
-- No additional runtime installation required — get it directly from the **Microsoft Store**
+- Windows 10 version 1903 (build 18362) or later, or Windows 11
+- [.NET SDK 10.0.402](https://dotnet.microsoft.com/download) or a newer 10.0.x SDK
+- Windows App SDK 2.5.1 and the Windows SDK build tools are restored from NuGet
+- No paid license file and no `sixlabors.lic` are required to build
 
+## Build
 
----
-
-## Installation
-
-### Microsoft Store *(Recommended)*
-
-Search for **KyappuTone** in the [Microsoft Store](https://github.com/AMit-KP/KyappuTone/tree/master#KyappuTone), or follow the store link once available. No manual setup or certificate trust required — just install and play.
-
-### Winget Package Manager
-
-Open Command Prompt or Powershell on your windows and type the following
-```bash
-winget install KyappuTone
+```powershell
+dotnet restore .\KyappuTone.sln
+dotnet build .\KyappuTone.sln -p:Platform=x64 -c Debug -p:AppxPackageSigningEnabled=false
 ```
 
-### GitHub Releases *(Recommended only if you want new versions before the Store gets them)*
+The app is packaged (MSIX). Running the loose executable from `bin` requires a package
+identity, so use Visual Studio's F5 with the packaging project, or register the build
+output with Developer Mode enabled:
 
-1. Open the [Releases](https://github.com/AMit-KP/KyappuTone/releases) page and download these two files:
-   - `KyappuTone_Certificate.cer`
-   - The `.msix` file for your system architecture (`x64` or `arm64`)
-2. Install the certificate first:
-   - Double-click the `.cer` file and choose **Install Certificate**.
-   - Select **Local Machine** and click Next (approve the admin prompt).
-   - Choose **Place all certificates in the following store**, click **Browse**, and select **Trusted People**.
-   - Click Next, then Finish.
-3. Double-click the `.msix` file and click **Install**.
-
-> **Note:** The certificate only needs to be installed once. You can skip step 2 for later releases.
->
-> **Note:** The GitHub and Microsoft Store versions are signed differently and can't update each other. If you have the Store version installed, uninstall it before installing from GitHub (and vice versa).
-
-### Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/AMit-KP/KyappuTone.git
-cd KyappuTone
-
-# Open in Visual Studio 2026
-start KyappuTone.sln
+```powershell
+Add-AppxPackage -Register .\bin\x64\Debug\net10.0-windows10.0.26100.0\win-x64\AppxManifest.xml
 ```
 
-Ensure the following workloads are installed in Visual Studio 2026:
-- **.NET desktop development**
-- **Windows application development** (includes Windows App SDK)
+## Test
 
-#### SixLabors License
+```powershell
+dotnet test .\tests\KyappuTone.Core.Tests\KyappuTone.Core.Tests.csproj
+```
 
-This project uses [ImageSharp](https://github.com/SixLabors/ImageSharp), which requires a license key from SixLabors. The key is not included in this repository.
+## CI
 
-To build locally:
+`.github/workflows/build.yml` builds x64 and ARM64, runs the unit tests on x64, and
+uploads the unsigned MSIX as an artifact.
 
-1. Get your own license key at [licensing.sixlabors.com](https://licensing.sixlabors.com/).
-2. Save the license file as `sixlabors.lic` in the project root, next to `KyappuTone.csproj`.
-3. Do not commit this file. It is already listed in `.gitignore`.
+## Credits
 
-Without this file, the build will fail with a license error.
-
-Then press **F5** to build and run.
-
----
-
-## Contributing
-
-Contributions are welcome! Please open an issue to discuss what you'd like to change before submitting a pull request. Make sure your code follows the existing style and that all builds pass cleanly.
-
-Each contributor needs their own SixLabors license key. Do not share keys or commit them to the repository. Pull requests from forks will not have access to the maintainer's CI secrets, so the automated build may fail on them until a maintainer reviews the change.
-
----
-
-## License
-
-This project is licensed under the [GNU General Public License v3.0](LICENSE).
-
----
-
-## Credits & Special Thanks
-
-[@Mahdi Hosseini](https://github.com/ghost1372) - For the amazing [DevWinUI](https://github.com/ghost1372/DevWinUI) that saved me hours of development and research time as an inexperienced developer.
- 
----
-
-## Inspired by
-
-<div align="center">
-
-*"Culture shouldn't exist only for those who can afford it"*
-
-— by Arsi "Hakita" Patala
-
-</div>
-
-If you are unable to access or purchase music through official storefronts, you can interact with community-hosted search tools or third-party bots:
-
->**Telegram Bot:** [@Music Downloader](https://t.me/MusicsHuntersbot?start=_tgr_qQ7b1WQ1NmM1) *(Note: External third-party bot. Use at your own discretion.)*
-
----
-<div align="center">
-
-Made with ♥ for music lovers on Windows
-
-</div>
+Upstream: Tunetastic by AMit-KP and contributors (GPLv3). Image processing uses
+SkiaSharp (MIT). Audio and media plumbing uses FFmpeg (LGPL) and FlyleafLib.
