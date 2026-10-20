@@ -12,9 +12,11 @@ The repository is private until the first release.
 
 ## Status
 
-Phase 0: foundation. Rebranded, retargeted to .NET 10, ImageSharp replaced with
-SkiaSharp. Feature work (audio core, library intelligence, downloads, radio, polish)
-lands in later phases; see `docs/superpowers/specs/`.
+Pre-release. The custom audio engine, EQ, crossfade, sleep timer, visualizers, favorites,
+listening history, statistics and home overview are implemented. The app plays local
+files only; Last.fm scrobbling and Spotify playback are not implemented, and Spotify
+playlist import is still planned for the acquisition phase. See
+`docs/superpowers/specs/` for the remaining work.
 
 ## Requirements
 

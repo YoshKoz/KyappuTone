@@ -111,16 +111,16 @@ public sealed partial class MainPlayerPage : Page
 				if (!string.IsNullOrEmpty(songPath))
 				{
 					var track = await DatabaseHelper.Instance.GetSongByPath(songPath);
-					if (track != null && File.Exists(track?.Path))
+					if (track is not null && File.Exists(track.Path))
 					{
-						Title.Text = track?.Title;
-						ToolTipService.SetToolTip(Title, track?.Title);
+						Title.Text = track.Title;
+						ToolTipService.SetToolTip(Title, track.Title);
 
-						Album.Text = track?.Album;
-						ToolTipService.SetToolTip(Album, track?.Album);
+						Album.Text = track.Album;
+						ToolTipService.SetToolTip(Album, track.Album);
 
-						Artist.Text = track?.Artists;
-						ToolTipService.SetToolTip(Artist, track?.Artists);
+						Artist.Text = track.Artists;
+						ToolTipService.SetToolTip(Artist, track.Artists);
 
 						_favoriteSongPath = songPath;
 						FavoriteGlyph.Glyph = track.Favorite ? "\uE735" : "\uE734";
@@ -839,7 +839,8 @@ public sealed partial class MainPlayerPage : Page
 
 	private void CopyAppBarButton_Click(object sender, RoutedEventArgs e)
 	{
-		System.Windows.Clipboard.SetText(lyricsText);
+		if (!string.IsNullOrEmpty(lyricsText))
+			System.Windows.Clipboard.SetText(lyricsText);
 	}
 	private async void EditAppBarButton_Click(object sender, RoutedEventArgs e)
 	{

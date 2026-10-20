@@ -42,8 +42,6 @@ public sealed partial class SettingsPage : Page
 
 	public SettingViewModel ViewModel { get; }
 
-	private int clickCounter;
-
 	private Slider[]? _eqBandSliders;
 	private TextBlock[]? _eqBandValues;
 	private bool _eqUiSync;
@@ -65,8 +63,6 @@ public sealed partial class SettingsPage : Page
 
 		if (LibraryScanner.IsScanning) ScanButton_Click(null, null);
 		Page_ActualThemeChanged(null, null);
-
-		clickCounter = 5;
 	}
 
 	/// <summary>
@@ -1405,7 +1401,6 @@ public sealed partial class SettingsPage : Page
 	private void Page_ActualThemeChanged(FrameworkElement? sender, object? args)
 	{
 		SourceCodeImage.Source = new BitmapImage(new Uri(App.Current.ThemeService.IsDark ? "ms-appx:///Assets/Store/GitHub_Invertocat_White.png" : "ms-appx:///Assets/Store/GitHub_Invertocat_Black.png"));
-		MicrosoftStoreImage.Source = new BitmapImage(new Uri(App.Current.ThemeService.IsDark ? "ms-appx:///Assets/Store/MS_Dark.png" : "ms-appx:///Assets/Store/MS_Light.png"));
 	}
 
 	private async void CheckForUpdates_Click(object sender, RoutedEventArgs e)
@@ -1503,19 +1498,9 @@ public sealed partial class SettingsPage : Page
 		App.GetService<MusicControlViewModel>().Forward_Rewind_Visibility = ForwardRewindButtonVisibility.IsOn ? Visibility.Visible : Visibility.Collapsed;
 	}
 
-	private async void RateThisAppButton_Click(object sender, RoutedEventArgs e)
-	{
-		MainPage._instance?.StoreRating(userInvoked: true);
-	}
-
 	private async void GitHubIssues_Click(object sender, RoutedEventArgs e)
 	{
-		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/AMit-KP/KyappuTone/issues"));
-	}
-
-	private async void BuyMeACoffee_Click(object sender, RoutedEventArgs e)
-	{
-		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://ko-fi.com/KyappuTone"));
+		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/YoshKoz/KyappuTone/issues"));
 	}
 
 	private void TaskBarOverlay_Toggled(object sender, RoutedEventArgs e)
@@ -1593,21 +1578,5 @@ public sealed partial class SettingsPage : Page
 		{
 			await AutoScanService.DisableAutoScan();
 		}
-	}
-
-	private void MusicDownloader_Reveal(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-	{
-		clickCounter--;
-		if (clickCounter == 0)
-		{
-			MusicDownloadLink.Visibility = Visibility.Visible;
-			ToolTipService.SetToolTip(MusicDownloader_Panel, $"Bot link revealed");
-			MusicDownloader_Description.Inlines.Clear();
-			MusicDownloader_Description.Inlines.Add(new Run { Text = "If you are unable to access or purchase music through official storefronts, you can interact with community-hosted search tools or third-party bots." });
-			MusicDownloader_Description.Inlines.Add(new LineBreak());
-			MusicDownloader_Description.Inlines.Add(new Run { FontStyle = Windows.UI.Text.FontStyle.Italic, Text = "(Note: External third-party Telegram bot. Use at your own discretion.)" });
-		}
-		else
-			ToolTipService.SetToolTip(MusicDownloader_Panel, $"Click {clickCounter} times to reveal");
 	}
 }

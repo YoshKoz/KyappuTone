@@ -53,23 +53,17 @@ Open a feature request issue and describe:
 ## Setting Up the Project
 
 ```bash
-git clone -b Development https://github.com/AMit-KP/KyappuTone.git
+git clone https://github.com/YoshKoz/KyappuTone.git
 cd KyappuTone
-start KyappuTone.sln
+dotnet build .\KyappuTone.sln -p:Platform=x64 -c Debug -p:AppxPackageSigningEnabled=false
 ```
 
+Requirements:
+- .NET SDK 10.0.402 or newer 10.0.x
+- Windows 10 1903+ / Windows 11
+- No paid license file is required; ImageSharp was replaced by SkiaSharp.
 
-- Save the ImageSharp license file as `sixlabors.lic` in the project root, next to `KyappuTone.csproj`.
-- Do not commit this file. It is already listed in `.gitignore`.
-
-Without this file, the build will fail with a license error.
-
-Required Visual Studio 2026 workloads:
-- **.NET desktop development**
-- **Windows application development** (includes Windows App SDK)
-
-
-Press **F5** to build and run.
+Open `KyappuTone.sln` in Visual Studio or run the build command above. Press **F5** to build and run.
 
 ---
 

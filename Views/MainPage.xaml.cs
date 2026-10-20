@@ -122,9 +122,6 @@ public sealed partial class MainPage : Page
 
 		if (bool.Parse(localSettings.Values[nameof(LocalSave.CheckForUpdatesAtStatup)]?.ToString() ?? "true"))
 			CheckForUpdate();
-
-		if (!bool.Parse(localSettings.Values[nameof(LocalSave.GivenStoreRating)]?.ToString() ?? "false"))
-			StoreRating();
 	}
 
 	/// <summary>
@@ -1186,6 +1183,11 @@ public sealed partial class MainPage : Page
 		// and unpackaged builds throw 0x803FB112 here, which used to take the whole app down.
 		try
 		{
+			// StoreContext requires a package with a Store identity. Sideloaded, developer-registered
+			// and unpackaged builds throw 0x803FB112 here, which used to take the whole app down.
+			if (Windows.ApplicationModel.Package.Current.SignatureKind != Windows.ApplicationModel.PackageSignatureKind.Store)
+				return;
+
 			var context = StoreContext.GetDefault();
 
 			WinRT.Interop.InitializeWithWindow.Initialize(context,
@@ -1680,37 +1682,5 @@ public sealed partial class MainPage : Page
 		result = result.Replace(@"\.", ".");   // keep the actual dot
 		result = result.Replace(@"?", "");     // remove regex quantifier ?
 		return result;
-	}
-
-	public async void StoreRating(bool userInvoked = false)
-	{
-		try
-		{
-			if (!userInvoked && !await DatabaseHelper.Instance.CheckIfTotalPlayTimeIsAbove1Hour())
-				return;
-
-			var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-			var _storeContext = StoreContext.GetDefault();
-
-			WinRT.Interop.InitializeWithWindow.Initialize(_storeContext, App.Hwnd);
-
-			var result = await _storeContext.RequestRateAndReviewAppAsync();
-
-			if (result.Status == StoreRateAndReviewStatus.Error || result.Status == StoreRateAndReviewStatus.NetworkError)
-				await LaunchStoreFallbackAsync();
-			else if (result.Status == StoreRateAndReviewStatus.Succeeded)
-				localSettings.Values[nameof(LocalSave.GivenStoreRating)] = true;
-			else if (result.Status == StoreRateAndReviewStatus.CanceledByUser)
-				localSettings.Values[nameof(LocalSave.GivenStoreRating)] = false;
-		}
-		catch
-		{
-			await LaunchStoreFallbackAsync();
-		}
-	}
-
-	private static async Task LaunchStoreFallbackAsync()
-	{
-		await Windows.System.Launcher.LaunchUriAsync(new Uri("https://apps.microsoft.com/detail/9PCCNQZTD6PX?mode=full"));
 	}
 }
