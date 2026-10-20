@@ -18,6 +18,8 @@ items were implemented:
 - Home-page genre mixes and an All Songs quick filter.
 - Package and assembly version reset to KyappuTone `0.3.0` after backing up and restoring
   the development library database.
+- Core test coverage expanded to 76 passing tests (Last.fm signatures and Spotify track
+  matching).
 
 Still open: automatic MSIX download/install handoff, a production signing certificate,
 subfolder auto-playlists and metadata enrichment. Batch multi-select and the Favorites
