@@ -17,7 +17,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
-      security-events: write
       actions: read
 
     steps:
@@ -67,3 +66,16 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
+          # Code scanning is not available for this private repo (no Advanced
+          # Security license), so don't attempt the code scanning upload.
+          upload: false
+          output: ../results
+
+      - name: Upload CodeQL SARIF as artifact
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif-csharp
+          path: ../results/*.sarif
+          retention-days: 14
+          if-no-files-found: warn
