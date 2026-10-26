@@ -24,7 +24,11 @@ jobs:
         env:
           GH_TRAFFIC_TOKEN: ${{ secrets.GH_TRAFFIC_TOKEN }}
           REPO: ${{ github.repository }}
-        run: python3 scripts/collect_github_traffic.py
+        run: |
+          if [ -z "${GH_TRAFFIC_TOKEN:-}" ]; then
+            echo "::warning::GH_TRAFFIC_TOKEN secret is missing - skipping GitHub traffic collection"; exit 0
+          fi
+          python3 scripts/collect_github_traffic.py
 
       - name: Fetch Store data and redraw graphics
         env:
@@ -41,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${RELEASE_PAT:-}" ] || [ -z "${SSH_SIGNING_KEY:-}" ]; then
-            echo "RELEASE_PAT or SSH_SIGNING_KEY secret is missing"; exit 1
+            echo "::warning::RELEASE_PAT or SSH_SIGNING_KEY secret is missing - skipping commit"; exit 0
           fi
 
           git add Assets/data Assets/charts
