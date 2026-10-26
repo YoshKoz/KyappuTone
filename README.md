@@ -9,8 +9,9 @@ metadata, internet radio, and a small discovery hub for YouTube audio downloads.
 KyappuTone is derived from [Tunetastic](https://github.com/AMit-KP/Tunetastic) and is
 licensed under the GNU General Public License v3.0. See `LICENSE` and `NOTICE`.
 
-**Status:** private preview, version 0.4.0. Packages are development builds, not
-production-signed releases.
+**Status:** preview, version 0.4.0. Packages are development builds, not
+production-signed releases. To try it, build from source (see [Build](#build)) or use the
+development-signed package described below.
 
 ## Highlights
 
@@ -49,9 +50,8 @@ production-signed releases.
 - **Last.fm:** scrobbling with an offline retry queue, using your own API credentials.
 - **Spotify:** playlist import only. Spotify audio is never streamed or downloaded.
 - **Discord Rich Presence:** optional now-playing display using your own application ID.
-- **GitHub releases:** optional fine-grained token for update checks against this private
-  repository. The app opens the release page for a manual install; it never downloads or
-  runs an update silently.
+- **GitHub releases:** optional update check against this repository's releases. The app opens
+  the release page for a manual install; it never downloads or runs an update silently.
 
 All integrations are opt-in. See `docs/integrations.md` for setup and storage details.
 
@@ -63,7 +63,7 @@ All integrations are opt-in. See `docs/integrations.md` for setup and storage de
   SDK. Windows App SDK 2.5.1 and the Windows SDK build tools are restored from NuGet.
 - No paid license file and no `sixlabors.lic` are required to build.
 
-## Install a private build
+## Install a development build
 
 Release artifacts are produced as MSIX packages under `AppPackages\<version>\`. The
 repository does not publish production-signed packages.
@@ -152,7 +152,7 @@ production signing checklist are in `docs/release.md`.
 | Metadata lookup | Settings → Integrations → Metadata enrichment | Local lookup cache in SQLite; no account |
 | Download tools | Settings → Integrations → Download tools | yt-dlp and FFmpeg in the app's LocalState |
 | Discord presence | Settings → Integrations → Discord Rich Presence | Application ID in settings; no token |
-| Update checks | Settings → About → Private update checks | Fine-grained GitHub token in Windows Credential Locker |
+| Update checks | Settings → About → Update checks | Optional GitHub token in Windows Credential Locker |
 
 ## Privacy
 
@@ -185,9 +185,10 @@ advisory flow as described in `SECURITY.md`.
 - Upstream: [Tunetastic](https://github.com/AMit-KP/Tunetastic) by AMit-KP and
   contributors, GPLv3.
 - Image processing: SkiaSharp (MIT).
-- Audio and media plumbing: FFmpeg (LGPL) and FlyleafLib.
+- Audio and media plumbing: FlyleafLib and FFmpeg. The FFmpeg DLLs in `Assets/FFmpeg` are a
+  GPLv3-enabled build (BtbN FFmpeg-Builds, `N-126175-g0056dd32fd`); see `NOTICE`.
 - Metadata: MusicBrainz and the Cover Art Archive.
 - Radio directory: Radio Browser.
-- Downloads: yt-dlp, with an LGPL FFmpeg build installed at runtime.
+- Downloads: yt-dlp, with an LGPL FFmpeg build downloaded at runtime (not bundled).
 
 KyappuTone is free software under the GNU General Public License v3.0. See `LICENSE`.

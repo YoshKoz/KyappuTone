@@ -1,17 +1,27 @@
-KyappuTone
-Copyright (C) 2026 Yoshi Tacke
-
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
-
-KyappuTone is derived from Tunetastic (https://github.com/AMit-KP/Tunetastic),
-Copyright (C) the Tunetastic contributors, licensed under GPLv3. The user
-interface, project identity, package identity, and image pipeline have been
-modified. Upstream source: https://github.com/AMit-KP/Tunetastic at commit
-79bc3cb.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+KyappuTone
+Copyright (C) 2026 Yoshi Tacke
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+KyappuTone is derived from Tunetastic (https://github.com/AMit-KP/Tunetastic),
+Copyright (C) the Tunetastic contributors, licensed under GPLv3. The user
+interface, project identity, package identity, and image pipeline have been
+modified. Upstream source: https://github.com/AMit-KP/Tunetastic at commit
+79bc3cb.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Bundled third-party binaries
+
+Assets/FFmpeg contains FFmpeg shared libraries (avcodec, avformat, avutil, swscale,
+swresample, avfilter, avdevice) from the BtbN FFmpeg-Builds project, FFmpeg
+N-126175-g0056dd32fd (2026-08-16). This build is configured with --enable-gpl and
+--enable-version3 and is distributed here under the GNU General Public License v3.0.
+FFmpeg is Copyright (C) 2000-2026 the FFmpeg developers. Corresponding source:
+https://github.com/FFmpeg/FFmpeg at commit 0056dd32fd; build scripts:
+https://github.com/BtbN/FFmpeg-Builds.

@@ -790,7 +790,7 @@
 				</StackPanel>
 				<dev:SettingsExpander.Items>
 					<dev:SettingsCard Description="The repository is private. Store a fine-grained GitHub token with Contents: read to check for releases. The token stays in Windows Credential Locker."
-					                  Header="Private update checks">
+					                  Header="Update checks">
 						<StackPanel Spacing="6">
 							<StackPanel Orientation="Horizontal"
 							            Spacing="8">

@@ -385,3 +385,7 @@ AppPackages/
 Tools/
 .venv/
 
+
+# Generated graphify output
+/Architecture/graph.html
+/Architecture/graph.json

@@ -1552,7 +1552,7 @@ public sealed partial class SettingsPage : Page
 	{
 		var hasToken = GitHubTokenService.HasToken;
 		GitHubTokenStatusText.Text = hasToken
-			? "Private update checks enabled"
+			? "Update checks enabled"
 			: "Token not set";
 		ClearGitHubTokenButton.IsEnabled = hasToken;
 	}

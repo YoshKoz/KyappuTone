@@ -150,7 +150,7 @@ supply a fine-grained token.
 
 1. Create a fine-grained personal access token for `YoshKoz/KyappuTone` with
    **Contents: read** only.
-2. Open **Settings → About → Private update checks**.
+2. Open **Settings → About → Update checks**.
 3. Paste the token and select **Save**.
 4. Use **Check for New Version**, or enable **Check for updates at startup**.
 

@@ -1,7 +1,7 @@
 # Release checklist
 
 KyappuTone uses a three-part product version and a four-part MSIX version. The current
-private preview is product `0.4.0`, package `0.4.0.0`.
+preview is product `0.4.0`, package `0.4.0.0`.
 
 ## Version rules
 
